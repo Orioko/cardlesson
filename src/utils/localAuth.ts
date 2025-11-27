@@ -13,12 +13,16 @@ export const getCurrentUser = (): LocalUser | null => {
     }
     
     try {
+        if (!window.localStorage) {
+            return null;
+        }
         const userData = localStorage.getItem(USER_STORAGE_KEY);
         if (userData) {
             return JSON.parse(userData) as LocalUser;
         }
     } catch (error) {
         console.error('Ошибка получения пользователя:', error);
+        return null;
     }
     
     return null;
@@ -32,18 +36,24 @@ export const getUserId = (): string | null => {
 export const login = (email: string): Promise<LocalUser> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            const user: LocalUser = {
-                id: userId,
-                email,
-                name: email.split('@')[0]
-            };
+            if (!window.localStorage) {
+                reject(new Error('localStorage не поддерживается'));
+                return;
+            }
             
             try {
+                const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                const user: LocalUser = {
+                    id: userId,
+                    email,
+                    name: email.split('@')[0]
+                };
+                
                 localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
                 window.dispatchEvent(new CustomEvent(USER_CHANGE_EVENT, { detail: user }));
                 resolve(user);
-            } catch {
+            } catch (error) {
+                console.error('Ошибка сохранения пользователя:', error);
                 reject(new Error('Ошибка сохранения пользователя'));
             }
         }, 300);

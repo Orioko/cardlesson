@@ -25,6 +25,10 @@ export const getWordsCacheTimestampKey = (userId: string): string => {
 
 export const saveWordsToCache = (userId: string, words: WordData[]): void => {
     try {
+        if (typeof window === 'undefined' || !window.localStorage) {
+            console.warn('localStorage не доступен');
+            return;
+        }
         const cacheKey = getWordsCacheKey(userId);
         const timestampKey = getWordsCacheTimestampKey(userId);
         localStorage.setItem(cacheKey, JSON.stringify(words));
@@ -36,6 +40,9 @@ export const saveWordsToCache = (userId: string, words: WordData[]): void => {
 
 export const loadWordsFromCache = (userId: string): WordData[] | null => {
     try {
+        if (typeof window === 'undefined' || !window.localStorage) {
+            return null;
+        }
         const cacheKey = getWordsCacheKey(userId);
         const cachedData = localStorage.getItem(cacheKey);
         if (cachedData) {

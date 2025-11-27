@@ -11,23 +11,33 @@ type Page = 'main' | 'dictionary';
 function App() {
     const [user, setUser] = useState<{ id: string } | null>(() => {
         if (typeof window !== 'undefined') {
-            return getCurrentUser();
+            try {
+                return getCurrentUser();
+            } catch (error) {
+                console.error('Ошибка инициализации пользователя:', error);
+                return null;
+            }
         }
         return null;
     });
     const [currentPage, setCurrentPage] = useState<Page>('main');
 
     useEffect(() => {
-        const unsubscribe = onAuthChange((user) => {
-            setUser(user);
-        });
+        try {
+            const unsubscribe = onAuthChange((user) => {
+                setUser(user);
+            });
 
-        return unsubscribe;
+            return unsubscribe;
+        } catch (error) {
+            console.error('Ошибка подписки на изменения аутентификации:', error);
+            return () => {};
+        }
     }, []);
 
     if (!user) {
         return (
-            <Suspense fallback={<div>Загрузка...</div>}>
+            <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Загрузка...</div>}>
                 <LoginPage />
             </Suspense>
         );
@@ -35,7 +45,7 @@ function App() {
 
     return (
         <div className="app-container">
-            <Suspense fallback={<div>Загрузка...</div>}>
+            <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Загрузка...</div>}>
                 {currentPage === 'main' && (
                     <MainPage onNavigateToDictionary={() => setCurrentPage('dictionary')} />
                 )}
