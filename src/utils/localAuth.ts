@@ -1,3 +1,5 @@
+import { findUserByEmail, saveUserToStorage, verifyUserCredentials } from './userStorage';
+
 interface LocalUser {
     id: string;
     email?: string;
@@ -33,7 +35,7 @@ export const getUserId = (): string | null => {
     return user?.id || null;
 };
 
-export const login = (email: string): Promise<LocalUser> => {
+export const login = (email: string, password: string): Promise<LocalUser> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             if (!window.localStorage) {
@@ -42,26 +44,63 @@ export const login = (email: string): Promise<LocalUser> => {
             }
             
             try {
-                const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                const userCredentials = verifyUserCredentials(email, password);
+                
+                if (!userCredentials) {
+                    reject(new Error('Неверный email или пароль'));
+                    return;
+                }
+                
                 const user: LocalUser = {
-                    id: userId,
-                    email,
-                    name: email.split('@')[0]
+                    id: userCredentials.id,
+                    email: userCredentials.email,
+                    name: userCredentials.email.split('@')[0]
                 };
                 
                 localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
                 window.dispatchEvent(new CustomEvent(USER_CHANGE_EVENT, { detail: user }));
                 resolve(user);
             } catch (error) {
-                console.error('Ошибка сохранения пользователя:', error);
-                reject(new Error('Ошибка сохранения пользователя'));
+                console.error('Ошибка входа:', error);
+                reject(error instanceof Error ? error : new Error('Ошибка входа'));
             }
         }, 300);
     });
 };
 
-export const register = (email: string): Promise<LocalUser> => {
-    return login(email);
+export const register = (email: string, password: string): Promise<LocalUser> => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (!window.localStorage) {
+                reject(new Error('localStorage не поддерживается'));
+                return;
+            }
+            
+            try {
+                const existingUser = findUserByEmail(email);
+                
+                if (existingUser) {
+                    reject(new Error('Пользователь с таким email уже существует'));
+                    return;
+                }
+                
+                const newUserCredentials = saveUserToStorage(email, password);
+                
+                const user: LocalUser = {
+                    id: newUserCredentials.id,
+                    email: newUserCredentials.email,
+                    name: newUserCredentials.email.split('@')[0]
+                };
+                
+                localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+                window.dispatchEvent(new CustomEvent(USER_CHANGE_EVENT, { detail: user }));
+                resolve(user);
+            } catch (error) {
+                console.error('Ошибка регистрации:', error);
+                reject(error instanceof Error ? error : new Error('Ошибка регистрации'));
+            }
+        }, 300);
+    });
 };
 
 export const logout = async (): Promise<void> => {

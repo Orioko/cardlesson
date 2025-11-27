@@ -39,7 +39,18 @@ export const fetchWords = async (): Promise<WordData[]> => {
         throw new Error('User not authenticated');
     }
     
-    return getWordsFromStorage(userId);
+    const words = getWordsFromStorage(userId);
+    
+    const uniqueWords = Array.from(
+        new Map(words.map(word => [word.id, word])).values()
+    );
+    
+    if (uniqueWords.length !== words.length) {
+        console.warn(`Найдено дубликатов: ${words.length - uniqueWords.length}, выполняется очистка`);
+        saveWordsToStorage(userId, uniqueWords);
+    }
+    
+    return uniqueWords;
 };
 
 export const addWord = async (wordData: Omit<WordData, 'id' | 'userId' | 'createdAt'>): Promise<WordData> => {
@@ -56,14 +67,19 @@ export const addWord = async (wordData: Omit<WordData, 'id' | 'userId' | 'create
         createdAt: new Date().toISOString()
     };
     
-    words.push(newWord);
-    words.sort((a, b) => {
-        const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return bDate - aDate;
-    });
+    const wordExists = words.some(w => w.id === newWord.id);
+    if (wordExists) {
+        console.warn('Слово с таким ID уже существует, генерируется новый ID');
+        newWord.id = `word_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
     
-    saveWordsToStorage(userId, words);
+    const uniqueWords = Array.from(
+        new Map(words.map(word => [word.id, word])).values()
+    );
+    
+    uniqueWords.unshift(newWord);
+    
+    saveWordsToStorage(userId, uniqueWords);
     return newWord;
 };
 

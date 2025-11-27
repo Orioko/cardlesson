@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getUserId } from '../../utils/localAuth';
 import { addWord, updateWord } from '../../utils/wordsApi';
-import { addWordToCache, loadWordsFromCache, removeWordFromCache, saveWordsToCache, updateWordInCache } from '../../utils/wordsCache';
 import styles from './AddWordForm.module.scss';
 
 interface WordData {
@@ -80,83 +79,18 @@ const AddWordForm = ({ visible, onHide, onWordAdded, editWordId, editWordData }:
             };
 
             if (isEditMode && editWordId) {
-                try {
-                    updateWordInCache(userId, editWordId, wordData);
-                } catch (cacheError) {
-                    console.error('Ошибка обновления кэша:', cacheError);
-                }
-                setRussianWord('');
-                setEnglishWord('');
-                setKoreanWord('');
-                onHide();
-                if (onWordAdded) {
-                    onWordAdded();
-                }
-                updateWord(editWordId, wordData).then((updatedWord) => {
-                    try {
-                        const cachedWords = loadWordsFromCache(userId) || [];
-                        const wordIndex = cachedWords.findIndex((w) => w.id === editWordId);
-                        if (wordIndex !== -1) {
-                            cachedWords[wordIndex] = updatedWord;
-                            saveWordsToCache(userId, cachedWords);
-                            if (onWordAdded) {
-                                onWordAdded();
-                            }
-                        }
-                    } catch (cacheError) {
-                        console.error('Ошибка обновления кэша:', cacheError);
-                    }
-                }).catch((error) => {
-                    console.error('Ошибка обновления слова на сервере:', error);
-                });
+                await updateWord(editWordId, wordData);
             } else {
-                const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-                const newWord = {
-                    id: tempId,
-                    ...wordData,
-                    userId,
-                    createdAt: new Date()
-                };
+                await addWord(wordData);
+            }
 
-                try {
-                    addWordToCache(userId, newWord);
-                } catch (cacheError) {
-                    console.error('Ошибка обновления кэша:', cacheError);
-                }
-
-                setRussianWord('');
-                setEnglishWord('');
-                setKoreanWord('');
-                onHide();
-                if (onWordAdded) {
-                    onWordAdded();
-                }
-
-                addWord(wordData).then((savedWord) => {
-                    try {
-                        const cachedWords = loadWordsFromCache(userId) || [];
-                        const wordIndex = cachedWords.findIndex((w) => w.id === tempId);
-                        if (wordIndex !== -1) {
-                            cachedWords[wordIndex] = savedWord;
-                            saveWordsToCache(userId, cachedWords);
-                            if (onWordAdded) {
-                                onWordAdded();
-                            }
-                        }
-                    } catch (cacheError) {
-                        console.error('Ошибка обновления кэша:', cacheError);
-                    }
-                }).catch((error) => {
-                    console.error('Ошибка сохранения слова на сервере:', error);
-                    try {
-                        removeWordFromCache(userId, tempId);
-                        if (onWordAdded) {
-                            onWordAdded();
-                        }
-                    } catch (cacheError) {
-                        console.error('Ошибка удаления из кэша:', cacheError);
-                    }
-                });
+            setRussianWord('');
+            setEnglishWord('');
+            setKoreanWord('');
+            onHide();
+            
+            if (onWordAdded) {
+                onWordAdded();
             }
         } catch (error) {
             console.error('Ошибка сохранения слова:', error);

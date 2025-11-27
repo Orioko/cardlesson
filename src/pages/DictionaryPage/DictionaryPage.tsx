@@ -1,29 +1,15 @@
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AddWordForm from '../../components/AddWordForm';
 import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
-import { getUserId } from '../../utils/localAuth';
-import { deleteWord } from '../../utils/wordsApi';
-import { loadWordsFromCache, removeWordFromCache } from '../../utils/wordsCache';
-import { initializeWordsSync, syncWordsFromServer } from '../../utils/wordsSync';
+import { useWordActions } from '../../hooks/useWordActions';
+import { useWords } from '../../hooks/useWords';
 import styles from './DictionaryPage.module.scss';
-
-interface WordData {
-    id: string;
-    ru: string;
-    en: string;
-    ko: string;
-    translations: {
-        ru: string;
-        en: string;
-        ko: string;
-    };
-}
 
 interface DictionaryPageProps {
     onNavigateToMain?: () => void;
@@ -31,109 +17,39 @@ interface DictionaryPageProps {
 
 const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
     const { t } = useTranslation();
-    
-    const getInitialWords = (): WordData[] => {
-        const userId = getUserId();
-        if (!userId) {
-            return [];
-        }
-        const cachedWords = loadWordsFromCache(userId);
-        return cachedWords !== null ? cachedWords : [];
-    };
 
-    const getInitialLoading = (): boolean => {
-        const userId = getUserId();
-        if (!userId) {
-            return false;
-        }
-        const cachedWords = loadWordsFromCache(userId);
-        return cachedWords === null || cachedWords.length === 0;
-    };
+    const { words, loading, refreshWords } = useWords();
+    const { 
+        editingWord, 
+        deletingWordId, 
+        handleEdit, 
+        handleDelete, 
+        confirmDelete, 
+        cancelDelete,
+        clearEditingWord 
+    } = useWordActions({ onWordUpdated: refreshWords });
 
-    const [words, setWords] = useState<WordData[]>(getInitialWords);
-    const [loading, setLoading] = useState<boolean>(getInitialLoading);
     const [showAddForm, setShowAddForm] = useState(false);
-    const [editingWord, setEditingWord] = useState<{ id: string; data: { ru: string; en: string; ko: string; translations: { ru: string; en: string; ko: string } } } | null>(null);
-    const [deletingWordId, setDeletingWordId] = useState<string | null>(null);
-
-    useEffect(() => {
-        const userId = getUserId();
-        if (!userId) {
-            return;
-        }
-
-        const cachedWords = loadWordsFromCache(userId);
-        const hasCachedWords = cachedWords !== null && cachedWords.length > 0;
-
-        const handleSyncComplete = (syncedWords: WordData[]) => {
-            setWords(syncedWords);
-            setLoading(false);
-        };
-
-        const cleanup = initializeWordsSync(userId, handleSyncComplete);
-
-        if (!hasCachedWords) {
-            syncWordsFromServer(userId).then((syncedWords) => {
-                if (syncedWords) {
-                    setWords(syncedWords);
-                }
-                setLoading(false);
-            });
-        } else {
-            syncWordsFromServer(userId).then((syncedWords) => {
-                if (syncedWords) {
-                    setWords(syncedWords);
-                }
-            });
-        }
-
-        return cleanup;
-    }, []);
 
     const handleWordAdded = () => {
-        const userId = getUserId();
-        if (userId) {
-            const cachedWords = loadWordsFromCache(userId);
-            if (cachedWords !== null) {
-                setWords(cachedWords);
-            }
-        }
-        setEditingWord(null);
+        refreshWords();
+        clearEditingWord();
     };
 
-    const handleEdit = (wordId: string, wordData: { ru: string; en: string; ko: string; translations: { ru: string; en: string; ko: string } }) => {
-        setEditingWord({ id: wordId, data: wordData });
+    const handleEditWord = (wordId: string, wordData: { ru: string; en: string; ko: string; translations: { ru: string; en: string; ko: string } }) => {
+        handleEdit(wordId, wordData);
         setShowAddForm(true);
     };
 
-    const handleDelete = (wordId: string) => {
-        setDeletingWordId(wordId);
-    };
-
-    const confirmDelete = async () => {
-        const userId = getUserId();
-        if (!deletingWordId || !userId) {
-            return;
-        }
-
-        const wordIdToDelete = deletingWordId;
-        setDeletingWordId(null);
-
-        try {
-            removeWordFromCache(userId, wordIdToDelete);
-            setWords((prevWords) => prevWords.filter((w) => w.id !== wordIdToDelete));
-            
-            deleteWord(wordIdToDelete).catch((error) => {
-                console.error('Ошибка удаления слова на сервере:', error);
-            });
-        } catch (error) {
-            console.error('Ошибка удаления слова:', error);
-        }
+    const handleConfirmDelete = async () => {
+        await confirmDelete(() => {
+            refreshWords();
+        });
     };
 
     const handleCloseAddForm = () => {
         setShowAddForm(false);
-        setEditingWord(null);
+        clearEditingWord();
     };
 
     return (
@@ -172,7 +88,7 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
                                     translations: word.translations
                                 }}
                                 showActions={true}
-                                onEdit={handleEdit}
+                                onEdit={handleEditWord}
                                 onDelete={handleDelete}
                             />
                         ))}
@@ -189,7 +105,7 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
             />
             <Dialog
                 visible={Boolean(deletingWordId)}
-                onHide={() => setDeletingWordId(null)}
+                onHide={cancelDelete}
                 header={t('confirmDelete')}
                 modal
                 className={styles.deleteDialog}
@@ -199,13 +115,13 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
                     <div className={styles.deleteActions}>
                         <Button
                             label={t('cancel')}
-                            onClick={() => setDeletingWordId(null)}
+                            onClick={cancelDelete}
                             severity="secondary"
                             outlined
                         />
                         <Button
                             label={t('delete')}
-                            onClick={confirmDelete}
+                            onClick={handleConfirmDelete}
                             severity="danger"
                         />
                     </div>

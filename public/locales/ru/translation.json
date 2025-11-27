@@ -37,6 +37,12 @@
   "confirmDeleteMessage": "Вы уверены, что хотите удалить это слово?",
   "wordUpdatedSuccessfully": "Слово успешно обновлено!",
   "errorUpdatingWord": "Ошибка при обновлении слова",
+  "invalidEmail": "Неверный формат email",
+  "passwordTooShort": "Пароль должен содержать минимум 6 символов",
+  "emailRequired": "Введите email",
+  "passwordRequired": "Введите пароль",
+  "invalidCredentials": "Неверный email или пароль",
+  "userAlreadyExists": "Пользователь с таким email уже существует",
   "words": {
     "hello": {
       "ru": "Привет",

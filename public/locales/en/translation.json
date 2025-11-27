@@ -37,6 +37,12 @@
   "confirmDeleteMessage": "Are you sure you want to delete this word?",
   "wordUpdatedSuccessfully": "Word updated successfully!",
   "errorUpdatingWord": "Error updating word",
+  "invalidEmail": "Invalid email format",
+  "passwordTooShort": "Password must be at least 6 characters",
+  "emailRequired": "Enter email",
+  "passwordRequired": "Enter password",
+  "invalidCredentials": "Invalid email or password",
+  "userAlreadyExists": "User with this email already exists",
   "words": {
     "hello": {
       "ru": "Привет",
