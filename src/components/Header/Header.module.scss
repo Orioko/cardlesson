@@ -1,0 +1,145 @@
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.headerContent {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    position: relative;
+}
+
+.title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    flex: 1;
+    line-height: 1.3;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.navButton {
+    white-space: nowrap;
+}
+
+.languageSelect {
+    min-width: 160px;
+}
+
+.languageSelect :global(.p-dropdown) {
+    background: white;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.languageSelect :global(.p-dropdown:hover) {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+    border-color: #000000;
+}
+
+.languageSelect :global(.p-dropdown-trigger) {
+    color: #667eea;
+}
+
+.languageSelect :global(.p-dropdown-label) {
+    color: #333;
+    font-weight: 500;
+}
+
+.exitButton {
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .headerContent {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px;
+        gap: 16px;
+    }
+
+    .title {
+        font-size: 20px;
+        text-align: center;
+        margin-bottom: 0;
+        padding-right: 0;
+    }
+
+    .controls {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .navButton {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .languageSelect {
+        min-width: 140px;
+        flex: 1;
+    }
+
+    .exitButton {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .headerContent {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .title {
+        font-size: 18px;
+        padding-right: 0;
+        margin-bottom: 0;
+    }
+
+    .controls {
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .navButton {
+        flex-shrink: 1;
+        min-width: 0;
+    }
+
+    .languageSelect {
+        min-width: 120px;
+        flex-shrink: 1;
+    }
+
+    .exitButton {
+        display: none;
+    }
+}
+

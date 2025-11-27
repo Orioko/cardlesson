@@ -1,0 +1,34 @@
+.whiteButton {
+    transition: all 0.3s ease;
+}
+
+.whiteButton :global(.p-button:hover) {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+    border-color: #000000;
+    color: #333;
+}
+
+.whiteButton :global(.p-button:active) {
+    transform: translateY(0);
+}
+
+.whiteButton :global(.p-button-label) {
+    color: #333;
+    font-weight: 500;
+}
+
+.whiteButton :global(.p-button-icon) {
+    color: #667eea;
+}
+
+.whiteButton.exitButton :global(.p-button-icon) {
+    color: #dc3545;
+}
+
+.whiteButton :global(.p-button:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
