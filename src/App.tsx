@@ -1,11 +1,12 @@
 import type { User } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import './App.css';
 import { auth } from './firebase';
-import DictionaryPage from './pages/DictionaryPage';
-import LoginPage from './pages/LoginPage/LoginPage';
-import MainPage from './pages/MainPage/MainPage';
+
+const LoginPage = lazy(() => import('./pages/LoginPage/LoginPage'));
+const MainPage = lazy(() => import('./pages/MainPage/MainPage'));
+const DictionaryPage = lazy(() => import('./pages/DictionaryPage'));
 
 type Page = 'main' | 'dictionary';
 
@@ -21,17 +22,23 @@ function App() {
     }, []);
 
     if (!user) {
-        return <LoginPage />;
+        return (
+            <Suspense fallback={<div>Загрузка...</div>}>
+                <LoginPage />
+            </Suspense>
+        );
     }
 
     return (
         <div className="app-container">
-            {currentPage === 'main' && (
-                <MainPage onNavigateToDictionary={() => setCurrentPage('dictionary')} />
-            )}
-            {currentPage === 'dictionary' && (
-                <DictionaryPage onNavigateToMain={() => setCurrentPage('main')} />
-            )}
+            <Suspense fallback={<div>Загрузка...</div>}>
+                {currentPage === 'main' && (
+                    <MainPage onNavigateToDictionary={() => setCurrentPage('dictionary')} />
+                )}
+                {currentPage === 'dictionary' && (
+                    <DictionaryPage onNavigateToMain={() => setCurrentPage('main')} />
+                )}
+            </Suspense>
         </div>
     );
 }

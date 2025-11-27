@@ -35,7 +35,8 @@ const WordCard = ({ wordKey, wordData, wordId, onEdit, onDelete, showActions = f
 
     if (wordData) {
         const currentLang = i18n.language || 'en';
-        currentWord = wordData[currentLang as keyof WordData] || '';
+        const langKey = currentLang as 'ru' | 'en' | 'ko';
+        currentWord = wordData[langKey] || '';
         translationsObj = wordData.translations || {};
     } else if (wordKey) {
         const currentLang = i18n.language || 'en';
