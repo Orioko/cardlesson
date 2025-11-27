@@ -10,19 +10,14 @@ i18n
     .init({
         fallbackLng: 'en',
         supportedLngs: ['ru', 'en', 'ko'],
-        debug: true,
+        debug: false,
 
         interpolation: {
-            escapeValue: false,
-            formatSeparator: ',',
-            format: (value, format) => {
-                if (format === 'uppercase') return value.toUpperCase();
-                return value;
-            }
+            escapeValue: false
         },
 
         backend: {
-            loadPath: '/locales/{{lng}}/translation.json',
+            loadPath: (import.meta.env.BASE_URL || '/cardlesson/') + 'locales/{{lng}}/translation.json',
         },
 
         detection: {

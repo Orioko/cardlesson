@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: '/cardlesson/',
   plugins: [react()],
   build: {
     rollupOptions: {
@@ -27,4 +28,4 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 1000
   }
-})
+});

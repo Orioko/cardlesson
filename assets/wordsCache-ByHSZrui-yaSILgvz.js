@@ -1,0 +1,1 @@
+import{t as e}from"./wordsCache-BZ4gcfdz-BnHwzGpD.js";export{e as loadWordsFromCache};
