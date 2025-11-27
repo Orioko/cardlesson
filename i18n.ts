@@ -17,7 +17,7 @@ i18n
         },
 
         backend: {
-            loadPath: (import.meta.env.BASE_URL || '/cardlesson/') + 'locales/{{lng}}/translation.json',
+            loadPath: '/locales/{{lng}}/translation.json',
         },
 
         detection: {
