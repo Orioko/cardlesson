@@ -1,11 +1,11 @@
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { auth, db } from '../../firebase';
+import { getUserId } from '../../utils/localAuth';
+import { addWord, updateWord } from '../../utils/wordsApi';
 import { addWordToCache, loadWordsFromCache, removeWordFromCache, saveWordsToCache, updateWordInCache } from '../../utils/wordsCache';
 import styles from './AddWordForm.module.scss';
 
@@ -39,13 +39,17 @@ const AddWordForm = ({ visible, onHide, onWordAdded, editWordId, editWordData }:
 
     useEffect(() => {
         if (visible && editWordData) {
-            setRussianWord(editWordData.ru || '');
-            setEnglishWord(editWordData.en || '');
-            setKoreanWord(editWordData.ko || '');
+            setTimeout(() => {
+                setRussianWord(editWordData.ru || '');
+                setEnglishWord(editWordData.en || '');
+                setKoreanWord(editWordData.ko || '');
+            }, 0);
         } else if (!visible) {
-            setRussianWord('');
-            setEnglishWord('');
-            setKoreanWord('');
+            setTimeout(() => {
+                setRussianWord('');
+                setEnglishWord('');
+                setKoreanWord('');
+            }, 0);
         }
     }, [visible, editWordData]);
 
@@ -55,7 +59,8 @@ const AddWordForm = ({ visible, onHide, onWordAdded, editWordId, editWordData }:
             return;
         }
 
-        if (!auth.currentUser) {
+        const userId = getUserId();
+        if (!userId) {
             setError(t('userNotAuthenticated'));
             return;
         }
@@ -75,12 +80,10 @@ const AddWordForm = ({ visible, onHide, onWordAdded, editWordId, editWordData }:
             };
 
             if (isEditMode && editWordId) {
-                if (auth.currentUser) {
-                    try {
-                        updateWordInCache(auth.currentUser.uid, editWordId, wordData);
-                    } catch (cacheError) {
-                        console.error('Ошибка обновления кэша:', cacheError);
-                    }
+                try {
+                    updateWordInCache(userId, editWordId, wordData);
+                } catch (cacheError) {
+                    console.error('Ошибка обновления кэша:', cacheError);
                 }
                 setRussianWord('');
                 setEnglishWord('');
@@ -89,24 +92,36 @@ const AddWordForm = ({ visible, onHide, onWordAdded, editWordId, editWordData }:
                 if (onWordAdded) {
                     onWordAdded();
                 }
-                updateDoc(doc(db, 'words', editWordId), wordData).catch((error) => {
-                    console.error('Ошибка обновления слова в Firebase:', error);
+                updateWord(editWordId, wordData).then((updatedWord) => {
+                    try {
+                        const cachedWords = loadWordsFromCache(userId) || [];
+                        const wordIndex = cachedWords.findIndex((w) => w.id === editWordId);
+                        if (wordIndex !== -1) {
+                            cachedWords[wordIndex] = updatedWord;
+                            saveWordsToCache(userId, cachedWords);
+                            if (onWordAdded) {
+                                onWordAdded();
+                            }
+                        }
+                    } catch (cacheError) {
+                        console.error('Ошибка обновления кэша:', cacheError);
+                    }
+                }).catch((error) => {
+                    console.error('Ошибка обновления слова на сервере:', error);
                 });
             } else {
                 const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
                 const newWord = {
                     id: tempId,
                     ...wordData,
-                    userId: auth.currentUser.uid,
+                    userId,
                     createdAt: new Date()
                 };
 
-                if (auth.currentUser) {
-                    try {
-                        addWordToCache(auth.currentUser.uid, newWord);
-                    } catch (cacheError) {
-                        console.error('Ошибка обновления кэша:', cacheError);
-                    }
+                try {
+                    addWordToCache(userId, newWord);
+                } catch (cacheError) {
+                    console.error('Ошибка обновления кэша:', cacheError);
                 }
 
                 setRussianWord('');
@@ -117,42 +132,29 @@ const AddWordForm = ({ visible, onHide, onWordAdded, editWordId, editWordData }:
                     onWordAdded();
                 }
 
-                addDoc(collection(db, 'words'), {
-                    ...wordData,
-                    userId: auth.currentUser.uid,
-                    createdAt: new Date()
-                }).then((docRef) => {
-                    if (auth.currentUser) {
-                        try {
-                            const cachedWords = loadWordsFromCache(auth.currentUser.uid) || [];
-                            const wordIndex = cachedWords.findIndex((w) => w.id === tempId);
-                            if (wordIndex !== -1) {
-                                cachedWords[wordIndex] = {
-                                    id: docRef.id,
-                                    ...wordData,
-                                    userId: auth.currentUser.uid,
-                                    createdAt: new Date()
-                                };
-                                saveWordsToCache(auth.currentUser.uid, cachedWords);
-                                if (onWordAdded) {
-                                    onWordAdded();
-                                }
-                            }
-                        } catch (cacheError) {
-                            console.error('Ошибка обновления кэша:', cacheError);
-                        }
-                    }
-                }).catch((error) => {
-                    console.error('Ошибка сохранения слова в Firebase:', error);
-                    if (auth.currentUser) {
-                        try {
-                            removeWordFromCache(auth.currentUser.uid, tempId);
+                addWord(wordData).then((savedWord) => {
+                    try {
+                        const cachedWords = loadWordsFromCache(userId) || [];
+                        const wordIndex = cachedWords.findIndex((w) => w.id === tempId);
+                        if (wordIndex !== -1) {
+                            cachedWords[wordIndex] = savedWord;
+                            saveWordsToCache(userId, cachedWords);
                             if (onWordAdded) {
                                 onWordAdded();
                             }
-                        } catch (cacheError) {
-                            console.error('Ошибка удаления из кэша:', cacheError);
                         }
+                    } catch (cacheError) {
+                        console.error('Ошибка обновления кэша:', cacheError);
+                    }
+                }).catch((error) => {
+                    console.error('Ошибка сохранения слова на сервере:', error);
+                    try {
+                        removeWordFromCache(userId, tempId);
+                        if (onWordAdded) {
+                            onWordAdded();
+                        }
+                    } catch (cacheError) {
+                        console.error('Ошибка удаления из кэша:', cacheError);
                     }
                 });
             }

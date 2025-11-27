@@ -1,4 +1,3 @@
-import { deleteDoc, doc } from 'firebase/firestore';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { useEffect, useState } from 'react';
@@ -8,7 +7,8 @@ import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
-import { auth, db } from '../../firebase';
+import { getUserId } from '../../utils/localAuth';
+import { deleteWord } from '../../utils/wordsApi';
 import { loadWordsFromCache, removeWordFromCache } from '../../utils/wordsCache';
 import { initializeWordsSync, syncWordsFromServer } from '../../utils/wordsSync';
 import styles from './DictionaryPage.module.scss';
@@ -33,18 +33,20 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
     const { t } = useTranslation();
     
     const getInitialWords = (): WordData[] => {
-        if (!auth.currentUser) {
+        const userId = getUserId();
+        if (!userId) {
             return [];
         }
-        const cachedWords = loadWordsFromCache(auth.currentUser.uid);
+        const cachedWords = loadWordsFromCache(userId);
         return cachedWords !== null ? cachedWords : [];
     };
 
     const getInitialLoading = (): boolean => {
-        if (!auth.currentUser) {
+        const userId = getUserId();
+        if (!userId) {
             return false;
         }
-        const cachedWords = loadWordsFromCache(auth.currentUser.uid);
+        const cachedWords = loadWordsFromCache(userId);
         return cachedWords === null || cachedWords.length === 0;
     };
 
@@ -55,11 +57,12 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
     const [deletingWordId, setDeletingWordId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!auth.currentUser) {
+        const userId = getUserId();
+        if (!userId) {
             return;
         }
 
-        const cachedWords = loadWordsFromCache(auth.currentUser.uid);
+        const cachedWords = loadWordsFromCache(userId);
         const hasCachedWords = cachedWords !== null && cachedWords.length > 0;
 
         const handleSyncComplete = (syncedWords: WordData[]) => {
@@ -67,17 +70,17 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
             setLoading(false);
         };
 
-        const cleanup = initializeWordsSync(auth.currentUser.uid, handleSyncComplete);
+        const cleanup = initializeWordsSync(userId, handleSyncComplete);
 
         if (!hasCachedWords) {
-            syncWordsFromServer(auth.currentUser.uid).then((syncedWords) => {
+            syncWordsFromServer(userId).then((syncedWords) => {
                 if (syncedWords) {
                     setWords(syncedWords);
                 }
                 setLoading(false);
             });
         } else {
-            syncWordsFromServer(auth.currentUser.uid).then((syncedWords) => {
+            syncWordsFromServer(userId).then((syncedWords) => {
                 if (syncedWords) {
                     setWords(syncedWords);
                 }
@@ -88,8 +91,9 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
     }, []);
 
     const handleWordAdded = () => {
-        if (auth.currentUser) {
-            const cachedWords = loadWordsFromCache(auth.currentUser.uid);
+        const userId = getUserId();
+        if (userId) {
+            const cachedWords = loadWordsFromCache(userId);
             if (cachedWords !== null) {
                 setWords(cachedWords);
             }
@@ -107,7 +111,8 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
     };
 
     const confirmDelete = async () => {
-        if (!deletingWordId || !auth.currentUser) {
+        const userId = getUserId();
+        if (!deletingWordId || !userId) {
             return;
         }
 
@@ -115,10 +120,10 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
         setDeletingWordId(null);
 
         try {
-            removeWordFromCache(auth.currentUser.uid, wordIdToDelete);
+            removeWordFromCache(userId, wordIdToDelete);
             setWords((prevWords) => prevWords.filter((w) => w.id !== wordIdToDelete));
             
-            deleteDoc(doc(db, 'words', wordIdToDelete)).catch((error) => {
+            deleteWord(wordIdToDelete).catch((error) => {
                 console.error('Ошибка удаления слова на сервере:', error);
             });
         } catch (error) {

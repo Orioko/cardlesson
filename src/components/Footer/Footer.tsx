@@ -1,6 +1,5 @@
-import { signOut } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
-import { auth } from '../../firebase';
+import { logout } from '../../utils/localAuth';
 import GradientButton from '../GradientButton';
 import styles from './Footer.module.scss';
 
@@ -9,7 +8,8 @@ const Footer = () => {
 
     const handleExit = async () => {
         try {
-            await signOut(auth);
+            await logout();
+            window.location.reload();
         } catch (error) {
             console.error('Ошибка выхода:', error);
         }

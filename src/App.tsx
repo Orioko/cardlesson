@@ -1,8 +1,6 @@
-import type { User } from 'firebase/auth';
-import { onAuthStateChanged } from 'firebase/auth';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import './App.css';
-import { auth } from './firebase';
+import { getCurrentUser, onAuthChange } from './utils/localAuth';
 
 const LoginPage = lazy(() => import('./pages/LoginPage/LoginPage'));
 const MainPage = lazy(() => import('./pages/MainPage/MainPage'));
@@ -11,14 +9,20 @@ const DictionaryPage = lazy(() => import('./pages/DictionaryPage'));
 type Page = 'main' | 'dictionary';
 
 function App() {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<{ id: string } | null>(() => {
+        if (typeof window !== 'undefined') {
+            return getCurrentUser();
+        }
+        return null;
+    });
     const [currentPage, setCurrentPage] = useState<Page>('main');
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthChange((user) => {
             setUser(user);
         });
-        return () => unsubscribe();
+
+        return unsubscribe;
     }, []);
 
     if (!user) {

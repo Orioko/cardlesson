@@ -1,7 +1,6 @@
-import { signOut } from 'firebase/auth';
 import { Dropdown } from 'primereact/dropdown';
 import { useTranslation } from 'react-i18next';
-import { auth } from '../../firebase';
+import { logout } from '../../utils/localAuth';
 import WhiteButton from '../WhiteButton';
 import styles from './Header.module.scss';
 
@@ -28,7 +27,8 @@ const Header = ({ title, showExitButton = true, onNavigateToDictionary, onNaviga
 
     const handleExit = async () => {
         try {
-            await signOut(auth);
+            await logout();
+            window.location.reload();
         } catch (error) {
             console.error('Ошибка выхода:', error);
         }

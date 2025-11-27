@@ -9,7 +9,7 @@ interface WordData {
         ko: string;
     };
     userId?: string;
-    createdAt?: unknown;
+    createdAt?: string | number | Date;
 }
 
 const CACHE_KEY_PREFIX = 'words_cache_';

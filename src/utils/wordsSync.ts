@@ -1,5 +1,5 @@
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { getUserId } from './localAuth';
+import { fetchWords } from './wordsApi';
 import { getWordsCacheTimestampKey, saveWordsToCache } from './wordsCache';
 
 interface WordData {
@@ -13,14 +13,15 @@ interface WordData {
         ko: string;
     };
     userId?: string;
-    createdAt?: unknown;
+    createdAt?: string | number | Date;
 }
 
 const SYNC_INTERVAL = 60000;
 const CACHE_MAX_AGE = 300000;
 
 export const syncWordsFromServer = async (userId: string): Promise<WordData[] | null> => {
-    if (!auth.currentUser || auth.currentUser.uid !== userId) {
+    const currentUserId = getUserId();
+    if (!currentUserId || currentUserId !== userId) {
         return null;
     }
 
@@ -38,20 +39,11 @@ export const syncWordsFromServer = async (userId: string): Promise<WordData[] | 
             }
         });
 
-        const wordsQuery = query(
-            collection(db, 'words'),
-            where('userId', '==', userId),
-            orderBy('createdAt', 'desc')
-        );
-        const querySnapshot = await getDocs(wordsQuery);
+        const serverWords = await fetchWords();
         const serverWordsMap = new Map<string, WordData>();
         
-        querySnapshot.forEach((doc) => {
-            const wordData = {
-                id: doc.id,
-                ...doc.data()
-            } as WordData;
-            serverWordsMap.set(doc.id, wordData);
+        serverWords.forEach((word: WordData) => {
+            serverWordsMap.set(word.id, word);
         });
 
         const mergedWords: WordData[] = [];
@@ -112,7 +104,8 @@ export const initializeWordsSync = (userId: string, onSyncComplete?: (words: Wor
     let isSyncing = false;
 
     const performSync = async () => {
-        if (isSyncing || !auth.currentUser || auth.currentUser.uid !== userId) {
+        const currentUserId = getUserId();
+        if (isSyncing || !currentUserId || currentUserId !== userId) {
             return;
         }
 
