@@ -1,9 +1,21 @@
 import react from '@vitejs/plugin-react';
+import { copyFileSync } from 'fs';
+import { join } from 'path';
 import { defineConfig } from 'vite';
+
+const copy404Plugin = () => {
+  return {
+    name: 'copy-404',
+    closeBundle() {
+      const distPath = join(process.cwd(), 'dist');
+      copyFileSync(join(distPath, 'index.html'), join(distPath, '404.html'));
+    }
+  };
+};
 
 export default defineConfig({
   base: '/cardlesson/',
-  plugins: [react()],
+  plugins: [react(), copy404Plugin()],
   build: {
     rollupOptions: {
       output: {
