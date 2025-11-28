@@ -1,15 +1,17 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { logout } from '../../utils/localAuth';
 import GradientButton from '../GradientButton';
 import styles from './Footer.module.scss';
 
 const Footer = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     const handleExit = async () => {
         try {
             await logout();
-            window.location.reload();
+            navigate('/login');
         } catch (error) {
             console.error('Ошибка выхода:', error);
         }

@@ -4,9 +4,8 @@ import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
 import { useWords } from '../../hooks/useWords';
 import styles from './MainPage.module.scss';
-import type { MainPageProps } from './types';
 
-const MainPage = ({ onNavigateToDictionary }: MainPageProps) => {
+const MainPage = () => {
     const { t } = useTranslation();
 
     const { words, loading } = useWords();
@@ -16,7 +15,6 @@ const MainPage = ({ onNavigateToDictionary }: MainPageProps) => {
             <Header 
                 title={t('mainTitle')} 
                 showNavigation={true}
-                onNavigateToDictionary={onNavigateToDictionary}
             />
             <div className={styles.cardsContainer}>
                 {loading ? (

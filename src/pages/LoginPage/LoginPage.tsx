@@ -3,13 +3,16 @@ import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Navigate, useNavigate } from 'react-router-dom';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import { useAuth } from '../../hooks/useAuth';
+import { getCurrentUser } from '../../utils/localAuth';
 import styles from './LoginPage.module.scss';
 
 const LoginPage = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -17,9 +20,21 @@ const LoginPage = () => {
 
     const { loading, error, handleLogin, handleRegister, clearError } = useAuth({
         onSuccess: () => {
-            window.location.reload();
+            navigate('/');
         }
     });
+
+    let isAuthorized = false;
+    try {
+        const user = getCurrentUser();
+        isAuthorized = Boolean(user);
+    } catch (error) {
+        console.error('Ошибка проверки авторизации:', error);
+    }
+
+    if (isAuthorized) {
+        return <Navigate to="/" replace />;
+    }
 
     const handleSubmit = async () => {
         if (loading) {

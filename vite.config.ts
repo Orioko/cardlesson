@@ -7,8 +7,15 @@ const copy404Plugin = () => {
   return {
     name: 'copy-404',
     closeBundle() {
-      const distPath = join(process.cwd(), 'dist');
-      copyFileSync(join(distPath, 'index.html'), join(distPath, '404.html'));
+      try {
+        const distPath = join(process.cwd(), 'dist');
+        const indexPath = join(distPath, 'index.html');
+        const notFoundPath = join(distPath, '404.html');
+        copyFileSync(indexPath, notFoundPath);
+        console.log('✅ 404.html created for GitHub Pages routing support');
+      } catch (error) {
+        console.error('❌ Failed to create 404.html:', error);
+      }
     }
   };
 };

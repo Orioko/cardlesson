@@ -1,13 +1,16 @@
 import { Dropdown } from 'primereact/dropdown';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { logout } from '../../utils/localAuth';
 import WhiteButton from '../WhiteButton';
 import { languageOptions } from './constants';
 import styles from './Header.module.scss';
 import type { HeaderProps } from './types';
 
-const Header = ({ title, showExitButton = true, onNavigateToDictionary, onNavigateToMain, showNavigation = false }: HeaderProps) => {
+const Header = ({ title, showExitButton = true, showNavigation = false }: HeaderProps) => {
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLanguageChange = (e: { value: string }) => {
         i18n.changeLanguage(e.value);
@@ -16,11 +19,14 @@ const Header = ({ title, showExitButton = true, onNavigateToDictionary, onNaviga
     const handleExit = async () => {
         try {
             await logout();
-            window.location.reload();
+            navigate('/login');
         } catch (error) {
             console.error('Ошибка выхода:', error);
         }
     };
+
+    const isOnMainPage = location.pathname === '/';
+    const isOnDictionaryPage = location.pathname === '/dictionary';
 
     return (
         <header className={styles.header}>
@@ -29,17 +35,17 @@ const Header = ({ title, showExitButton = true, onNavigateToDictionary, onNaviga
                 <div className={styles.controls}>
                     {showNavigation && (
                         <>
-                            {onNavigateToMain && (
+                            {isOnDictionaryPage && (
                                 <WhiteButton
-                                    onClick={onNavigateToMain}
+                                    onClick={() => navigate('/')}
                                     icon="pi pi-home"
                                     label={t('practice')}
                                     className={styles.navButton}
                                 />
                             )}
-                            {onNavigateToDictionary && (
+                            {isOnMainPage && (
                                 <WhiteButton
-                                    onClick={onNavigateToDictionary}
+                                    onClick={() => navigate('/dictionary')}
                                     icon="pi pi-book"
                                     label={t('myDictionary')}
                                     className={styles.navButton}

@@ -1,60 +1,41 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { getCurrentUser, onAuthChange } from './utils/localAuth';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const LoginPage = lazy(() => import('./pages/LoginPage/LoginPage'));
 const MainPage = lazy(() => import('./pages/MainPage/MainPage'));
 const DictionaryPage = lazy(() => import('./pages/DictionaryPage'));
 
-type Page = 'main' | 'dictionary';
-
-function App() {
-    const [user, setUser] = useState<{ id: string } | null>(() => {
-        if (typeof window !== 'undefined') {
-            try {
-                return getCurrentUser();
-            } catch (error) {
-                console.error('Ошибка инициализации пользователя:', error);
-                return null;
-            }
-        }
-        return null;
-    });
-    const [currentPage, setCurrentPage] = useState<Page>('main');
-
-    useEffect(() => {
-        try {
-            const unsubscribe = onAuthChange((user) => {
-                setUser(user);
-            });
-
-            return unsubscribe;
-        } catch (error) {
-            console.error('Ошибка подписки на изменения аутентификации:', error);
-            return () => {};
-        }
-    }, []);
-
-    if (!user) {
-        return (
-            <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Загрузка...</div>}>
-                <LoginPage />
-            </Suspense>
-        );
-    }
-
+const App = () => {
     return (
-        <div className="app-container">
-            <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Загрузка...</div>}>
-                {currentPage === 'main' && (
-                    <MainPage onNavigateToDictionary={() => setCurrentPage('dictionary')} />
-                )}
-                {currentPage === 'dictionary' && (
-                    <DictionaryPage onNavigateToMain={() => setCurrentPage('main')} />
-                )}
-            </Suspense>
-        </div>
+        <BrowserRouter basename="/cardlesson">
+            <div className="app-container">
+                <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Загрузка...</div>}>
+                    <Routes>
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route
+                            path="/"
+                            element={
+                                <ProtectedRoute>
+                                    <MainPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/dictionary"
+                            element={
+                                <ProtectedRoute>
+                                    <DictionaryPage />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                </Suspense>
+            </div>
+        </BrowserRouter>
     );
-}
+};
 
 export default App;

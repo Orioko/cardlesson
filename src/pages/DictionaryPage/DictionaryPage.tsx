@@ -10,9 +10,8 @@ import WordCard from '../../components/WordCard';
 import { useWordActions } from '../../hooks/useWordActions';
 import { useWords } from '../../hooks/useWords';
 import styles from './DictionaryPage.module.scss';
-import type { DictionaryPageProps } from './types';
 
-const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
+const DictionaryPage = () => {
     const { t } = useTranslation();
 
     const { words, loading, refreshWords } = useWords();
@@ -54,7 +53,6 @@ const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
             <Header 
                 title={t('myDictionary')} 
                 showNavigation={true}
-                onNavigateToMain={onNavigateToMain}
             />
             <div className={styles.content}>
                 <div className={styles.actions}>
