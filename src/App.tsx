@@ -1,6 +1,7 @@
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import './App.css';
+import styles from './App.module.scss';
 import ProtectedRoute from './components/ProtectedRoute';
 import { WordsProvider } from './contexts/WordsProvider';
 
@@ -12,9 +13,13 @@ const App = () => {
   return (
     <BrowserRouter basename="/cardlesson">
       <WordsProvider>
-        <div className="app-container">
+        <div className={styles.appContainer}>
           <Suspense
-            fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Загрузка...</div>}
+            fallback={
+              <div className={styles.fallback}>
+                <ProgressSpinner />
+              </div>
+            }
           >
             <Routes>
               <Route path="/login" element={<LoginPage />} />

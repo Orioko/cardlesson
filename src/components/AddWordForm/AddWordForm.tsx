@@ -4,6 +4,7 @@ import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import GradientButton from '../GradientButton';
 import { getUserId } from '../../utils/localAuth';
 import { addWord, updateWord } from '../../utils/wordsApi';
 import styles from './AddWordForm.module.scss';
@@ -109,6 +110,7 @@ const AddWordForm = ({
       header={isEditMode ? t('editWord') : t('addNewWord')}
       className={styles.dialog}
       modal
+      dismissableMask
     >
       <div className={styles.form}>
         {error && <Message severity="error" text={error} className={styles.message} />}
@@ -154,7 +156,11 @@ const AddWordForm = ({
 
         <div className={styles.actions}>
           <Button label={t('cancel')} onClick={handleClose} severity="secondary" outlined />
-          <Button label={isEditMode ? t('saveWord') : t('addWord')} onClick={handleSubmit} />
+          <GradientButton
+            label={isEditMode ? t('saveWord') : t('addWord')}
+            onClick={handleSubmit}
+            className={styles.submitButton}
+          />
         </div>
       </div>
     </Dialog>

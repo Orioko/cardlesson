@@ -1,3 +1,4 @@
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { useTranslation } from 'react-i18next';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
@@ -15,7 +16,9 @@ const MainPage = () => {
       <Header title={t('mainTitle')} showNavigation={true} />
       <div className={styles.cardsContainer}>
         {loading ? (
-          <div className={styles.loading}>{t('loading')}</div>
+          <div className={styles.loading}>
+            <ProgressSpinner />
+          </div>
         ) : words.length === 0 ? (
           <div className={styles.emptyState}>
             <p>{t('noWords')}</p>

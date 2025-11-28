@@ -37,16 +37,51 @@
   margin-top: 10px;
 }
 
+.submitButton {
+  min-width: 120px;
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    width: 95vw;
+    max-width: 450px;
+  }
+
+  .form {
+    gap: 16px;
+  }
+}
+
 @media (max-width: 480px) {
   .dialog {
     width: 95vw;
+    max-width: none;
+  }
+
+  .form {
+    gap: 16px;
+    padding: 5px 0;
+  }
+
+  .field {
+    gap: 6px;
+  }
+
+  .label {
+    font-size: 13px;
   }
 
   .actions {
     flex-direction: column;
+    gap: 10px;
   }
 
-  .actions button {
+  .actions :global(button),
+  .actions :global(.p-button) {
     width: 100%;
+  }
+
+  .submitButton {
+    min-width: auto;
   }
 }

@@ -96,33 +96,29 @@
 
 .editButton,
 .deleteButton {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #333 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.2s ease !important;
 }
 
 .editButton:hover {
-  background: rgba(102, 126, 234, 0.9);
-  color: white;
+  background: rgba(102, 126, 234, 0.9) !important;
+  color: white !important;
   transform: scale(1.1);
 }
 
 .deleteButton:hover {
-  background: rgba(220, 53, 69, 0.9);
-  color: white;
+  background: rgba(220, 53, 69, 0.9) !important;
+  color: white !important;
   transform: scale(1.1);
 }
 
-.editButton i,
-.deleteButton i {
+.editButton :global(.p-button-icon),
+.deleteButton :global(.p-button-icon) {
   font-size: 14px;
 }

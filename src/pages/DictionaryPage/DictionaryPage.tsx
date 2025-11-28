@@ -1,5 +1,6 @@
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AddWordForm from '../../components/AddWordForm';
@@ -70,7 +71,9 @@ const DictionaryPage = () => {
         </div>
 
         {loading ? (
-          <div className={styles.loading}>{t('loading')}</div>
+          <div className={styles.loading}>
+            <ProgressSpinner />
+          </div>
         ) : words.length === 0 ? (
           <div className={styles.emptyState}>
             <p>{t('noWords')}</p>

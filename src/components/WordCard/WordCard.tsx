@@ -1,5 +1,6 @@
-import type { KeyboardEvent, MouseEvent } from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { Button } from 'primereact/button';
+import type { KeyboardEvent } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LANGS } from './constants';
 import type { Lang, WordCardProps } from './types';
@@ -68,7 +69,7 @@ const WordCard = ({
   }, []);
 
   const handleEdit = useCallback(
-    (e: MouseEvent) => {
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       stopPropagation(e);
       if (wordId && wordData && onEdit) {
         onEdit(wordId, wordData);
@@ -78,7 +79,7 @@ const WordCard = ({
   );
 
   const handleDelete = useCallback(
-    (e: MouseEvent) => {
+    (e: React.MouseEvent<HTMLButtonElement>) => {
       stopPropagation(e);
       if (wordId && onDelete) {
         onDelete(wordId);
@@ -102,24 +103,28 @@ const WordCard = ({
       {showActions && wordId && (
         <div className={styles.actions} onClick={stopPropagation}>
           {onEdit && wordData && (
-            <button
-              className={styles.editButton}
+            <Button
+              icon="pi pi-pencil"
               onClick={handleEdit}
               aria-label={t('edit')}
               title={t('edit')}
-            >
-              <i className="pi pi-pencil" />
-            </button>
+              className={styles.editButton}
+              rounded
+              text
+              severity="secondary"
+            />
           )}
           {onDelete && (
-            <button
-              className={styles.deleteButton}
+            <Button
+              icon="pi pi-times"
               onClick={handleDelete}
               aria-label={t('delete')}
               title={t('delete')}
-            >
-              <i className="pi pi-times" />
-            </button>
+              className={styles.deleteButton}
+              rounded
+              text
+              severity="danger"
+            />
           )}
         </div>
       )}
