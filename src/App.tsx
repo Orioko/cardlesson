@@ -6,8 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { WordsProvider } from './contexts/WordsProvider';
 
 const LoginPage = lazy(() => import('./pages/LoginPage/LoginPage'));
-const MainPage = lazy(() => import('./pages/MainPage/MainPage'));
 const DictionaryPage = lazy(() => import('./pages/DictionaryPage'));
+const RepeatPage = lazy(() => import('./pages/RepeatPage'));
 
 const App = () => {
   return (
@@ -27,7 +27,7 @@ const App = () => {
                 path="/"
                 element={
                   <ProtectedRoute>
-                    <MainPage />
+                    <DictionaryPage />
                   </ProtectedRoute>
                 }
               />
@@ -36,6 +36,14 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <DictionaryPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/repeat"
+                element={
+                  <ProtectedRoute>
+                    <RepeatPage />
                   </ProtectedRoute>
                 }
               />

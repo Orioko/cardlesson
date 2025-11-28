@@ -1,4 +1,3 @@
-import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useState } from 'react';
@@ -7,6 +6,7 @@ import AddWordForm from '../../components/AddWordForm';
 import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
+import WhiteButton from '../../components/WhiteButton';
 import WordCard from '../../components/WordCard';
 import { useWordActions } from '../../hooks/useWordActions';
 import { useWordsContext } from '../../hooks/useWordsContext';
@@ -116,8 +116,8 @@ const DictionaryPage = () => {
         <div className={styles.deleteContent}>
           <p>{t('confirmDeleteMessage')}</p>
           <div className={styles.deleteActions}>
-            <Button label={t('cancel')} onClick={cancelDelete} severity="secondary" outlined />
-            <Button label={t('delete')} onClick={handleConfirmDelete} severity="danger" />
+            <WhiteButton label={t('cancel')} onClick={cancelDelete} />
+            <GradientButton label={t('delete')} onClick={handleConfirmDelete} />
           </div>
         </div>
       </Dialog>

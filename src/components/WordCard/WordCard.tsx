@@ -64,28 +64,28 @@ const WordCard = ({
     setIsFlipped((s) => !s);
   }, []);
 
-  const stopPropagation = useCallback((e: MouseEvent) => {
+  const stopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
 
   const handleEdit = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      stopPropagation(e);
+      e.stopPropagation();
       if (wordId && wordData && onEdit) {
         onEdit(wordId, wordData);
       }
     },
-    [wordId, wordData, onEdit, stopPropagation]
+    [wordId, wordData, onEdit]
   );
 
   const handleDelete = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      stopPropagation(e);
+      e.stopPropagation();
       if (wordId && onDelete) {
         onDelete(wordId);
       }
     },
-    [wordId, onDelete, stopPropagation]
+    [wordId, onDelete]
   );
 
   const handleKeyDown = useCallback(

@@ -25,8 +25,8 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
     }
   };
 
-  const isOnMainPage = location.pathname === '/';
-  const isOnDictionaryPage = location.pathname === '/dictionary';
+  const isOnDictionaryPage = location.pathname === '/' || location.pathname === '/dictionary';
+  const isOnRepeatPage = location.pathname === '/repeat';
 
   return (
     <header className={styles.header}>
@@ -37,15 +37,15 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
             <>
               {isOnDictionaryPage && (
                 <WhiteButton
-                  onClick={() => navigate('/')}
-                  icon="pi pi-home"
-                  label={t('practice')}
+                  onClick={() => navigate('/repeat')}
+                  icon="pi pi-refresh"
+                  label={t('repeat')}
                   className={styles.navButton}
                 />
               )}
-              {isOnMainPage && (
+              {isOnRepeatPage && (
                 <WhiteButton
-                  onClick={() => navigate('/dictionary')}
+                  onClick={() => navigate('/')}
                   icon="pi pi-book"
                   label={t('myDictionary')}
                   className={styles.navButton}
