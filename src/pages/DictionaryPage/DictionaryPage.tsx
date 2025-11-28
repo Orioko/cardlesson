@@ -8,13 +8,13 @@ import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
 import { useWordActions } from '../../hooks/useWordActions';
-import { useWords } from '../../hooks/useWords';
+import { useWordsContext } from '../../hooks/useWordsContext';
 import styles from './DictionaryPage.module.scss';
 
 const DictionaryPage = () => {
     const { t } = useTranslation();
 
-    const { words, loading, refreshWords } = useWords();
+    const { words, loading, refreshWords } = useWordsContext();
     const { 
         editingWord, 
         deletingWordId, 

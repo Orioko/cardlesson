@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
-import { useWords } from '../../hooks/useWords';
+import { useWordsContext } from '../../hooks/useWordsContext';
 import styles from './MainPage.module.scss';
 
 const MainPage = () => {
     const { t } = useTranslation();
 
-    const { words, loading } = useWords();
+    const { words, loading } = useWordsContext();
 
     return (
         <div className={styles.mainContainer}>
