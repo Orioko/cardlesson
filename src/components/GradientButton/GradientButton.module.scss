@@ -1,22 +1,21 @@
 .gradientButton {
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .gradientButton :global(.p-button:hover) {
-    background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
-    transform: translateY(-2px);
+  background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
 }
 
 .gradientButton :global(.p-button:active) {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .gradientButton :global(.p-button-label) {
-    color: white;
+  color: white;
 }
 
 .gradientButton :global(.p-button-icon) {
-    color: white;
+  color: white;
 }
-

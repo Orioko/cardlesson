@@ -1,20 +1,19 @@
 .footer {
-    display: none;
-    padding: 20px;
-    background: transparent;
-    margin-top: auto;
+  display: none;
+  padding: 20px;
+  background: transparent;
+  margin-top: auto;
 }
 
 .exitButton {
-    width: 100%;
-    max-width: 365px;
-    margin: 0 auto;
-    display: block;
+  width: 100%;
+  max-width: 365px;
+  margin: 0 auto;
+  display: block;
 }
 
 @media (max-width: 768px) {
-    .footer {
-        display: block;
-    }
+  .footer {
+    display: block;
+  }
 }
-

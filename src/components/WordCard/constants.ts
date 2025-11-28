@@ -5,4 +5,3 @@ import type { Lang } from './types';
  * Используется для итерации по языкам и фильтрации доступных переводов.
  */
 export const LANGS: Lang[] = ['ru', 'en', 'ko'];
-

@@ -16,7 +16,7 @@ const copy404Plugin = () => {
       } catch (error) {
         console.error('❌ Failed to create 404.html:', error);
       }
-    }
+    },
   };
 };
 
@@ -42,9 +42,9 @@ export default defineConfig({
             }
             return 'vendor';
           }
-        }
-      }
+        },
+      },
     },
-    chunkSizeWarningLimit: 1000
-  }
+    chunkSizeWarningLimit: 1000,
+  },
 });

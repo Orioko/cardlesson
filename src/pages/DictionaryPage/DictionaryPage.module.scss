@@ -1,112 +1,111 @@
 .dictionaryContainer {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    padding-top: 88px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 88px;
 }
 
 .content {
-    flex: 1;
-    padding: 32px 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
-    box-sizing: border-box;
+  flex: 1;
+  padding: 32px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .actions {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
 }
 
 .addButton {
-    min-width: 200px;
+  min-width: 200px;
 }
 
 .cardsContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
 }
 
 .loading {
-    text-align: center;
-    padding: 40px;
-    font-size: 18px;
-    color: #666;
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #666;
 }
 
 .emptyState {
-    text-align: center;
-    padding: 60px 20px;
-    color: #666;
-    font-size: 16px;
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
 }
 
 @media (max-width: 768px) {
-    .dictionaryContainer {
-        padding-top: 120px;
-    }
+  .dictionaryContainer {
+    padding-top: 120px;
+  }
 
-    .content {
-        padding: 24px 16px;
-    }
+  .content {
+    padding: 24px 16px;
+  }
 
-    .actions {
-        margin-bottom: 24px;
-    }
+  .actions {
+    margin-bottom: 24px;
+  }
 
-    .addButton {
-        width: 100%;
-        max-width: 300px;
-    }
+  .addButton {
+    width: 100%;
+    max-width: 300px;
+  }
 
-    .cardsContainer {
-        gap: 16px;
-    }
+  .cardsContainer {
+    gap: 16px;
+  }
 }
 
 .deleteDialog {
-    width: 90vw;
-    max-width: 400px;
+  width: 90vw;
+  max-width: 400px;
 }
 
 .deleteContent {
-    padding: 10px 0;
+  padding: 10px 0;
 }
 
 .deleteActions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 
 @media (max-width: 480px) {
-    .dictionaryContainer {
-        padding-top: 130px;
-    }
+  .dictionaryContainer {
+    padding-top: 130px;
+  }
 
-    .content {
-        padding: 20px 16px;
-    }
+  .content {
+    padding: 20px 16px;
+  }
 
-    .actions {
-        margin-bottom: 20px;
-    }
+  .actions {
+    margin-bottom: 20px;
+  }
 
-    .cardsContainer {
-        gap: 16px;
-    }
+  .cardsContainer {
+    gap: 16px;
+  }
 
-    .deleteActions {
-        flex-direction: column;
-    }
+  .deleteActions {
+    flex-direction: column;
+  }
 
-    .deleteActions button {
-        width: 100%;
-    }
+  .deleteActions button {
+    width: 100%;
+  }
 }
-

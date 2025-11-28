@@ -9,36 +9,38 @@ const MainPage = lazy(() => import('./pages/MainPage/MainPage'));
 const DictionaryPage = lazy(() => import('./pages/DictionaryPage'));
 
 const App = () => {
-    return (
-        <BrowserRouter basename="/cardlesson">
-            <WordsProvider>
-                <div className="app-container">
-                    <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Загрузка...</div>}>
-                        <Routes>
-                            <Route path="/login" element={<LoginPage />} />
-                            <Route
-                                path="/"
-                                element={
-                                    <ProtectedRoute>
-                                        <MainPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/dictionary"
-                                element={
-                                    <ProtectedRoute>
-                                        <DictionaryPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
-                    </Suspense>
-                </div>
-            </WordsProvider>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter basename="/cardlesson">
+      <WordsProvider>
+        <div className="app-container">
+          <Suspense
+            fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Загрузка...</div>}
+          >
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <MainPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dictionary"
+                element={
+                  <ProtectedRoute>
+                    <DictionaryPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+        </div>
+      </WordsProvider>
+    </BrowserRouter>
+  );
 };
 
 export default App;
