@@ -1,12 +1,7 @@
 import { Button } from 'primereact/button';
+import { GRADIENT_STYLES } from './constants';
 import styles from './GradientButton.module.scss';
-
-interface GradientButtonProps {
-    onClick: () => void;
-    label: string;
-    icon?: string;
-    className?: string;
-}
+import type { GradientButtonProps } from './types';
 
 const GradientButton = ({ onClick, label, icon, className }: GradientButtonProps) => {
     return (
@@ -15,11 +10,7 @@ const GradientButton = ({ onClick, label, icon, className }: GradientButtonProps
             icon={icon}
             label={label}
             className={`${styles.gradientButton} ${className || ''}`}
-            style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                border: 'none',
-                color: 'white'
-            }}
+            style={GRADIENT_STYLES}
         />
     );
 };

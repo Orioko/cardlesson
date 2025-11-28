@@ -7,25 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { getUserId } from '../../utils/localAuth';
 import { addWord, updateWord } from '../../utils/wordsApi';
 import styles from './AddWordForm.module.scss';
-
-interface WordData {
-    ru: string;
-    en: string;
-    ko: string;
-    translations: {
-        ru: string;
-        en: string;
-        ko: string;
-    };
-}
-
-interface AddWordFormProps {
-    visible: boolean;
-    onHide: () => void;
-    onWordAdded?: () => void;
-    editWordId?: string;
-    editWordData?: WordData;
-}
+import type { AddWordFormProps } from './types';
 
 const AddWordForm = ({ visible, onHide, onWordAdded, editWordId, editWordData }: AddWordFormProps) => {
     const { t } = useTranslation();

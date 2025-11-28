@@ -2,24 +2,12 @@ import { Dropdown } from 'primereact/dropdown';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../utils/localAuth';
 import WhiteButton from '../WhiteButton';
+import { languageOptions } from './constants';
 import styles from './Header.module.scss';
-
-interface HeaderProps {
-    title: string;
-    showExitButton?: boolean;
-    onNavigateToDictionary?: () => void;
-    onNavigateToMain?: () => void;
-    showNavigation?: boolean;
-}
+import type { HeaderProps } from './types';
 
 const Header = ({ title, showExitButton = true, onNavigateToDictionary, onNavigateToMain, showNavigation = false }: HeaderProps) => {
     const { t, i18n } = useTranslation();
-
-    const languageOptions = [
-        { label: 'Русский', value: 'ru' },
-        { label: 'English', value: 'en' },
-        { label: '한국어', value: 'ko' }
-    ];
 
     const handleLanguageChange = (e: { value: string }) => {
         i18n.changeLanguage(e.value);

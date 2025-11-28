@@ -4,10 +4,7 @@ import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
 import { useWords } from '../../hooks/useWords';
 import styles from './MainPage.module.scss';
-
-interface MainPageProps {
-    onNavigateToDictionary?: () => void;
-}
+import type { MainPageProps } from './types';
 
 const MainPage = ({ onNavigateToDictionary }: MainPageProps) => {
     const { t } = useTranslation();

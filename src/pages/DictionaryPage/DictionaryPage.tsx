@@ -10,10 +10,7 @@ import WordCard from '../../components/WordCard';
 import { useWordActions } from '../../hooks/useWordActions';
 import { useWords } from '../../hooks/useWords';
 import styles from './DictionaryPage.module.scss';
-
-interface DictionaryPageProps {
-    onNavigateToMain?: () => void;
-}
+import type { DictionaryPageProps } from './types';
 
 const DictionaryPage = ({ onNavigateToMain }: DictionaryPageProps) => {
     const { t } = useTranslation();
