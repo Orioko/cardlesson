@@ -72,13 +72,14 @@
   }
 
   .actions {
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
   }
 
   .actions :global(button),
   .actions :global(.p-button) {
-    width: 100%;
+    width: auto;
+    flex: 1;
   }
 
   .submitButton {

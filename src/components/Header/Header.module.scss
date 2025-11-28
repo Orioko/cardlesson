@@ -39,6 +39,16 @@
   flex-shrink: 0;
 }
 
+.settingsButton {
+  color: white !important;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: rotate(90deg);
+  }
+}
+
 .navButton {
   white-space: nowrap;
 }
@@ -102,8 +112,13 @@
   }
 
   .languageSelect {
-    min-width: 140px;
-    flex: 1;
+    width: auto;
+    min-width: auto;
+  }
+
+  .languageSelect :global(.p-dropdown) {
+    width: auto;
+    min-width: auto;
   }
 
   .exitButton {
@@ -134,8 +149,13 @@
   }
 
   .languageSelect {
-    min-width: 120px;
-    flex-shrink: 1;
+    width: auto;
+    min-width: auto;
+  }
+
+  .languageSelect :global(.p-dropdown) {
+    width: auto;
+    min-width: auto;
   }
 
   .exitButton {

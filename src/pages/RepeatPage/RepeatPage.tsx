@@ -19,6 +19,7 @@ const RepeatPageContent = () => {
   );
   const [isCompleted, setIsCompleted] = useState(false);
   const [correctWords, setCorrectWords] = useState<Set<string>>(() => new Set());
+  const [incorrectCount, setIncorrectCount] = useState(() => 0);
 
   const currentWord = useMemo(() => {
     if (wordsQueue.length === 0 || currentIndex >= wordsQueue.length) {
@@ -61,6 +62,7 @@ const RepeatPageContent = () => {
 
   const handleIncorrect = useCallback(() => {
     if (currentWord && wordsQueue.length > 0) {
+      setIncorrectCount((prev) => prev + 1);
       const newQueue = [...wordsQueue];
       const wordToMove = newQueue.splice(currentIndex, 1)[0];
       newQueue.push(wordToMove);
@@ -77,6 +79,7 @@ const RepeatPageContent = () => {
     setCurrentIndex(0);
     setIsCompleted(false);
     setCorrectWords(new Set());
+    setIncorrectCount(0);
   }, [words]);
 
   const hasWords = words.length > 0;
@@ -148,17 +151,21 @@ const RepeatPageContent = () => {
         <div className={styles.actions}>
           <Button
             icon="pi pi-check"
-            label={t('correct')}
             onClick={handleCorrect}
             className={styles.correctButton}
             size="large"
+            rounded
+            aria-label={t('correct')}
+            title={t('correct')}
           />
           <Button
-            icon="pi pi-refresh"
-            label={t('repeatWord')}
+            icon="pi pi-times"
             onClick={handleIncorrect}
             className={styles.incorrectButton}
             size="large"
+            rounded
+            aria-label={t('repeatWord')}
+            title={t('repeatWord')}
           />
         </div>
         <div className={styles.progress}>
@@ -166,9 +173,14 @@ const RepeatPageContent = () => {
             <span className={styles.progressMain}>
               {t('progress', { current: currentIndex + 1, total: wordsQueue.length })}
             </span>
-            <span className={styles.progressSecondary}>
-              {t('totalWords', { count: words.length })}
-            </span>
+            <div className={styles.stats}>
+              <span className={styles.progressSecondary}>
+                {t('correctCount', { count: correctWords.size })}
+              </span>
+              <span className={styles.progressSecondary}>
+                {t('incorrectCount', { count: incorrectCount })}
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -36,12 +36,19 @@
 
 .correctButton,
 .incorrectButton {
-  flex: 1;
-  min-width: 150px;
+  width: 56px;
   height: 56px;
-  font-size: 16px;
+  min-width: 56px;
   border: none;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.correctButton :global(.p-button-icon),
+.incorrectButton :global(.p-button-icon) {
+  font-size: 24px;
 }
 
 .correctButton {
@@ -111,6 +118,13 @@
   align-items: center;
 }
 
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
 .progressMain {
   font-size: 24px;
   font-weight: 700;
@@ -161,34 +175,35 @@
 
 @media (max-width: 768px) {
   .repeatContainer {
-    padding-top: 120px;
+    padding-top: 100px;
   }
 
   .content {
-    padding: 24px 16px;
-    gap: 24px;
+    padding: 16px 16px;
+    gap: 20px;
   }
 
   .actions {
-    flex-direction: column;
+    flex-direction: row;
     gap: 16px;
   }
 
   .correctButton,
   .incorrectButton {
-    width: 100%;
+    width: 52px;
     height: 52px;
+    min-width: 52px;
   }
 }
 
 @media (max-width: 480px) {
   .repeatContainer {
-    padding-top: 130px;
+    padding-top: 100px;
   }
 
   .content {
-    padding: 20px 16px;
-    gap: 20px;
+    padding: 12px 16px;
+    gap: 16px;
   }
 
   .cardWrapper {

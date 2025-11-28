@@ -1,5 +1,5 @@
 export const languageOptions = [
-  { label: 'Русский', value: 'ru' },
-  { label: 'English', value: 'en' },
-  { label: '한국어', value: 'ko' },
+  { label: 'RU', value: 'ru' },
+  { label: 'EN', value: 'en' },
+  { label: 'KO', value: 'ko' },
 ];

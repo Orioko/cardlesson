@@ -22,42 +22,40 @@ const WordCard = ({
     if (wordData) {
       const filled = LANGS.filter((l) => wordData[l]?.trim());
       if (!filled.length) {
-        return { front: '', back: {} };
+        return { front: '', back: {} as Partial<Record<Lang, string>> };
       }
 
-      const frontLang = pickRandom(filled);
-      if (!frontLang) {
-        return { front: '', back: {} };
+      const selectedFrontLang = pickRandom(filled);
+      if (!selectedFrontLang) {
+        return { front: '', back: {} as Partial<Record<Lang, string>> };
       }
 
-      const backEntries = LANGS.filter((l) => l !== frontLang && wordData[l]?.trim()).map(
+      const backEntries = LANGS.filter((l) => wordData[l]?.trim()).map(
         (l) => [l, wordData[l].trim()] as const
       );
 
       return {
-        front: wordData[frontLang].trim(),
+        front: wordData[selectedFrontLang].trim(),
         back: Object.fromEntries(backEntries) as Partial<Record<Lang, string>>,
       };
     }
 
     if (wordKey) {
       const currentLang = (i18n.resolvedLanguage || i18n.language || 'en') as Lang;
-      const front = t(`words.${wordKey}.${currentLang}`, { defaultValue: '' }) as string;
+      const frontText = t(`words.${wordKey}.${currentLang}`, { defaultValue: '' }) as string;
 
-      const back = LANGS.reduce<Partial<Record<Lang, string>>>((acc, l) => {
-        if (l !== currentLang) {
-          const translation = t(`words.${wordKey}.${l}`, { defaultValue: '' }) as string;
-          if (translation) {
-            acc[l] = translation;
-          }
+      const backTranslations = LANGS.reduce<Partial<Record<Lang, string>>>((acc, l) => {
+        const translation = t(`words.${wordKey}.${l}`, { defaultValue: '' }) as string;
+        if (translation) {
+          acc[l] = translation;
         }
         return acc;
       }, {});
 
-      return { front, back };
+      return { front: frontText, back: backTranslations };
     }
 
-    return { front: '', back: {} };
+    return { front: '', back: {} as Partial<Record<Lang, string>> };
   }, [wordData, wordKey, i18n.resolvedLanguage, i18n.language, t]);
 
   const handleFlip = useCallback(() => {

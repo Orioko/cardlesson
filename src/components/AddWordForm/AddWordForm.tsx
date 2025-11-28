@@ -2,11 +2,13 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import GradientButton from '../GradientButton';
 import { getUserId } from '../../utils/localAuth';
+import { getSelectedLanguages } from '../../utils/selectedLanguagesStorage';
 import { addWord, updateWord } from '../../utils/wordsApi';
+import GradientButton from '../GradientButton';
+import type { Lang } from '../WordCard/types';
 import styles from './AddWordForm.module.scss';
 import type { AddWordFormProps } from './types';
 
@@ -18,33 +20,53 @@ const AddWordForm = ({
   editWordData,
 }: AddWordFormProps) => {
   const { t } = useTranslation();
-  const [russianWord, setRussianWord] = useState('');
-  const [englishWord, setEnglishWord] = useState('');
-  const [koreanWord, setKoreanWord] = useState('');
+  const [selectedLangs, setSelectedLangs] = useState<Lang[]>(() => getSelectedLanguages());
+  const [wordValues, setWordValues] = useState<Record<Lang, string>>({
+    ru: '',
+    en: '',
+    ko: '',
+  });
   const [error, setError] = useState('');
 
   const isEditMode = Boolean(editWordId && editWordData);
 
   useEffect(() => {
+    const handleLanguagesChange = () => {
+      const updatedLangs = getSelectedLanguages();
+      setSelectedLangs(updatedLangs);
+    };
+
+    window.addEventListener('selectedLanguagesChanged', handleLanguagesChange);
+    window.addEventListener('storage', handleLanguagesChange);
+
+    return () => {
+      window.removeEventListener('selectedLanguagesChanged', handleLanguagesChange);
+      window.removeEventListener('storage', handleLanguagesChange);
+    };
+  }, []);
+
+  useEffect(() => {
     if (visible && editWordData) {
       setTimeout(() => {
-        setRussianWord(editWordData.ru || '');
-        setEnglishWord(editWordData.en || '');
-        setKoreanWord(editWordData.ko || '');
+        setWordValues({
+          ru: editWordData.ru || '',
+          en: editWordData.en || '',
+          ko: editWordData.ko || '',
+        });
       }, 0);
     } else if (!visible) {
       setTimeout(() => {
-        setRussianWord('');
-        setEnglishWord('');
-        setKoreanWord('');
+        setWordValues({
+          ru: '',
+          en: '',
+          ko: '',
+        });
       }, 0);
     }
   }, [visible, editWordData]);
 
   const handleSubmit = async () => {
-    const filledFields = [russianWord.trim(), englishWord.trim(), koreanWord.trim()].filter(
-      (field) => field.length > 0
-    ).length;
+    const filledFields = selectedLangs.filter((lang) => wordValues[lang]?.trim().length > 0).length;
 
     if (filledFields < 2) {
       setError(t('fillAtLeastTwoFields'));
@@ -61,13 +83,13 @@ const AddWordForm = ({
 
     try {
       const wordData = {
-        ru: russianWord.trim(),
-        en: englishWord.trim(),
-        ko: koreanWord.trim(),
+        ru: wordValues.ru.trim(),
+        en: wordValues.en.trim(),
+        ko: wordValues.ko.trim(),
         translations: {
-          ru: russianWord.trim(),
-          en: englishWord.trim(),
-          ko: koreanWord.trim(),
+          ru: wordValues.ru.trim(),
+          en: wordValues.en.trim(),
+          ko: wordValues.ko.trim(),
         },
       };
 
@@ -77,9 +99,11 @@ const AddWordForm = ({
         await addWord(wordData);
       }
 
-      setRussianWord('');
-      setEnglishWord('');
-      setKoreanWord('');
+      setWordValues({
+        ru: '',
+        en: '',
+        ko: '',
+      });
       onHide();
 
       if (onWordAdded) {
@@ -96,15 +120,43 @@ const AddWordForm = ({
   };
 
   const handleClose = () => {
-    setRussianWord('');
-    setEnglishWord('');
-    setKoreanWord('');
+    setWordValues({
+      ru: '',
+      en: '',
+      ko: '',
+    });
     setError('');
     onHide();
   };
 
+  const getLangLabel = (lang: Lang): string => {
+    const labels: Record<Lang, string> = {
+      ru: t('russianWord'),
+      en: t('englishWord'),
+      ko: t('koreanWord'),
+    };
+    return labels[lang];
+  };
+
+  const getLangPlaceholder = (lang: Lang): string => {
+    const placeholders: Record<Lang, string> = {
+      ru: t('enterRussianWord'),
+      en: t('enterEnglishWord'),
+      ko: t('enterKoreanWord'),
+    };
+    return placeholders[lang];
+  };
+
+  const dialogKey = useMemo(() => {
+    if (!visible) {
+      return 'closed';
+    }
+    return `open-${editWordId || 'new'}-${JSON.stringify(getSelectedLanguages())}`;
+  }, [visible, editWordId]);
+
   return (
     <Dialog
+      key={dialogKey}
       visible={visible}
       onHide={handleClose}
       header={isEditMode ? t('editWord') : t('addNewWord')}
@@ -115,44 +167,20 @@ const AddWordForm = ({
       <div className={styles.form}>
         {error && <Message severity="error" text={error} className={styles.message} />}
 
-        <div className={styles.field}>
-          <label htmlFor="russianWord" className={styles.label}>
-            {t('russianWord')}
-          </label>
-          <InputText
-            id="russianWord"
-            value={russianWord}
-            onChange={(e) => setRussianWord(e.target.value)}
-            className={styles.input}
-            placeholder={t('enterRussianWord')}
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="englishWord" className={styles.label}>
-            {t('englishWord')}
-          </label>
-          <InputText
-            id="englishWord"
-            value={englishWord}
-            onChange={(e) => setEnglishWord(e.target.value)}
-            className={styles.input}
-            placeholder={t('enterEnglishWord')}
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="koreanWord" className={styles.label}>
-            {t('koreanWord')}
-          </label>
-          <InputText
-            id="koreanWord"
-            value={koreanWord}
-            onChange={(e) => setKoreanWord(e.target.value)}
-            className={styles.input}
-            placeholder={t('enterKoreanWord')}
-          />
-        </div>
+        {selectedLangs.map((lang) => (
+          <div key={lang} className={styles.field}>
+            <label htmlFor={lang} className={styles.label}>
+              {getLangLabel(lang)}
+            </label>
+            <InputText
+              id={lang}
+              value={wordValues[lang]}
+              onChange={(e) => setWordValues({ ...wordValues, [lang]: e.target.value })}
+              className={styles.input}
+              placeholder={getLangPlaceholder(lang)}
+            />
+          </div>
+        ))}
 
         <div className={styles.actions}>
           <Button label={t('cancel')} onClick={handleClose} severity="secondary" outlined />
