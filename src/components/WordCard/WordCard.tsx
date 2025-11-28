@@ -1,75 +1,96 @@
-import { useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LANGS } from './constants';
+import type { Lang, WordCardProps } from './types';
+import { pickRandom } from './utils';
 import styles from './WordCard.module.scss';
-
-interface WordData {
-    ru: string;
-    en: string;
-    ko: string;
-    translations: {
-        ru: string;
-        en: string;
-        ko: string;
-    };
-}
-
-interface WordCardProps {
-    wordKey?: string;
-    wordData?: WordData;
-    wordId?: string;
-    onEdit?: (wordId: string, wordData: WordData) => void;
-    onDelete?: (wordId: string) => void;
-    showActions?: boolean;
-}
 
 const WordCard = ({ wordKey, wordData, wordId, onEdit, onDelete, showActions = false }: WordCardProps) => {
     const { t, i18n } = useTranslation();
     const [isFlipped, setIsFlipped] = useState(false);
 
-    const handleFlip = () => {
-        setIsFlipped(!isFlipped);
-    };
+    const { front, back } = useMemo(() => {
+        if (wordData) {
+            const filled = LANGS.filter((l) => wordData[l]?.trim());
+            if (!filled.length) {
+                return { front: '', back: {} };
+            }
 
-    let currentWord: string;
-    let translationsObj: Record<string, string> = {};
+            const frontLang = pickRandom(filled);
+            if (!frontLang) {
+                return { front: '', back: {} };
+            }
 
-    if (wordData) {
-        const currentLang = i18n.language || 'en';
-        const langKey = currentLang as 'ru' | 'en' | 'ko';
-        currentWord = wordData[langKey] || '';
-        translationsObj = wordData.translations || {};
-    } else if (wordKey) {
-        const currentLang = i18n.language || 'en';
-        currentWord = t(`words.${wordKey}.${currentLang}`);
-        const translations = t(`words.${wordKey}.translations`, { returnObjects: true }) as Record<string, string> | string;
-        translationsObj = typeof translations === 'object' && translations !== null ? translations : {};
-    } else {
-        currentWord = '';
-    }
+            const backEntries = LANGS
+                .filter((l) => l !== frontLang && wordData[l]?.trim())
+                .map((l) => [l, wordData[l].trim()] as const);
 
-    const handleEditClick = (e: React.MouseEvent) => {
+            return {
+                front: wordData[frontLang].trim(),
+                back: Object.fromEntries(backEntries) as Partial<Record<Lang, string>>
+            };
+        }
+
+        if (wordKey) {
+            const currentLang = (i18n.resolvedLanguage || i18n.language || 'en') as Lang;
+            const front = t(`words.${wordKey}.${currentLang}`, { defaultValue: '' }) as string;
+
+            const back = LANGS.reduce<Partial<Record<Lang, string>>>((acc, l) => {
+                if (l !== currentLang) {
+                    const translation = t(`words.${wordKey}.${l}`, { defaultValue: '' }) as string;
+                    if (translation) {
+                        acc[l] = translation;
+                    }
+                }
+                return acc;
+            }, {});
+
+            return { front, back };
+        }
+
+        return { front: '', back: {} };
+    }, [wordData, wordKey, i18n.resolvedLanguage, i18n.language, t]);
+
+    const handleFlip = useCallback(() => {
+        setIsFlipped((s) => !s);
+    }, []);
+
+    const stopPropagation = useCallback((e: MouseEvent) => {
         e.stopPropagation();
+    }, []);
+
+    const handleEdit = useCallback((e: MouseEvent) => {
+        stopPropagation(e);
         if (wordId && wordData && onEdit) {
             onEdit(wordId, wordData);
         }
-    };
+    }, [wordId, wordData, onEdit, stopPropagation]);
 
-    const handleDeleteClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleDelete = useCallback((e: MouseEvent) => {
+        stopPropagation(e);
         if (wordId && onDelete) {
             onDelete(wordId);
         }
-    };
+    }, [wordId, onDelete, stopPropagation]);
+
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleFlip();
+        }
+    }, [handleFlip]);
 
     return (
         <div className={styles.cardContainer}>
             {showActions && wordId && (
-                <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
+                <div className={styles.actions} onClick={stopPropagation}>
                     {onEdit && wordData && (
                         <button
                             className={styles.editButton}
-                            onClick={handleEditClick}
+                            onClick={handleEdit}
                             aria-label={t('edit')}
+                            title={t('edit')}
                         >
                             <i className="pi pi-pencil" />
                         </button>
@@ -77,25 +98,32 @@ const WordCard = ({ wordKey, wordData, wordId, onEdit, onDelete, showActions = f
                     {onDelete && (
                         <button
                             className={styles.deleteButton}
-                            onClick={handleDeleteClick}
+                            onClick={handleDelete}
                             aria-label={t('delete')}
+                            title={t('delete')}
                         >
                             <i className="pi pi-times" />
                         </button>
                     )}
                 </div>
             )}
-            <div className={styles.card} onClick={handleFlip}>
+            <div 
+                className={styles.card} 
+                onClick={handleFlip}
+                role="button"
+                tabIndex={0}
+                onKeyDown={handleKeyDown}
+            >
                 <div className={`${styles.cardInner} ${isFlipped ? styles.flipped : ''}`}>
                     <div className={styles.cardFront}>
-                        <div className={styles.word}>{currentWord || wordKey || ''}</div>
+                        <div className={styles.word}>{front || wordKey || ''}</div>
                     </div>
                     <div className={styles.cardBack}>
                         <div className={styles.translations}>
-                            {Object.entries(translationsObj).map(([lang, translation]) => (
+                            {(Object.keys(back) as Lang[]).map((lang) => (
                                 <div key={lang} className={styles.translation}>
                                     <span className={styles.langLabel}>{lang.toUpperCase()}:</span>
-                                    <span className={styles.translationText}>{translation}</span>
+                                    <span className={styles.translationText}>{back[lang]}</span>
                                 </div>
                             ))}
                         </div>

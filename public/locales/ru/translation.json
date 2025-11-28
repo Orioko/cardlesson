@@ -3,7 +3,7 @@
   "ExitUser": "Выйти",
   "exitAccount": "Выйти из учётной записи",
   "selectLanguage": "Выберите язык",
-  "mainTitle": "Эта страница сделана для самостоятельного повторения слов на Корейском языке",
+  "mainTitle": "Твоя практика — твой прогресс! Повторяй слова и достигай новых высот",
   "loginTitle": "Добро пожаловать!",
   "loginSubtitle": "Авторизуйтесь, чтобы начать изучение",
   "loginButton": "Войти",
@@ -22,6 +22,7 @@
   "addWord": "Добавить",
   "cancel": "Отмена",
   "fillAllFields": "Заполните все поля",
+  "fillAtLeastTwoFields": "Необходимо заполнить хотя бы 2 поля",
   "wordAddedSuccessfully": "Слово успешно добавлено!",
   "errorAddingWord": "Ошибка при добавлении слова",
   "userNotAuthenticated": "Пользователь не авторизован",
@@ -42,57 +43,5 @@
   "emailRequired": "Введите email",
   "passwordRequired": "Введите пароль",
   "invalidCredentials": "Неверный email или пароль",
-  "userAlreadyExists": "Пользователь с таким email уже существует",
-  "words": {
-    "hello": {
-      "ru": "Привет",
-      "en": "Hello",
-      "ko": "안녕하세요",
-      "translations": {
-        "ru": "Привет",
-        "en": "Hello",
-        "ko": "안녕하세요"
-      }
-    },
-    "thankYou": {
-      "ru": "Спасибо",
-      "en": "Thank you",
-      "ko": "감사합니다",
-      "translations": {
-        "ru": "Спасибо",
-        "en": "Thank you",
-        "ko": "감사합니다"
-      }
-    },
-    "water": {
-      "ru": "Вода",
-      "en": "Water",
-      "ko": "물",
-      "translations": {
-        "ru": "Вода",
-        "en": "Water",
-        "ko": "물"
-      }
-    },
-    "book": {
-      "ru": "Книга",
-      "en": "Book",
-      "ko": "책",
-      "translations": {
-        "ru": "Книга",
-        "en": "Book",
-        "ko": "책"
-      }
-    },
-    "friend": {
-      "ru": "Друг",
-      "en": "Friend",
-      "ko": "친구",
-      "translations": {
-        "ru": "Друг",
-        "en": "Friend",
-        "ko": "친구"
-      }
-    }
-  }
+  "userAlreadyExists": "Пользователь с таким email уже существует"
 }

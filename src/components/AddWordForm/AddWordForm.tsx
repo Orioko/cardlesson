@@ -53,8 +53,14 @@ const AddWordForm = ({ visible, onHide, onWordAdded, editWordId, editWordData }:
     }, [visible, editWordData]);
 
     const handleSubmit = async () => {
-        if (!russianWord.trim() || !englishWord.trim() || !koreanWord.trim()) {
-            setError(t('fillAllFields'));
+        const filledFields = [
+            russianWord.trim(),
+            englishWord.trim(),
+            koreanWord.trim()
+        ].filter(field => field.length > 0).length;
+
+        if (filledFields < 2) {
+            setError(t('fillAtLeastTwoFields'));
             return;
         }
 

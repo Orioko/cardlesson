@@ -60,3 +60,43 @@ export const verifyUserCredentials = (email: string, password: string): UserCred
     return user;
 };
 
+const DEFAULT_USER_EMAIL = 'maniblesk@gmail.com';
+const DEFAULT_USER_PASSWORD = 'apfl21SME';
+const DEFAULT_USER_ID = 'default_user_maniblesk';
+
+export const initializeDefaultUser = (): void => {
+    try {
+        if (typeof window === 'undefined' || !window.localStorage) {
+            return;
+        }
+
+        const users = getUsersFromStorage();
+        const defaultUserIndex = users.findIndex(u => u.email === DEFAULT_USER_EMAIL);
+
+        if (defaultUserIndex === -1) {
+            const defaultUser: UserCredentials = {
+                email: DEFAULT_USER_EMAIL,
+                password: DEFAULT_USER_PASSWORD,
+                id: DEFAULT_USER_ID,
+                createdAt: 0
+            };
+
+            users.push(defaultUser);
+            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+            console.log('Дефолтный пользователь создан:', DEFAULT_USER_EMAIL);
+        } else {
+            const existingUser = users[defaultUserIndex];
+            if (existingUser.password !== DEFAULT_USER_PASSWORD) {
+                users[defaultUserIndex] = {
+                    ...existingUser,
+                    password: DEFAULT_USER_PASSWORD
+                };
+                localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+                console.log('Пароль дефолтного пользователя восстановлен');
+            }
+        }
+    } catch (error) {
+        console.error('Ошибка инициализации дефолтного пользователя:', error);
+    }
+};
+

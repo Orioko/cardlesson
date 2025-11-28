@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { cleanupDuplicates } from './utils/cleanupDuplicates';
+import { initializeDefaultUser } from './utils/userStorage';
 
 import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.min.css';
@@ -18,6 +19,8 @@ const initApp = async () => {
     const root = ReactDOM.createRoot(rootElement);
 
     try {
+        initializeDefaultUser();
+        
         const i18nPromise = import('../i18n');
         const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 3000));
         
