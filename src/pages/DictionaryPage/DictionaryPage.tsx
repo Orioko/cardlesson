@@ -11,6 +11,13 @@ import WhiteButton from '../../components/WhiteButton';
 import WordCard from '../../components/WordCard';
 import { useWordActions } from '../../hooks/useWordActions';
 import { useWordsContext } from '../../hooks/useWordsContext';
+import {
+  adjustPaginationAfterAdd,
+  adjustPaginationAfterDelete,
+  calculateAdjustedFirst,
+  getPaginatedItems,
+  handlePageChange,
+} from '../../utils/paginationUtils';
 import styles from './DictionaryPage.module.scss';
 
 const DictionaryPage = () => {
@@ -31,28 +38,22 @@ const DictionaryPage = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
 
-  const adjustedFirst = useMemo(() => {
-    if (first >= words.length && words.length > 0) {
-      return 0;
-    }
-    return first;
-  }, [first, words.length]);
+  const adjustedFirst = useMemo(
+    () => calculateAdjustedFirst(first, words.length),
+    [first, words.length]
+  );
 
-  const paginatedWords = useMemo(() => {
-    return words.slice(adjustedFirst, adjustedFirst + rows);
-  }, [words, adjustedFirst, rows]);
+  const paginatedWords = useMemo(() => getPaginatedItems(words, first, rows), [words, first, rows]);
 
-  const handlePageChange = (event: { first: number; rows: number }) => {
-    const newFirst = event.first >= words.length && words.length > 0 ? 0 : event.first;
-    setFirst(newFirst);
-    setRows(event.rows);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handlePageChangeEvent = (event: { first: number; rows: number }) => {
+    const newState = handlePageChange(event, words.length);
+    setFirst(newState.first);
+    setRows(newState.rows);
   };
 
   const handleWordAdded = () => {
-    if (first >= words.length) {
-      setFirst(0);
-    }
+    const newFirst = adjustPaginationAfterAdd(first, words.length);
+    setFirst(newFirst);
     refreshWords();
     clearEditingWord();
   };
@@ -72,9 +73,8 @@ const DictionaryPage = () => {
 
   const handleConfirmDelete = async () => {
     await confirmDelete(() => {
-      if (first >= words.length - 1) {
-        setFirst(Math.max(0, first - rows));
-      }
+      const newFirst = adjustPaginationAfterDelete(first, rows, words.length - 1);
+      setFirst(newFirst);
       refreshWords();
     });
   };
@@ -129,7 +129,7 @@ const DictionaryPage = () => {
               rows={rows}
               totalRecords={words.length}
               rowsPerPageOptions={[10, 20, 30]}
-              onPageChange={handlePageChange}
+              onPageChange={handlePageChangeEvent}
               className={styles.paginator}
             />
           </>

@@ -7,79 +7,46 @@ import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
 import { useWordsContext } from '../../hooks/useWordsContext';
+import {
+  handleCorrectAnswer,
+  handleIncorrectAnswer,
+  initializeRepeatState,
+  resetRepeatState,
+  type RepeatState,
+} from '../../utils/repeatUtils';
 import styles from './RepeatPage.module.scss';
 
 const RepeatPageContent = () => {
   const { t } = useTranslation();
   const { words } = useWordsContext();
 
-  const [currentIndex, setCurrentIndex] = useState(() => 0);
-  const [wordsQueue, setWordsQueue] = useState<typeof words>(() =>
-    words.length > 0 ? [...words] : []
-  );
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [correctWords, setCorrectWords] = useState<Set<string>>(() => new Set());
-  const [incorrectCount, setIncorrectCount] = useState(() => 0);
+  const [repeatState, setRepeatState] = useState<RepeatState>(() => initializeRepeatState(words));
 
   const currentWord = useMemo(() => {
-    if (wordsQueue.length === 0 || currentIndex >= wordsQueue.length) {
+    if (
+      repeatState.wordsQueue.length === 0 ||
+      repeatState.currentIndex >= repeatState.wordsQueue.length
+    ) {
       return null;
     }
-    return wordsQueue[currentIndex];
-  }, [wordsQueue, currentIndex]);
+    return repeatState.wordsQueue[repeatState.currentIndex];
+  }, [repeatState.wordsQueue, repeatState.currentIndex]);
 
   const handleCorrect = useCallback(() => {
-    if (currentWord) {
-      const newCorrectWords = new Set(correctWords);
-      newCorrectWords.add(currentWord.id);
-      setCorrectWords(newCorrectWords);
-
-      if (newCorrectWords.size >= words.length) {
-        setIsCompleted(true);
-        return;
-      }
-
-      const newQueue = wordsQueue.filter((w) => w.id !== currentWord.id);
-      setWordsQueue(newQueue);
-
-      if (newQueue.length === 0) {
-        const remainingWords = words.filter((w) => !newCorrectWords.has(w.id));
-        if (remainingWords.length > 0) {
-          setWordsQueue(remainingWords);
-          setCurrentIndex(0);
-        } else {
-          setIsCompleted(true);
-        }
-      } else {
-        let newIndex = currentIndex;
-        if (newIndex >= newQueue.length) {
-          newIndex = 0;
-        }
-        setCurrentIndex(newIndex);
-      }
+    const result = handleCorrectAnswer(currentWord, repeatState, words);
+    setRepeatState(result.newState);
+    if (result.shouldComplete) {
+      return;
     }
-  }, [currentWord, currentIndex, wordsQueue, correctWords, words]);
+  }, [currentWord, repeatState, words]);
 
   const handleIncorrect = useCallback(() => {
-    if (currentWord && wordsQueue.length > 0) {
-      setIncorrectCount((prev) => prev + 1);
-      const newQueue = [...wordsQueue];
-      const wordToMove = newQueue.splice(currentIndex, 1)[0];
-      newQueue.push(wordToMove);
-      setWordsQueue(newQueue);
-
-      if (currentIndex >= newQueue.length - 1) {
-        setCurrentIndex(0);
-      }
-    }
-  }, [currentWord, currentIndex, wordsQueue]);
+    const result = handleIncorrectAnswer(currentWord, repeatState);
+    setRepeatState(result.newState);
+  }, [currentWord, repeatState]);
 
   const handleRepeatAgain = useCallback(() => {
-    setWordsQueue(words.length > 0 ? [...words] : []);
-    setCurrentIndex(0);
-    setIsCompleted(false);
-    setCorrectWords(new Set());
-    setIncorrectCount(0);
+    setRepeatState(resetRepeatState(words));
   }, [words]);
 
   const hasWords = words.length > 0;
@@ -98,7 +65,7 @@ const RepeatPageContent = () => {
     );
   }
 
-  if (isCompleted) {
+  if (repeatState.isCompleted) {
     return (
       <div className={styles.repeatContainer}>
         <Header title={t('repeat')} showNavigation={true} />
@@ -171,14 +138,17 @@ const RepeatPageContent = () => {
         <div className={styles.progress}>
           <div className={styles.progressText}>
             <span className={styles.progressMain}>
-              {t('progress', { current: correctWords.size, total: words.length })}
+              {t('progress', {
+                current: repeatState.correctWords.size,
+                total: words.length,
+              })}
             </span>
             <div className={styles.stats}>
               <span className={styles.progressSecondary}>
-                {t('correctCount', { count: correctWords.size })}
+                {t('correctCount', { count: repeatState.correctWords.size })}
               </span>
               <span className={styles.progressSecondary}>
-                {t('incorrectCount', { count: incorrectCount })}
+                {t('incorrectCount', { count: repeatState.incorrectCount })}
               </span>
             </div>
           </div>
