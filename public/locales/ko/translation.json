@@ -46,6 +46,8 @@
   "saveWord": "저장",
   "confirmDelete": "삭제 확인",
   "confirmDeleteMessage": "이 단어를 삭제하시겠습니까?",
+  "confirmExit": "로그아웃 확인",
+  "confirmExitMessage": "계정에서 로그아웃하시겠습니까?",
   "wordUpdatedSuccessfully": "단어가 성공적으로 업데이트되었습니다!",
   "errorUpdatingWord": "단어 업데이트 중 오류 발생",
   "invalidEmail": "잘못된 이메일 형식",

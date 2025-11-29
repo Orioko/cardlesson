@@ -46,6 +46,8 @@
   "saveWord": "Сохранить",
   "confirmDelete": "Подтверждение удаления",
   "confirmDeleteMessage": "Вы уверены, что хотите удалить это слово?",
+  "confirmExit": "Подтверждение выхода",
+  "confirmExitMessage": "Вы уверены, что хотите выйти из учётной записи?",
   "wordUpdatedSuccessfully": "Слово успешно обновлено!",
   "errorUpdatingWord": "Ошибка при обновлении слова",
   "invalidEmail": "Неверный формат email",
