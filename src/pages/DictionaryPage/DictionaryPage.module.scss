@@ -116,10 +116,6 @@
   }
 
   .deleteActions {
-    flex-direction: column;
-  }
-
-  .deleteActions button {
-    width: 100%;
+    flex-direction: row;
   }
 }

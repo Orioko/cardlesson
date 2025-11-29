@@ -15,7 +15,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 32px;
 }
 
@@ -198,7 +197,7 @@
 
 @media (max-width: 480px) {
   .repeatContainer {
-    padding-top: 100px;
+    padding-top: 115px;
   }
 
   .content {

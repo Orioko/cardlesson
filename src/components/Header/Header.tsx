@@ -1,9 +1,11 @@
 import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { logout } from '../../utils/localAuth';
+import GradientButton from '../GradientButton';
 import LanguageSettings from '../LanguageSettings';
 import WhiteButton from '../WhiteButton';
 import { languageOptions, type LanguageOption } from './constants';
@@ -15,6 +17,7 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
   const navigate = useNavigate();
   const location = useLocation();
   const [showLanguageSettings, setShowLanguageSettings] = useState(false);
+  const [showExitDialog, setShowExitDialog] = useState(false);
   const languageOverlayRef = useRef<OverlayPanel>(null);
 
   const currentLanguageOption = useMemo(
@@ -34,13 +37,21 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
     languageOverlayRef.current?.toggle(e);
   }, []);
 
-  const handleExit = async () => {
+  const handleExitClick = () => {
+    setShowExitDialog(true);
+  };
+
+  const handleConfirmExit = async () => {
     try {
       await logout();
       navigate('/login');
     } catch (error) {
       console.error('Ошибка выхода:', error);
     }
+  };
+
+  const handleCancelExit = () => {
+    setShowExitDialog(false);
   };
 
   const isOnDictionaryPage = location.pathname === '/' || location.pathname === '/dictionary';
@@ -115,7 +126,7 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
             />
             {showExitButton && (
               <WhiteButton
-                onClick={handleExit}
+                onClick={handleExitClick}
                 icon="pi pi-times"
                 label={t('ExitUser')}
                 className={styles.exitButton}
@@ -128,6 +139,21 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
         visible={showLanguageSettings}
         onHide={() => setShowLanguageSettings(false)}
       />
+      <Dialog
+        visible={showExitDialog}
+        onHide={handleCancelExit}
+        header={t('confirmExit')}
+        modal
+        className={styles.exitDialog}
+      >
+        <div className={styles.exitContent}>
+          <p>{t('confirmExitMessage')}</p>
+          <div className={styles.exitActions}>
+            <WhiteButton label={t('cancel')} onClick={handleCancelExit} />
+            <GradientButton label={t('ExitUser')} onClick={handleConfirmExit} />
+          </div>
+        </div>
+      </Dialog>
     </>
   );
 };
