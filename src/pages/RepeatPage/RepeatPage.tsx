@@ -171,7 +171,7 @@ const RepeatPageContent = () => {
         <div className={styles.progress}>
           <div className={styles.progressText}>
             <span className={styles.progressMain}>
-              {t('progress', { current: currentIndex + 1, total: wordsQueue.length })}
+              {t('progress', { current: correctWords.size, total: words.length })}
             </span>
             <div className={styles.stats}>
               <span className={styles.progressSecondary}>

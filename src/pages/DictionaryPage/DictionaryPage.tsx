@@ -1,6 +1,7 @@
 import { Dialog } from 'primereact/dialog';
+import { Paginator } from 'primereact/paginator';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AddWordForm from '../../components/AddWordForm';
 import Footer from '../../components/Footer';
@@ -27,8 +28,31 @@ const DictionaryPage = () => {
   } = useWordActions({ onWordUpdated: refreshWords });
 
   const [showAddForm, setShowAddForm] = useState(false);
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+
+  const adjustedFirst = useMemo(() => {
+    if (first >= words.length && words.length > 0) {
+      return 0;
+    }
+    return first;
+  }, [first, words.length]);
+
+  const paginatedWords = useMemo(() => {
+    return words.slice(adjustedFirst, adjustedFirst + rows);
+  }, [words, adjustedFirst, rows]);
+
+  const handlePageChange = (event: { first: number; rows: number }) => {
+    const newFirst = event.first >= words.length && words.length > 0 ? 0 : event.first;
+    setFirst(newFirst);
+    setRows(event.rows);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleWordAdded = () => {
+    if (first >= words.length) {
+      setFirst(0);
+    }
     refreshWords();
     clearEditingWord();
   };
@@ -48,6 +72,9 @@ const DictionaryPage = () => {
 
   const handleConfirmDelete = async () => {
     await confirmDelete(() => {
+      if (first >= words.length - 1) {
+        setFirst(Math.max(0, first - rows));
+      }
       refreshWords();
     });
   };
@@ -79,23 +106,33 @@ const DictionaryPage = () => {
             <p>{t('noWords')}</p>
           </div>
         ) : (
-          <div className={styles.cardsContainer}>
-            {words.map((word) => (
-              <WordCard
-                key={word.id}
-                wordId={word.id}
-                wordData={{
-                  ru: word.ru,
-                  en: word.en,
-                  ko: word.ko,
-                  translations: word.translations,
-                }}
-                showActions={true}
-                onEdit={handleEditWord}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
+          <>
+            <div className={styles.cardsContainer}>
+              {paginatedWords.map((word) => (
+                <WordCard
+                  key={word.id}
+                  wordId={word.id}
+                  wordData={{
+                    ru: word.ru,
+                    en: word.en,
+                    ko: word.ko,
+                    translations: word.translations,
+                  }}
+                  showActions={true}
+                  onEdit={handleEditWord}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+            <Paginator
+              first={adjustedFirst}
+              rows={rows}
+              totalRecords={words.length}
+              rowsPerPageOptions={[10, 20, 30]}
+              onPageChange={handlePageChange}
+              className={styles.paginator}
+            />
+          </>
         )}
       </div>
       <Footer />

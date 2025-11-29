@@ -9,3 +9,26 @@
   align-items: center;
   min-height: 100vh;
 }
+
+.scrollTop {
+  :global(.p-scrolltop) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+  }
+
+  :global(.p-scrolltop:hover) {
+    background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+    transform: translateY(-2px);
+  }
+
+  :global(.p-scrolltop-icon) {
+    color: white;
+    font-size: 20px;
+  }
+}

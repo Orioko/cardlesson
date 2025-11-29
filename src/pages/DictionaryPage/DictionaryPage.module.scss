@@ -31,6 +31,12 @@
   gap: 24px;
 }
 
+.paginator {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
 .loading {
   display: flex;
   justify-content: center;
@@ -60,11 +66,15 @@
 
   .addButton {
     width: 100%;
-    max-width: 300px;
+    max-width: 400px;
   }
 
   .cardsContainer {
-    gap: 16px;
+    gap: 8px;
+  }
+
+  .paginator {
+    margin-top: 24px;
   }
 }
 
@@ -86,7 +96,7 @@
 
 @media (max-width: 480px) {
   .dictionaryContainer {
-    padding-top: 100px;
+    padding-top: 115px;
   }
 
   .content {
@@ -94,11 +104,15 @@
   }
 
   .actions {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 
   .cardsContainer {
-    gap: 16px;
+    gap: 2px;
+  }
+
+  .paginator {
+    margin-top: 20px;
   }
 
   .deleteActions {

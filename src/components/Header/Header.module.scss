@@ -49,36 +49,83 @@
   }
 }
 
-.navButton {
-  white-space: nowrap;
+.languageSwitcher {
+  position: relative;
 }
 
-.languageSelect {
-  min-width: 160px;
-}
-
-.languageSelect :global(.p-dropdown) {
+.languageButton {
   background: white;
-  border: 1px solid #000000;
+  border: none;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+
+  &:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
-.languageSelect :global(.p-dropdown:hover) {
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
-  border-color: #000000;
+.languageButtonContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.languageSelect :global(.p-dropdown-trigger) {
+.languageCode {
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.languageButton :global(.pi-chevron-down) {
+  font-size: 12px;
   color: #667eea;
 }
 
-.languageSelect :global(.p-dropdown-label) {
-  color: #333;
-  font-weight: 500;
+.languageOverlay {
+  min-width: 160px;
+  padding: 8px;
+}
+
+.languageOption {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.languageOption.active {
+  background: rgba(102, 126, 234, 0.15);
+  font-weight: 600;
+}
+
+.flagOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.flagIcon {
+  width: 20px;
+  height: 15px;
+  flex-shrink: 0;
 }
 
 .exitButton {
@@ -109,16 +156,11 @@
   .navButton {
     flex: 1;
     min-width: 0;
+    white-space: nowrap;
   }
 
-  .languageSelect {
-    width: auto;
-    min-width: auto;
-  }
-
-  .languageSelect :global(.p-dropdown) {
-    width: auto;
-    min-width: auto;
+  .languageCode {
+    display: none;
   }
 
   .exitButton {
@@ -146,16 +188,10 @@
   .navButton {
     flex-shrink: 1;
     min-width: 0;
+    height: 39px;
   }
-
-  .languageSelect {
-    width: auto;
-    min-width: auto;
-  }
-
-  .languageSelect :global(.p-dropdown) {
-    width: auto;
-    min-width: auto;
+  .languageCode {
+    display: none;
   }
 
   .exitButton {

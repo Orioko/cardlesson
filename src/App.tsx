@@ -1,4 +1,5 @@
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { ScrollTop } from 'primereact/scrolltop';
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import styles from './App.module.scss';
@@ -49,6 +50,7 @@ const App = () => {
               />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+            <ScrollTop threshold={200} className={styles.scrollTop} />
           </Suspense>
         </div>
       </WordsProvider>
