@@ -1,9 +1,11 @@
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Message } from 'primereact/message';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useWordsContext } from '../../hooks/useWordsContext';
 import { getSelectedLanguages, saveSelectedLanguages } from '../../utils/selectedLanguagesStorage';
+import { exportWordsToJson, importWordsFromFile } from '../../utils/wordsImportExport';
 import GradientButton from '../GradientButton';
 import { LANGS } from '../WordCard/constants';
 import type { Lang } from '../WordCard/types';
@@ -12,8 +14,10 @@ import type { LanguageSettingsProps } from './types';
 
 const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
   const { t } = useTranslation();
+  const { words, refreshWords } = useWordsContext();
   const [selectedLangs, setSelectedLangs] = useState<Lang[]>(() => getSelectedLanguages());
   const [error, setError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleLangToggle = (lang: Lang) => {
     setError('');
@@ -47,6 +51,76 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
     onHide();
   };
 
+  const handleExportWords = () => {
+    try {
+      exportWordsToJson(words);
+    } catch {
+      setError(t('errorExportingWords'));
+    }
+  };
+
+  const handleImportWords = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setError('');
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    try {
+      const result = await importWordsFromFile(file);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+      if (result.addedCount > 0 || result.duplicatesCount > 0) {
+        await refreshWords();
+        const messages: string[] = [];
+
+        if (result.addedCount > 0) {
+          messages.push(
+            t('wordsImported', { count: result.addedCount }) ||
+              `Добавлено слов: ${result.addedCount}`
+          );
+        }
+
+        if (result.duplicatesCount > 0) {
+          messages.push(
+            t('duplicatesSkipped', { count: result.duplicatesCount }) ||
+              `Пропущено дубликатов: ${result.duplicatesCount}`
+          );
+        }
+
+        if (result.errorCount > 0) {
+          messages.push(
+            t('errorsDuringImport', { count: result.errorCount }) || `Ошибок: ${result.errorCount}`
+          );
+        }
+
+        if (messages.length > 0) {
+          setError(messages.join('. '));
+        } else {
+          setError('');
+        }
+      } else {
+        setError(t('noWordsImported') || 'Не удалось импортировать слова');
+      }
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === 'Invalid file format: expected array of words'
+      ) {
+        setError(t('invalidFileFormat'));
+      } else {
+        setError(t('errorImportingWords') || 'Ошибка при импорте слов');
+      }
+    }
+  };
+
+  const handleImportButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
   const getLangLabel = (lang: Lang): string => {
     const labels: Record<Lang, string> = {
       ru: t('russian'),
@@ -75,6 +149,35 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
             <span className={styles.label}>{getLangLabel(lang)}</span>
           </label>
         ))}
+      </div>
+
+      <div className={styles.importExportSection}>
+        <div className={styles.buttonGroup}>
+          <Button
+            icon="pi pi-upload"
+            label={t('importWords')}
+            onClick={handleImportButtonClick}
+            severity="secondary"
+            outlined
+            className={styles.importButton}
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json"
+            onChange={handleImportWords}
+            className={styles.hiddenFileInput}
+          />
+          <Button
+            icon="pi pi-download"
+            label={t('exportWords')}
+            onClick={handleExportWords}
+            severity="secondary"
+            outlined
+            className={styles.exportButton}
+            disabled={words.length === 0}
+          />
+        </div>
       </div>
 
       <div className={styles.actions}>
