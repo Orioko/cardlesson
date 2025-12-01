@@ -140,3 +140,40 @@ export const handleIncorrectAnswer = (
 export const resetRepeatState = (words: Word[]): RepeatState => {
   return initializeRepeatState(words);
 };
+
+export interface HandleWordUpdateResult {
+  newState: RepeatState;
+}
+
+export const handleWordUpdate = (
+  wordId: string,
+  updatedWord: Word,
+  state: RepeatState
+): HandleWordUpdateResult => {
+  const newQueue = state.wordsQueue.map((w) => (w.id === wordId ? updatedWord : w));
+
+  if (newQueue.length === 0) {
+    return {
+      newState: {
+        ...state,
+        wordsQueue: newQueue,
+        isCompleted: true,
+      },
+    };
+  }
+
+  let newIndex = state.currentIndex;
+  if (newIndex >= newQueue.length - 1) {
+    newIndex = 0;
+  } else {
+    newIndex += 1;
+  }
+
+  return {
+    newState: {
+      ...state,
+      wordsQueue: newQueue,
+      currentIndex: newIndex,
+    },
+  };
+};

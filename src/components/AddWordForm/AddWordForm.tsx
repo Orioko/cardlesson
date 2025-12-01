@@ -107,7 +107,14 @@ const AddWordForm = ({
       onHide();
 
       if (onWordAdded) {
-        onWordAdded();
+        if (isEditMode && editWordId) {
+          onWordAdded({
+            id: editWordId,
+            data: wordData,
+          });
+        } else {
+          onWordAdded();
+        }
       }
     } catch (error) {
       console.error('Ошибка сохранения слова:', error);

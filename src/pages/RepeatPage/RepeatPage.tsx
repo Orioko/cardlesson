@@ -2,14 +2,17 @@ import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import AddWordForm from '../../components/AddWordForm';
 import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
+import { useWordActions } from '../../hooks/useWordActions';
 import { useWordsContext } from '../../hooks/useWordsContext';
 import {
   handleCorrectAnswer,
   handleIncorrectAnswer,
+  handleWordUpdate,
   initializeRepeatState,
   resetRepeatState,
   type RepeatState,
@@ -20,7 +23,10 @@ const RepeatPageContent = () => {
   const { t } = useTranslation();
   const { words } = useWordsContext();
 
+  const { editingWord, handleEdit, clearEditingWord } = useWordActions();
+
   const [repeatState, setRepeatState] = useState<RepeatState>(() => initializeRepeatState(words));
+  const [showEditForm, setShowEditForm] = useState(false);
 
   const currentWord = useMemo(() => {
     if (
@@ -48,6 +54,59 @@ const RepeatPageContent = () => {
   const handleRepeatAgain = useCallback(() => {
     setRepeatState(resetRepeatState(words));
   }, [words]);
+
+  const handleEditWord = useCallback(
+    (
+      wordId: string,
+      wordData: {
+        ru: string;
+        en: string;
+        ko: string;
+        translations: { ru: string; en: string; ko: string };
+      }
+    ) => {
+      handleEdit(wordId, wordData);
+      setShowEditForm(true);
+    },
+    [handleEdit]
+  );
+
+  const handleWordSaved = useCallback(
+    (updatedWordData?: {
+      id: string;
+      data: {
+        ru: string;
+        en: string;
+        ko: string;
+        translations: { ru: string; en: string; ko: string };
+      };
+    }) => {
+      if (!updatedWordData || !editingWord) {
+        setShowEditForm(false);
+        clearEditingWord();
+        return;
+      }
+
+      const updatedWord = {
+        id: updatedWordData.id,
+        ru: updatedWordData.data.ru,
+        en: updatedWordData.data.en,
+        ko: updatedWordData.data.ko,
+        translations: updatedWordData.data.translations,
+      };
+
+      const result = handleWordUpdate(editingWord.id, updatedWord, repeatState);
+      setRepeatState(result.newState);
+      setShowEditForm(false);
+      clearEditingWord();
+    },
+    [editingWord, repeatState, clearEditingWord]
+  );
+
+  const handleCloseEditForm = useCallback(() => {
+    setShowEditForm(false);
+    clearEditingWord();
+  }, [clearEditingWord]);
 
   const hasWords = words.length > 0;
 
@@ -113,6 +172,8 @@ const RepeatPageContent = () => {
               ko: currentWord.ko,
               translations: currentWord.translations,
             }}
+            showActions={true}
+            onEdit={handleEditWord}
           />
         </div>
         <div className={styles.actions}>
@@ -155,6 +216,13 @@ const RepeatPageContent = () => {
         </div>
       </div>
       <Footer />
+      <AddWordForm
+        visible={showEditForm}
+        onHide={handleCloseEditForm}
+        onWordAdded={handleWordSaved}
+        editWordId={editingWord?.id}
+        editWordData={editingWord?.data}
+      />
     </div>
   );
 };

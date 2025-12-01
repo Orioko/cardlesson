@@ -21,7 +21,7 @@ export interface WordData {
 export interface AddWordFormProps {
   visible: boolean;
   onHide: () => void;
-  onWordAdded?: () => void;
+  onWordAdded?: (updatedWord?: { id: string; data: WordData }) => void;
   editWordId?: string;
   editWordData?: WordData;
 }
