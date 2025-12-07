@@ -16,7 +16,7 @@ interface WordDataNormalized {
   ko: string;
 }
 
-const normalizeWord = (word: WordData): WordDataNormalized => {
+export const normalizeWord = (word: WordData): WordDataNormalized => {
   const getFieldValue = (main: string | undefined, translation: string | undefined): string => {
     const value = (main || translation || '').trim().toLowerCase();
     return value;
@@ -29,7 +29,7 @@ const normalizeWord = (word: WordData): WordDataNormalized => {
   };
 };
 
-const wordsAreEqual = (word1: WordDataNormalized, word2: WordDataNormalized): boolean => {
+export const wordsAreEqual = (word1: WordDataNormalized, word2: WordDataNormalized): boolean => {
   const getNonEmptyValues = (word: WordDataNormalized): string[] => {
     return [word.ru, word.en, word.ko].filter((value) => value.length > 0).sort();
   };

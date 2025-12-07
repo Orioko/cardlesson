@@ -70,56 +70,8 @@
   "wordsImported": "가져온 단어: {{count}}",
   "duplicatesSkipped": "중복 건너뛴 항목: {{count}}",
   "errorsDuringImport": "오류: {{count}}",
-  "words": {
-    "hello": {
-      "ru": "Привет",
-      "en": "Hello",
-      "ko": "안녕하세요",
-      "translations": {
-        "ru": "Привет",
-        "en": "Hello",
-        "ko": "안녕하세요"
-      }
-    },
-    "thankYou": {
-      "ru": "Спасибо",
-      "en": "Thank you",
-      "ko": "감사합니다",
-      "translations": {
-        "ru": "Спасибо",
-        "en": "Thank you",
-        "ko": "감사합니다"
-      }
-    },
-    "water": {
-      "ru": "Вода",
-      "en": "Water",
-      "ko": "물",
-      "translations": {
-        "ru": "Вода",
-        "en": "Water",
-        "ko": "물"
-      }
-    },
-    "book": {
-      "ru": "Книга",
-      "en": "Book",
-      "ko": "책",
-      "translations": {
-        "ru": "Книга",
-        "en": "Book",
-        "ko": "책"
-      }
-    },
-    "friend": {
-      "ru": "Друг",
-      "en": "Friend",
-      "ko": "친구",
-      "translations": {
-        "ru": "Друг",
-        "en": "Friend",
-        "ko": "친구"
-      }
-    }
-  }
+  "checkDuplicates": "중복 확인",
+  "duplicatesRemoved": "중복 제거됨: {{count}}",
+  "noDuplicatesFound": "중복이 없습니다",
+  "errorCheckingDuplicates": "중복 확인 중 오류 발생"
 }

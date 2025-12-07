@@ -72,5 +72,9 @@
   "wordsImportedWithErrors": "Добавлено слов: {{added}}, ошибок: {{errors}}",
   "wordsImported": "Добавлено слов: {{count}}",
   "duplicatesSkipped": "Пропущено дубликатов: {{count}}",
-  "errorsDuringImport": "Ошибок: {{count}}"
+  "errorsDuringImport": "Ошибок: {{count}}",
+  "checkDuplicates": "Проверить дубликаты",
+  "duplicatesRemoved": "Удалено дубликатов: {{count}}",
+  "noDuplicatesFound": "Дубликаты не найдены",
+  "errorCheckingDuplicates": "Ошибка при проверке дубликатов"
 }

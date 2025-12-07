@@ -4,6 +4,7 @@ import { Message } from 'primereact/message';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWordsContext } from '../../hooks/useWordsContext';
+import { checkAndRemoveDuplicates } from '../../utils/cleanupDuplicates';
 import { getSelectedLanguages, saveSelectedLanguages } from '../../utils/selectedLanguagesStorage';
 import { exportWordsToJson, importWordsFromFile } from '../../utils/wordsImportExport';
 import GradientButton from '../GradientButton';
@@ -17,10 +18,13 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
   const { words, refreshWords } = useWordsContext();
   const [selectedLangs, setSelectedLangs] = useState<Lang[]>(() => getSelectedLanguages());
   const [error, setError] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
+  const [statusSeverity, setStatusSeverity] = useState<'error' | 'success' | 'info'>('error');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleLangToggle = (lang: Lang) => {
     setError('');
+    setStatusMessage('');
     if (selectedLangs.includes(lang)) {
       if (selectedLangs.length <= 2) {
         setError(t('minTwoLanguagesRequired'));
@@ -48,6 +52,7 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
 
   const handleClose = () => {
     setError('');
+    setStatusMessage('');
     onHide();
   };
 
@@ -61,6 +66,7 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
 
   const handleImportWords = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
+    setStatusMessage('');
     const file = event.target.files?.[0];
     if (!file) {
       return;
@@ -121,6 +127,34 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
     fileInputRef.current?.click();
   };
 
+  const handleCheckDuplicates = async () => {
+    setError('');
+    setStatusMessage('');
+    try {
+      const result = await checkAndRemoveDuplicates();
+      await refreshWords();
+
+      if (result.duplicatesCount > 0) {
+        setStatusMessage(
+          t('duplicatesRemoved', { count: result.duplicatesCount }) ||
+            `Удалено дубликатов: ${result.duplicatesCount}`
+        );
+        setStatusSeverity('success');
+      } else {
+        setStatusMessage(t('noDuplicatesFound') || 'Дубликаты не найдены');
+        setStatusSeverity('info');
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === 'User not authenticated') {
+        setError(t('userNotAuthenticated'));
+        setStatusSeverity('error');
+      } else {
+        setError(t('errorCheckingDuplicates') || 'Ошибка при проверке дубликатов');
+        setStatusSeverity('error');
+      }
+    }
+  };
+
   const getLangLabel = (lang: Lang): string => {
     const labels: Record<Lang, string> = {
       ru: t('russian'),
@@ -133,6 +167,9 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
   return (
     <div className={styles.content}>
       {error && <Message severity="error" text={error} className={styles.message} />}
+      {statusMessage && !error && (
+        <Message severity={statusSeverity} text={statusMessage} className={styles.message} />
+      )}
 
       <p className={styles.description}>{t('selectLanguagesForCards')}</p>
 
@@ -175,6 +212,15 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
             severity="secondary"
             outlined
             className={styles.exportButton}
+            disabled={words.length === 0}
+          />
+          <Button
+            icon="pi pi-trash"
+            label={t('checkDuplicates')}
+            onClick={handleCheckDuplicates}
+            severity="secondary"
+            outlined
+            className={styles.checkDuplicatesButton}
             disabled={words.length === 0}
           />
         </div>

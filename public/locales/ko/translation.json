@@ -72,5 +72,9 @@
   "wordsImportedWithErrors": "가져온 단어: {{added}}, 오류: {{errors}}",
   "wordsImported": "가져온 단어: {{count}}",
   "duplicatesSkipped": "중복 건너뛴 항목: {{count}}",
-  "errorsDuringImport": "오류: {{count}}"
+  "errorsDuringImport": "오류: {{count}}",
+  "checkDuplicates": "중복 확인",
+  "duplicatesRemoved": "중복 제거됨: {{count}}",
+  "noDuplicatesFound": "중복이 없습니다",
+  "errorCheckingDuplicates": "중복 확인 중 오류 발생"
 }

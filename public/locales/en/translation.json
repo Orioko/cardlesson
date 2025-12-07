@@ -72,5 +72,9 @@
   "wordsImportedWithErrors": "Words imported: {{added}}, errors: {{errors}}",
   "wordsImported": "Words imported: {{count}}",
   "duplicatesSkipped": "Duplicates skipped: {{count}}",
-  "errorsDuringImport": "Errors: {{count}}"
+  "errorsDuringImport": "Errors: {{count}}",
+  "checkDuplicates": "Check Duplicates",
+  "duplicatesRemoved": "Duplicates removed: {{count}}",
+  "noDuplicatesFound": "No duplicates found",
+  "errorCheckingDuplicates": "Error checking duplicates"
 }

@@ -70,56 +70,8 @@
   "wordsImported": "Добавлено слов: {{count}}",
   "duplicatesSkipped": "Пропущено дубликатов: {{count}}",
   "errorsDuringImport": "Ошибок: {{count}}",
-  "words": {
-    "hello": {
-      "ru": "Привет",
-      "en": "Hello",
-      "ko": "안녕하세요",
-      "translations": {
-        "ru": "Привет",
-        "en": "Hello",
-        "ko": "안녕하세요"
-      }
-    },
-    "thankYou": {
-      "ru": "Спасибо",
-      "en": "Thank you",
-      "ko": "감사합니다",
-      "translations": {
-        "ru": "Спасибо",
-        "en": "Thank you",
-        "ko": "감사합니다"
-      }
-    },
-    "water": {
-      "ru": "Вода",
-      "en": "Water",
-      "ko": "물",
-      "translations": {
-        "ru": "Вода",
-        "en": "Water",
-        "ko": "물"
-      }
-    },
-    "book": {
-      "ru": "Книга",
-      "en": "Book",
-      "ko": "책",
-      "translations": {
-        "ru": "Книга",
-        "en": "Book",
-        "ko": "책"
-      }
-    },
-    "friend": {
-      "ru": "Друг",
-      "en": "Friend",
-      "ko": "친구",
-      "translations": {
-        "ru": "Друг",
-        "en": "Friend",
-        "ko": "친구"
-      }
-    }
-  }
+  "checkDuplicates": "Проверить дубликаты",
+  "duplicatesRemoved": "Удалено дубликатов: {{count}}",
+  "noDuplicatesFound": "Дубликаты не найдены",
+  "errorCheckingDuplicates": "Ошибка при проверке дубликатов"
 }
