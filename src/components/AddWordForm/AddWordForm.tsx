@@ -119,9 +119,13 @@ const AddWordForm = ({
     } catch (error) {
       console.error('Ошибка сохранения слова:', error);
       const errorMessage = error instanceof Error ? error.message : String(error);
-      setError(isEditMode ? t('errorUpdatingWord') : t('errorAddingWord'));
-      if (errorMessage.includes('permission') || errorMessage.includes('Permission')) {
+
+      if (errorMessage === 'DUPLICATE_WORD') {
+        setError(t('duplicateWordError') || 'Такое слово уже существует в словаре');
+      } else if (errorMessage.includes('permission') || errorMessage.includes('Permission')) {
         setError(t('permissionDenied') || 'Недостаточно прав для выполнения операции');
+      } else {
+        setError(isEditMode ? t('errorUpdatingWord') : t('errorAddingWord'));
       }
     }
   };

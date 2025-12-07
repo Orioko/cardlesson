@@ -70,8 +70,9 @@
   "wordsImported": "Добавлено слов: {{count}}",
   "duplicatesSkipped": "Пропущено дубликатов: {{count}}",
   "errorsDuringImport": "Ошибок: {{count}}",
-  "checkDuplicates": "Проверить дубликаты",
+  "checkDuplicates": "Удалить дубликаты",
   "duplicatesRemoved": "Удалено дубликатов: {{count}}",
   "noDuplicatesFound": "Дубликаты не найдены",
-  "errorCheckingDuplicates": "Ошибка при проверке дубликатов"
+  "errorCheckingDuplicates": "Ошибка при проверке дубликатов",
+  "duplicateWordError": "Такое слово уже существует в словаре"
 }

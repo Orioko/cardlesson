@@ -48,6 +48,25 @@ export const wordsAreEqual = (word1: WordDataNormalized, word2: WordDataNormaliz
   return values1.every((value, index) => value === values2[index]);
 };
 
+export const isDuplicateWord = (newWord: WordData, existingWords: WordData[]): boolean => {
+  if (existingWords.length === 0) {
+    return false;
+  }
+
+  const normalizedNew = normalizeWord(newWord);
+  const normalizedKey = [normalizedNew.ru, normalizedNew.en, normalizedNew.ko]
+    .sort()
+    .filter((v) => v.length > 0)
+    .join('|');
+
+  if (normalizedKey.length === 0) {
+    return false;
+  }
+
+  const normalizedExisting = existingWords.map(normalizeWord);
+  return normalizedExisting.some((existing) => wordsAreEqual(normalizedNew, existing));
+};
+
 export const filterDuplicateWords = (
   importedWords: WordData[],
   existingWords: WordData[]

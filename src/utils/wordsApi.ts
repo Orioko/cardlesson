@@ -1,5 +1,6 @@
 import { getUserId } from './localAuth';
 import { loadWordsFromCache, saveWordsToCache } from './wordsCache';
+import { isDuplicateWord } from './wordsDuplicatesCheck';
 
 interface WordData {
   id: string;
@@ -60,6 +61,16 @@ export const addWord = async (
   }
 
   const words = getWordsFromStorage(userId);
+
+  const newWordForCheck: WordData = {
+    id: '',
+    ...wordData,
+  };
+
+  if (isDuplicateWord(newWordForCheck, words)) {
+    throw new Error('DUPLICATE_WORD');
+  }
+
   const newWord: WordData = {
     id: `word_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     ...wordData,

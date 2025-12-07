@@ -70,8 +70,9 @@
   "wordsImported": "가져온 단어: {{count}}",
   "duplicatesSkipped": "중복 건너뛴 항목: {{count}}",
   "errorsDuringImport": "오류: {{count}}",
-  "checkDuplicates": "중복 확인",
+  "checkDuplicates": "중복 제거",
   "duplicatesRemoved": "중복 제거됨: {{count}}",
   "noDuplicatesFound": "중복이 없습니다",
-  "errorCheckingDuplicates": "중복 확인 중 오류 발생"
+  "errorCheckingDuplicates": "중복 확인 중 오류 발생",
+  "duplicateWordError": "이 단어는 이미 사전에 존재합니다"
 }
