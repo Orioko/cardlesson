@@ -96,12 +96,7 @@ export const cleanupDuplicates = (): void => {
     );
 
     if (uniqueWords.length !== words.length) {
-      console.log(`Удалено дубликатов: ${words.length - uniqueWords.length}`);
-      console.log(`Уникальных слов: ${uniqueWords.length}`);
       saveWordsToCache(userId, uniqueWords);
-      console.log('Дубликаты успешно удалены!');
-    } else {
-      console.log('Дубликаты не найдены');
     }
   } catch (error) {
     console.error('Ошибка при очистке дубликатов:', error);

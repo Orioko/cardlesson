@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LANGS } from './constants';
 import type { Lang, WordCardProps } from './types';
-import { pickRandom } from './utils';
+import { pickDeterministic, pickRandom } from './utils';
 import styles from './WordCard.module.scss';
 
 const WordCard = ({
@@ -14,19 +14,32 @@ const WordCard = ({
   onEdit,
   onDelete,
   showActions = false,
+  displayLang,
 }: WordCardProps) => {
   const { t, i18n } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
 
+  const frontLang = useMemo(() => {
+    if (displayLang && wordData?.[displayLang]?.trim()) {
+      return displayLang;
+    }
+    if (!wordData) {
+      return null;
+    }
+    const filled = LANGS.filter((l) => wordData[l]?.trim());
+    if (filled.length === 0) {
+      return null;
+    }
+    if (wordId) {
+      return pickDeterministic(filled, wordId) || null;
+    }
+    return pickRandom(filled) || null;
+  }, [wordData, displayLang, wordId]);
+
   const { front, back } = useMemo(() => {
     if (wordData) {
       const filled = LANGS.filter((l) => wordData[l]?.trim());
-      if (!filled.length) {
-        return { front: '', back: {} as Partial<Record<Lang, string>> };
-      }
-
-      const selectedFrontLang = pickRandom(filled);
-      if (!selectedFrontLang) {
+      if (!filled.length || !frontLang) {
         return { front: '', back: {} as Partial<Record<Lang, string>> };
       }
 
@@ -35,7 +48,7 @@ const WordCard = ({
       );
 
       return {
-        front: wordData[selectedFrontLang].trim(),
+        front: wordData[frontLang].trim(),
         back: Object.fromEntries(backEntries) as Partial<Record<Lang, string>>,
       };
     }
@@ -56,7 +69,7 @@ const WordCard = ({
     }
 
     return { front: '', back: {} as Partial<Record<Lang, string>> };
-  }, [wordData, wordKey, i18n.resolvedLanguage, i18n.language, t]);
+  }, [wordData, wordKey, i18n.resolvedLanguage, i18n.language, t, frontLang]);
 
   const handleFlip = useCallback(() => {
     setIsFlipped((s) => !s);

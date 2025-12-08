@@ -1,0 +1,21 @@
+.dialog {
+  width: 90vw;
+  max-width: 400px;
+}
+
+.content {
+  padding: 10px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+@media (max-width: 480px) {
+  .actions {
+    flex-direction: row;
+  }
+}

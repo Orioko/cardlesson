@@ -1,13 +1,12 @@
-import { Dialog } from 'primereact/dialog';
 import { Paginator } from 'primereact/paginator';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AddWordForm from '../../components/AddWordForm';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
-import WhiteButton from '../../components/WhiteButton';
 import WordCard from '../../components/WordCard';
 import { useWordActions } from '../../hooks/useWordActions';
 import { useWordsContext } from '../../hooks/useWordsContext';
@@ -143,21 +142,11 @@ const DictionaryPage = () => {
         editWordId={editingWord?.id}
         editWordData={editingWord?.data}
       />
-      <Dialog
+      <ConfirmDialog
         visible={Boolean(deletingWordId)}
         onHide={cancelDelete}
-        header={t('confirmDelete')}
-        modal
-        className={styles.deleteDialog}
-      >
-        <div className={styles.deleteContent}>
-          <p>{t('confirmDeleteMessage')}</p>
-          <div className={styles.deleteActions}>
-            <WhiteButton label={t('cancel')} onClick={cancelDelete} />
-            <GradientButton label={t('delete')} onClick={handleConfirmDelete} />
-          </div>
-        </div>
-      </Dialog>
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };

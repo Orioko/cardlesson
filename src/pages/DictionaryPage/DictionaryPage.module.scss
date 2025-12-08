@@ -57,7 +57,7 @@
   }
 
   .content {
-    padding: 16px 16px;
+    padding: 16px;
   }
 
   .actions {
@@ -78,29 +78,13 @@
   }
 }
 
-.deleteDialog {
-  width: 90vw;
-  max-width: 400px;
-}
-
-.deleteContent {
-  padding: 10px 0;
-}
-
-.deleteActions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
 @media (max-width: 480px) {
   .dictionaryContainer {
     padding-top: 115px;
   }
 
   .content {
-    padding: 12px 16px;
+    padding: 16px;
   }
 
   .actions {
@@ -113,9 +97,5 @@
 
   .paginator {
     margin-top: 20px;
-  }
-
-  .deleteActions {
-    flex-direction: row;
   }
 }

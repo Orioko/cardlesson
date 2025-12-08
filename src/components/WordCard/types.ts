@@ -22,6 +22,7 @@ export interface WordData {
  * @prop onEdit - Обработчик редактирования слова
  * @prop onDelete - Обработчик удаления слова
  * @prop showActions - Показывать ли кнопки действий (редактирование/удаление)
+ * @prop displayLang - Принудительный язык для отображения (для режима таймера)
  */
 export interface WordCardProps {
   wordKey?: string;
@@ -30,4 +31,5 @@ export interface WordCardProps {
   onEdit?: (id: string, data: WordData) => void;
   onDelete?: (id: string) => void;
   showActions?: boolean;
+  displayLang?: Lang;
 }

@@ -9,6 +9,8 @@ import { WordsProvider } from './contexts/WordsProvider';
 const LoginPage = lazy(() => import('./pages/LoginPage/LoginPage'));
 const DictionaryPage = lazy(() => import('./pages/DictionaryPage'));
 const RepeatPage = lazy(() => import('./pages/RepeatPage'));
+const TimerPage = lazy(() => import('./pages/TimerPage'));
+const RecordsPage = lazy(() => import('./pages/RecordsPage'));
 
 const App = () => {
   return (
@@ -45,6 +47,22 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <RepeatPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/timer"
+                element={
+                  <ProtectedRoute>
+                    <TimerPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/records"
+                element={
+                  <ProtectedRoute>
+                    <RecordsPage />
                   </ProtectedRoute>
                 }
               />

@@ -1,0 +1,467 @@
+.timerContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 88px;
+}
+
+.content {
+  flex: 1;
+  padding: 32px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.timerSelection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.timerTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.timerOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  width: 100%;
+}
+
+.timerOption {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+  padding: 16px 24px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  :global(.p-button-label) {
+    color: white;
+    font-weight: 600;
+  }
+}
+
+.readyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+}
+
+.timerWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.timerDisplay {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 32px 48px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+}
+
+.timerText {
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+}
+
+.cardWrapper {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: center;
+}
+
+.actions {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.correctButton,
+.incorrectButton {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border: none;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.correctButton :global(.p-button-icon),
+.incorrectButton :global(.p-button-icon) {
+  font-size: 24px;
+}
+
+.correctButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.correctButton:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+}
+
+.correctButton:active {
+  transform: translateY(0);
+}
+
+.correctButton :global(.p-button-label) {
+  color: white;
+  font-weight: 600;
+}
+
+.correctButton :global(.p-button-icon) {
+  color: white;
+}
+
+.incorrectButton {
+  background: #8e8e93;
+  color: white;
+}
+
+.incorrectButton:hover {
+  background: #6d6d73;
+  box-shadow: 0 4px 12px rgba(142, 142, 147, 0.3);
+  transform: translateY(-2px);
+}
+
+.incorrectButton:active {
+  transform: translateY(0);
+}
+
+.incorrectButton :global(.p-button-label) {
+  color: white;
+  font-weight: 600;
+}
+
+.incorrectButton :global(.p-button-icon) {
+  color: white;
+}
+
+.progress {
+  text-align: center;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+  border: 2px solid rgba(99, 102, 241, 0.15);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.progressText {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.progressMain {
+  font-size: 24px;
+  font-weight: 700;
+  color: #6366f1;
+  letter-spacing: 0.5px;
+}
+
+.finishedState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 600px;
+  padding: 40px 20px;
+}
+
+.finishedTitle {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.encouragementText {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #667eea;
+  text-align: center;
+}
+
+.stats {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  min-width: 150px;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.startButton,
+.resetButton {
+  min-width: 200px;
+}
+
+.finishedActions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.recordsButton {
+  min-width: 200px;
+}
+
+.timerSelection .recordsButton {
+  width: 100%;
+  max-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .timerContainer {
+    padding-top: 100px;
+  }
+
+  .content {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .timerTitle {
+    font-size: 20px;
+  }
+
+  .timerOptions {
+    gap: 12px;
+  }
+
+  .timerOption {
+    min-width: 100px;
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+
+  .timerDisplay {
+    padding: 24px 32px;
+    border-radius: 16px;
+  }
+
+  .timerText {
+    font-size: 36px;
+  }
+
+  .actions {
+    gap: 16px;
+  }
+
+  .correctButton,
+  .incorrectButton {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+  }
+
+  .finishedState {
+    padding: 32px 16px;
+    gap: 24px;
+  }
+
+  .finishedActions {
+    gap: 12px;
+  }
+
+  .finishedTitle {
+    font-size: 24px;
+  }
+
+  .stats {
+    gap: 16px;
+    flex-direction: column;
+  }
+
+  .statItem {
+    width: 100%;
+    min-width: auto;
+    padding: 20px;
+  }
+
+  .statValue {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .timerContainer {
+    padding-top: 115px;
+  }
+
+  .content {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .timerTitle {
+    font-size: 18px;
+  }
+
+  .timerOptions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .timerOption {
+    width: 100%;
+    max-width: none;
+    min-width: auto;
+  }
+
+  .timerSelection .recordsButton {
+    width: 100%;
+    max-width: none;
+  }
+
+  .timerDisplay {
+    padding: 20px 24px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .timerText {
+    font-size: 32px;
+    letter-spacing: 1px;
+  }
+
+  .actions {
+    gap: 12px;
+  }
+
+  .correctButton,
+  .incorrectButton {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+  }
+
+  .progressMain {
+    font-size: 16px;
+  }
+
+  .finishedState {
+    padding: 24px 12px;
+    gap: 20px;
+  }
+
+  .finishedActions {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .finishedActions .resetButton,
+  .finishedActions .recordsButton {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .finishedTitle {
+    font-size: 20px;
+  }
+
+  .statItem {
+    padding: 16px;
+  }
+
+  .statValue {
+    font-size: 24px;
+  }
+}

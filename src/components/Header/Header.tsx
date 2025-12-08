@@ -56,6 +56,8 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
 
   const isOnDictionaryPage = location.pathname === '/' || location.pathname === '/dictionary';
   const isOnRepeatPage = location.pathname === '/repeat';
+  const isOnTimerPage = location.pathname === '/timer';
+  const isOnRecordsPage = location.pathname === '/records';
 
   return (
     <>
@@ -66,20 +68,74 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
             {showNavigation && (
               <>
                 {isOnDictionaryPage && (
-                  <WhiteButton
-                    onClick={() => navigate('/repeat')}
-                    icon="pi pi-refresh"
-                    label={t('repeat')}
-                    className={styles.navButton}
-                  />
+                  <>
+                    <WhiteButton
+                      onClick={() => navigate('/repeat')}
+                      icon="pi pi-refresh"
+                      label={t('repeat')}
+                      className={styles.navButton}
+                    />
+                    <WhiteButton
+                      onClick={() => navigate('/timer')}
+                      icon="pi pi-clock"
+                      label={t('timer')}
+                      className={styles.navButton}
+                    />
+                  </>
                 )}
                 {isOnRepeatPage && (
-                  <WhiteButton
-                    onClick={() => navigate('/')}
-                    icon="pi pi-book"
-                    label={t('myDictionary')}
-                    className={styles.navButton}
-                  />
+                  <>
+                    <WhiteButton
+                      onClick={() => navigate('/timer')}
+                      icon="pi pi-clock"
+                      label={t('timer')}
+                      className={styles.navButton}
+                    />
+                    <WhiteButton
+                      onClick={() => navigate('/')}
+                      icon="pi pi-book"
+                      label={t('myDictionary')}
+                      className={styles.navButton}
+                    />
+                  </>
+                )}
+                {isOnTimerPage && (
+                  <>
+                    <WhiteButton
+                      onClick={() => navigate('/repeat')}
+                      icon="pi pi-refresh"
+                      label={t('repeat')}
+                      className={styles.navButton}
+                    />
+                    <WhiteButton
+                      onClick={() => navigate('/')}
+                      icon="pi pi-book"
+                      label={t('myDictionary')}
+                      className={styles.navButton}
+                    />
+                  </>
+                )}
+                {isOnRecordsPage && (
+                  <>
+                    <WhiteButton
+                      onClick={() => navigate('/repeat')}
+                      icon="pi pi-refresh"
+                      label={t('repeat')}
+                      className={styles.navButton}
+                    />
+                    <WhiteButton
+                      onClick={() => navigate('/timer')}
+                      icon="pi pi-clock"
+                      label={t('timer')}
+                      className={styles.navButton}
+                    />
+                    <WhiteButton
+                      onClick={() => navigate('/')}
+                      icon="pi pi-book"
+                      label={t('myDictionary')}
+                      className={styles.navButton}
+                    />
+                  </>
                 )}
               </>
             )}

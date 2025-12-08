@@ -14,6 +14,12 @@
   margin-top: 20px;
 }
 
+.exitActions :global(button),
+.exitActions :global(.p-button) {
+  flex: 1;
+  min-width: 0;
+}
+
 @media (max-width: 480px) {
   .exitActions {
     flex-direction: row;
@@ -36,6 +42,17 @@
 
 @media (max-width: 768px) {
   .footer {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-top: 0;
+    width: 100%;
+  }
+
+  .exitButton {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
   }
 }

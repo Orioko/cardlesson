@@ -1,5 +1,5 @@
 import { Dialog } from 'primereact/dialog';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../utils/localAuth';
@@ -11,6 +11,20 @@ const Footer = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showExitDialog, setShowExitDialog] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   const handleExitClick = () => {
     setShowExitDialog(true);
@@ -35,7 +49,7 @@ const Footer = () => {
         <GradientButton
           onClick={handleExitClick}
           icon="pi pi-sign-out"
-          label={t('exitAccount')}
+          label={isMobile ? t('ExitUser') : t('exitAccount')}
           className={styles.exitButton}
         />
       </footer>
@@ -50,7 +64,7 @@ const Footer = () => {
           <p>{t('confirmExitMessage')}</p>
           <div className={styles.exitActions}>
             <WhiteButton label={t('cancel')} onClick={handleCancelExit} />
-            <GradientButton label={t('exitAccount')} onClick={handleConfirmExit} />
+            <GradientButton label={t('ExitUser')} onClick={handleConfirmExit} />
           </div>
         </div>
       </Dialog>

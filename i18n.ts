@@ -14,6 +14,8 @@ const initI18n = async () => {
         supportedLngs: ['ru', 'en', 'ko'],
         debug: false,
 
+        pluralSeparator: '_',
+
         interpolation: {
           escapeValue: false,
         },

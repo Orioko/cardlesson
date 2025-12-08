@@ -77,6 +77,10 @@
   gap: 8px;
 }
 
+.languageButtonContent .flagIcon {
+  margin-right: 4px;
+}
+
 .languageCode {
   color: #333;
   font-weight: 500;
@@ -154,9 +158,43 @@
   }
 
   .navButton {
-    flex: 1;
-    min-width: 0;
-    white-space: nowrap;
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none !important;
+  }
+
+  .navButton :global(.p-button) {
+    border: none !important;
+  }
+
+  .navButton :global(.p-button-label) {
+    display: none;
+  }
+
+  .navButton :global(.p-button-icon) {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .languageButton {
+    height: 44px;
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  .languageButtonContent {
+    gap: 0;
+  }
+
+  .flagIcon {
+    width: 24px;
+    height: 18px;
   }
 
   .languageCode {
@@ -186,10 +224,45 @@
   }
 
   .navButton {
-    flex-shrink: 1;
-    min-width: 0;
-    height: 39px;
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none !important;
   }
+
+  .navButton :global(.p-button) {
+    border: none !important;
+  }
+
+  .navButton :global(.p-button-label) {
+    display: none;
+  }
+
+  .navButton :global(.p-button-icon) {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .languageButton {
+    height: 44px;
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  .languageButtonContent {
+    gap: 0;
+  }
+
+  .flagIcon {
+    width: 24px;
+    height: 18px;
+  }
+
   .languageCode {
     display: none;
   }
