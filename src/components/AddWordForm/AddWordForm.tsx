@@ -4,6 +4,7 @@ import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { autoDistributeWords } from '../../utils/languageDetection';
 import { getUserId } from '../../utils/localAuth';
 import { getSelectedLanguages } from '../../utils/selectedLanguagesStorage';
 import { addWord, updateWord } from '../../utils/wordsApi';
@@ -82,14 +83,16 @@ const AddWordForm = ({
     setError('');
 
     try {
+      const distributed = autoDistributeWords(wordValues);
+
       const wordData = {
-        ru: wordValues.ru.trim(),
-        en: wordValues.en.trim(),
-        ko: wordValues.ko.trim(),
+        ru: distributed.ru,
+        en: distributed.en,
+        ko: distributed.ko,
         translations: {
-          ru: wordValues.ru.trim(),
-          en: wordValues.en.trim(),
-          ko: wordValues.ko.trim(),
+          ru: distributed.ru,
+          en: distributed.en,
+          ko: distributed.ko,
         },
       };
 

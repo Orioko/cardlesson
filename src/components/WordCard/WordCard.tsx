@@ -1,10 +1,11 @@
 import { Button } from 'primereact/button';
 import type { KeyboardEvent } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getFrontCardLanguage } from '../../utils/frontCardLanguageStorage';
 import { LANGS } from './constants';
 import type { Lang, WordCardProps } from './types';
-import { pickDeterministic, pickRandom } from './utils';
+import { getFilledLanguages, getFrontLanguage } from './utils';
 import styles from './WordCard.module.scss';
 
 const WordCard = ({
@@ -18,37 +19,44 @@ const WordCard = ({
 }: WordCardProps) => {
   const { t, i18n } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
+  const [frontCardLanguageUpdate, setFrontCardLanguageUpdate] = useState(0);
+
+  useEffect(() => {
+    const handleFrontCardLanguageChange = () => {
+      setFrontCardLanguageUpdate((prev) => prev + 1);
+    };
+
+    window.addEventListener('frontCardLanguageChanged', handleFrontCardLanguageChange);
+    return () => {
+      window.removeEventListener('frontCardLanguageChanged', handleFrontCardLanguageChange);
+    };
+  }, []);
 
   const frontLang = useMemo(() => {
-    if (displayLang && wordData?.[displayLang]?.trim()) {
-      return displayLang;
-    }
-    if (!wordData) {
-      return null;
-    }
-    const filled = LANGS.filter((l) => wordData[l]?.trim());
-    if (filled.length === 0) {
-      return null;
-    }
-    if (wordId) {
-      return pickDeterministic(filled, wordId) || null;
-    }
-    return pickRandom(filled) || null;
-  }, [wordData, displayLang, wordId]);
+    return getFrontLanguage(wordData, displayLang, wordId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wordData, displayLang, wordId, frontCardLanguageUpdate]);
 
   const { front, back } = useMemo(() => {
     if (wordData) {
-      const filled = LANGS.filter((l) => wordData[l]?.trim());
+      const filled = getFilledLanguages(wordData);
       if (!filled.length || !frontLang) {
         return { front: '', back: {} as Partial<Record<Lang, string>> };
       }
 
-      const backEntries = LANGS.filter((l) => wordData[l]?.trim()).map(
-        (l) => [l, wordData[l].trim()] as const
-      );
+      const backEntries = filled.map((l) => [l, wordData[l].trim()] as const);
+
+      const frontText = wordData[frontLang]?.trim() || '';
+      const savedFrontLang = getFrontCardLanguage();
+      const russianWord = wordData.ru?.trim() || '';
+
+      let displayText = frontText;
+      if (!frontText && savedFrontLang !== null && frontLang === savedFrontLang && russianWord) {
+        displayText = `${t('translationNotSpecified')} (${russianWord})`;
+      }
 
       return {
-        front: wordData[frontLang].trim(),
+        front: displayText,
         back: Object.fromEntries(backEntries) as Partial<Record<Lang, string>>,
       };
     }

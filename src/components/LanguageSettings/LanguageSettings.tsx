@@ -5,6 +5,8 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWordsContext } from '../../hooks/useWordsContext';
 import { checkAndRemoveDuplicates } from '../../utils/cleanupDuplicates';
+import { fixWordsLanguages } from '../../utils/fixWordsLanguages';
+import { getFrontCardLanguage, saveFrontCardLanguage } from '../../utils/frontCardLanguageStorage';
 import { getSelectedLanguages, saveSelectedLanguages } from '../../utils/selectedLanguagesStorage';
 import { exportWordsToJson, importWordsFromFile } from '../../utils/wordsImportExport';
 import GradientButton from '../GradientButton';
@@ -17,6 +19,7 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
   const { t } = useTranslation();
   const { words, refreshWords } = useWordsContext();
   const [selectedLangs, setSelectedLangs] = useState<Lang[]>(() => getSelectedLanguages());
+  const [frontCardLang, setFrontCardLang] = useState<Lang | null>(() => getFrontCardLanguage());
   const [error, setError] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [statusSeverity, setStatusSeverity] = useState<'error' | 'success' | 'info'>('error');
@@ -44,6 +47,7 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
       }
 
       saveSelectedLanguages(selectedLangs);
+      saveFrontCardLanguage(frontCardLang);
       onHide();
     } catch {
       setError(t('minTwoLanguagesRequired'));
@@ -155,6 +159,40 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
     }
   };
 
+  const handleFixWordsLanguages = async () => {
+    setError('');
+    setStatusMessage('');
+    try {
+      const result = await fixWordsLanguages();
+      await refreshWords();
+
+      if (result.fixedCount > 0) {
+        setStatusMessage(
+          t('wordsLanguagesFixed', { count: result.fixedCount }) ||
+            `Исправлено слов: ${result.fixedCount}`
+        );
+        setStatusSeverity('success');
+      } else {
+        setStatusMessage(t('noWordsToFix') || 'Нет слов для исправления');
+        setStatusSeverity('info');
+      }
+
+      if (result.errorCount > 0) {
+        setError(
+          t('errorsDuringFix', { count: result.errorCount }) || `Ошибок: ${result.errorCount}`
+        );
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message === 'User not authenticated') {
+        setError(t('userNotAuthenticated'));
+        setStatusSeverity('error');
+      } else {
+        setError(t('errorFixingWordsLanguages') || 'Ошибка при исправлении языков слов');
+        setStatusSeverity('error');
+      }
+    }
+  };
+
   const getLangLabel = (lang: Lang): string => {
     const labels: Record<Lang, string> = {
       ru: t('russian'),
@@ -182,6 +220,33 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
               onChange={() => handleLangToggle(lang)}
               disabled={selectedLangs.length <= 2 && selectedLangs.includes(lang)}
               className={styles.checkbox}
+            />
+            <span className={styles.label}>{getLangLabel(lang)}</span>
+          </label>
+        ))}
+      </div>
+
+      <p className={styles.description}>{t('selectFrontCardLanguage')}</p>
+
+      <div className={styles.languagesList}>
+        <label className={styles.languageItem}>
+          <input
+            type="radio"
+            name="frontCardLanguage"
+            checked={frontCardLang === null}
+            onChange={() => setFrontCardLang(null)}
+            className={styles.radio}
+          />
+          <span className={styles.label}>{t('random')}</span>
+        </label>
+        {LANGS.map((lang) => (
+          <label key={lang} className={styles.languageItem}>
+            <input
+              type="radio"
+              name="frontCardLanguage"
+              checked={frontCardLang === lang}
+              onChange={() => setFrontCardLang(lang)}
+              className={styles.radio}
             />
             <span className={styles.label}>{getLangLabel(lang)}</span>
           </label>
@@ -221,6 +286,15 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
             severity="secondary"
             outlined
             className={styles.checkDuplicatesButton}
+            disabled={words.length === 0}
+          />
+          <Button
+            icon="pi pi-refresh"
+            label={t('fixWordsLanguages')}
+            onClick={handleFixWordsLanguages}
+            severity="secondary"
+            outlined
+            className={styles.fixWordsLanguagesButton}
             disabled={words.length === 0}
           />
         </div>
