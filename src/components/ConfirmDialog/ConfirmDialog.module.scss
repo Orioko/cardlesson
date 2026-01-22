@@ -4,14 +4,27 @@
 }
 
 .content {
-  padding: 10px 0;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.content p {
+  margin: 0;
+  line-height: 1.5;
 }
 
 .actions {
   display: flex;
   gap: 12px;
-  justify-content: flex-end;
-  margin-top: 20px;
+  justify-content: space-between;
+  margin-top: 0;
+  width: 100%;
+}
+
+.actions > * {
+  flex: 1;
 }
 
 @media (max-width: 480px) {

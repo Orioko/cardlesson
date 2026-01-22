@@ -96,6 +96,22 @@ const TimerPageContent = () => {
     return repeatState.wordsQueue[repeatState.currentIndex];
   }, [repeatState]);
 
+  useEffect(() => {
+    if (
+      timerState.isRunning &&
+      !timerState.isFinished &&
+      (repeatState?.isCompleted === true ||
+        (!currentWord && repeatState && repeatState.wordsQueue.length === 0))
+    ) {
+      if (selectedTimer && wordsCompletedRef.current.size > 0) {
+        saveTimerRecord(selectedTimer, wordsCompletedRef.current.size);
+      }
+      requestAnimationFrame(() => {
+        setTimerState((prev) => ({ ...prev, isRunning: false, isFinished: true }));
+      });
+    }
+  }, [timerState.isRunning, timerState.isFinished, repeatState, currentWord, selectedTimer]);
+
   const handleStartTimer = useCallback(() => {
     if (!selectedTimer) {
       return;

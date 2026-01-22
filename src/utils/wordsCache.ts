@@ -53,34 +53,6 @@ export const loadWordsFromCache = (userId: string): WordData[] | null => {
   }
   return null;
 };
-
-export const addWordToCache = (userId: string, word: WordData): void => {
-  try {
-    const cachedWords = loadWordsFromCache(userId) || [];
-    cachedWords.unshift(word);
-    saveWordsToCache(userId, cachedWords);
-  } catch (error) {
-    console.error('Ошибка добавления слова в кэш:', error);
-  }
-};
-
-export const updateWordInCache = (
-  userId: string,
-  wordId: string,
-  wordData: Partial<WordData>
-): void => {
-  try {
-    const cachedWords = loadWordsFromCache(userId) || [];
-    const index = cachedWords.findIndex((w) => w.id === wordId);
-    if (index !== -1) {
-      cachedWords[index] = { ...cachedWords[index], ...wordData };
-      saveWordsToCache(userId, cachedWords);
-    }
-  } catch (error) {
-    console.error('Ошибка обновления слова в кэше:', error);
-  }
-};
-
 export const removeWordFromCache = (userId: string, wordId: string): void => {
   try {
     const cachedWords = loadWordsFromCache(userId) || [];
@@ -88,16 +60,5 @@ export const removeWordFromCache = (userId: string, wordId: string): void => {
     saveWordsToCache(userId, filteredWords);
   } catch (error) {
     console.error('Ошибка удаления слова из кэша:', error);
-  }
-};
-
-export const clearWordsCache = (userId: string): void => {
-  try {
-    const cacheKey = getWordsCacheKey(userId);
-    const timestampKey = getWordsCacheTimestampKey(userId);
-    localStorage.removeItem(cacheKey);
-    localStorage.removeItem(timestampKey);
-  } catch (error) {
-    console.error('Ошибка очистки кэша:', error);
   }
 };

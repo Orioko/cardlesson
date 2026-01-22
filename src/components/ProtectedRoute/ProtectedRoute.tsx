@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { getCurrentUser } from '../../utils/localAuth';
+import React from 'react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
