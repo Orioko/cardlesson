@@ -103,12 +103,5 @@
   "lastFiveRecords": "Showing last 5 records for each duration",
   "clearRecords": "Clear Records",
   "clear": "Clear",
-  "confirmClearRecords": "Are you sure you want to clear all records?",
-  "tags": "Tags",
-  "enterTag": "Enter tag and press Enter",
-  "removeTag": "Remove tag",
-  "filterByTags": "Filter by tags",
-  "selectTags": "Select tags",
-  "clearFilters": "Clear filters",
-  "noWordsWithSelectedTags": "No words with selected tags"
+  "confirmClearRecords": "Are you sure you want to clear all records?"
 }

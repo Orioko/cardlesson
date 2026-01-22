@@ -8,7 +8,6 @@ interface WordData {
     en?: string;
     ko?: string;
   };
-  tags?: string[];
 }
 
 interface WordDataNormalized {

@@ -63,7 +63,6 @@ const RepeatPageContent = () => {
         en: string;
         ko: string;
         translations: { ru: string; en: string; ko: string };
-        tags?: string[];
       }
     ) => {
       handleEdit(wordId, wordData);
@@ -172,7 +171,6 @@ const RepeatPageContent = () => {
               en: currentWord.en,
               ko: currentWord.ko,
               translations: currentWord.translations,
-              tags: currentWord.tags,
             }}
             showActions={true}
             onEdit={handleEditWord}
