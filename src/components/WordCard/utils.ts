@@ -1,9 +1,15 @@
 import { getFrontCardLanguage } from '../../utils/frontCardLanguageStorage';
+import { createEphemeralRng, getRuntimeRandomSalt } from '../../utils/runtimeRandom';
 import { LANGS } from './constants';
 import type { Lang, WordData } from './types';
 
 export const pickRandom = <T>(arr: T[]): T | undefined => {
-  return arr.length ? arr[Math.floor(Math.random() * arr.length)] : undefined;
+  if (arr.length === 0) {
+    return undefined;
+  }
+
+  const rng = createEphemeralRng('wordcard_pickRandom');
+  return arr[Math.floor(rng() * arr.length)];
 };
 
 export const pickDeterministic = <T>(arr: T[], key: string): T | undefined => {
@@ -51,7 +57,7 @@ export const getFrontLanguage = (
   }
 
   if (wordId) {
-    return pickDeterministic(filled, wordId) || null;
+    return pickDeterministic(filled, `${getRuntimeRandomSalt()}_${wordId}`) || null;
   }
 
   return pickRandom(filled) || null;

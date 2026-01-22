@@ -1,3 +1,5 @@
+import { createEphemeralRng } from './runtimeRandom';
+
 export interface Word {
   id: string;
   ru: string;
@@ -12,8 +14,9 @@ export interface Word {
 
 export const shuffleArray = <T>(array: T[]): T[] => {
   const shuffled = [...array];
+  const rng = createEphemeralRng('repeat_shuffleArray');
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rng() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
