@@ -102,5 +102,12 @@
   "lastFiveRecords": "각 시간대별 최근 5개 기록 표시",
   "clearRecords": "기록 지우기",
   "clear": "지우기",
-  "confirmClearRecords": "모든 기록을 지우시겠습니까?"
+  "confirmClearRecords": "모든 기록을 지우시겠습니까?",
+  "tags": "태그",
+  "enterTag": "태그를 입력하고 Enter를 누르세요",
+  "removeTag": "태그 제거",
+  "filterByTags": "태그로 필터링",
+  "selectTags": "태그 선택",
+  "clearFilters": "필터 지우기",
+  "noWordsWithSelectedTags": "선택한 태그가 있는 단어가 없습니다"
 }

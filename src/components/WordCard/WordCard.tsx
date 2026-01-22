@@ -157,6 +157,15 @@ const WordCard = ({
         <div className={`${styles.cardInner} ${isFlipped ? styles.flipped : ''}`}>
           <div className={styles.cardFront}>
             <div className={styles.word}>{front || wordKey || ''}</div>
+            {wordData?.tags && wordData.tags.length > 0 && (
+              <div className={styles.tags}>
+                {wordData.tags.map((tag) => (
+                  <span key={tag} className={styles.tag}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
           <div className={styles.cardBack}>
             <div className={styles.translations}>
@@ -167,6 +176,15 @@ const WordCard = ({
                 </div>
               ))}
             </div>
+            {wordData?.tags && wordData.tags.length > 0 && (
+              <div className={styles.tags}>
+                {wordData.tags.map((tag) => (
+                  <span key={tag} className={styles.tag}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

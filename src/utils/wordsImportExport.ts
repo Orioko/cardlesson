@@ -11,6 +11,7 @@ export interface WordData {
     en?: string;
     ko?: string;
   };
+  tags?: string[];
 }
 
 export interface ImportResult {
@@ -65,6 +66,7 @@ export const importWordsFromFile = async (file: File): Promise<ImportResult> => 
               en: word.translations?.en || word.en || '',
               ko: word.translations?.ko || word.ko || '',
             },
+            tags: word.tags && word.tags.length > 0 ? word.tags : undefined,
           };
 
           const filledFields = [wordData.ru, wordData.en, wordData.ko].filter(

@@ -7,6 +7,7 @@ export interface WordData {
     en: string;
     ko: string;
   };
+  tags?: string[];
 }
 
 export interface AddWordFormProps {
