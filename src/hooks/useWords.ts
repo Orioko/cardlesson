@@ -12,7 +12,6 @@ interface WordData {
     en: string;
     ko: string;
   };
-  tags?: string[];
 }
 
 export const useWords = () => {

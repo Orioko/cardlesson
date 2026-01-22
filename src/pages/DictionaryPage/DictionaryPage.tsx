@@ -1,4 +1,3 @@
-import { MultiSelect } from 'primereact/multiselect';
 import { Paginator } from 'primereact/paginator';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useMemo, useState } from 'react';
@@ -37,48 +36,22 @@ const DictionaryPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
-  const allTags = useMemo(() => {
-    const tagSet = new Set<string>();
-    words.forEach((word) => {
-      if (word.tags && word.tags.length > 0) {
-        word.tags.forEach((tag) => tagSet.add(tag));
-      }
-    });
-    return Array.from(tagSet).sort();
-  }, [words]);
-
-  const filteredWords = useMemo(() => {
-    if (selectedTags.length === 0) {
-      return words;
-    }
-    return words.filter((word) => {
-      if (!word.tags || word.tags.length === 0) {
-        return false;
-      }
-      return selectedTags.some((selectedTag) => word.tags?.includes(selectedTag));
-    });
-  }, [words, selectedTags]);
 
   const adjustedFirst = useMemo(
-    () => calculateAdjustedFirst(first, filteredWords.length),
-    [first, filteredWords.length]
+    () => calculateAdjustedFirst(first, words.length),
+    [first, words.length]
   );
 
-  const paginatedWords = useMemo(
-    () => getPaginatedItems(filteredWords, first, rows),
-    [filteredWords, first, rows]
-  );
+  const paginatedWords = useMemo(() => getPaginatedItems(words, first, rows), [words, first, rows]);
 
   const handlePageChangeEvent = (event: { first: number; rows: number }) => {
-    const newState = handlePageChange(event, filteredWords.length);
+    const newState = handlePageChange(event, words.length);
     setFirst(newState.first);
     setRows(newState.rows);
   };
 
   const handleWordAdded = () => {
-    const newFirst = adjustPaginationAfterAdd(first, filteredWords.length);
+    const newFirst = adjustPaginationAfterAdd(first, words.length);
     setFirst(newFirst);
     refreshWords();
     clearEditingWord();
@@ -91,7 +64,6 @@ const DictionaryPage = () => {
       en: string;
       ko: string;
       translations: { ru: string; en: string; ko: string };
-      tags?: string[];
     }
   ) => {
     handleEdit(wordId, wordData);
@@ -100,15 +72,10 @@ const DictionaryPage = () => {
 
   const handleConfirmDelete = async () => {
     await confirmDelete(() => {
-      const newFirst = adjustPaginationAfterDelete(first, rows, filteredWords.length - 1);
+      const newFirst = adjustPaginationAfterDelete(first, rows, words.length - 1);
       setFirst(newFirst);
       refreshWords();
     });
-  };
-
-  const handleTagsChange = (tags: string[]) => {
-    setSelectedTags(tags);
-    setFirst(0);
   };
 
   const handleCloseAddForm = () => {
@@ -120,32 +87,6 @@ const DictionaryPage = () => {
     <div className={styles.dictionaryContainer}>
       <Header title={t('myDictionary')} showNavigation={true} />
       <div className={styles.content}>
-        {!loading && words.length > 0 && allTags.length > 0 && (
-          <div className={styles.filters}>
-            <label htmlFor="tags-filter" className={styles.filterLabel}>
-              {t('filterByTags')}
-            </label>
-            <MultiSelect
-              id="tags-filter"
-              value={selectedTags}
-              onChange={(e: { value: string[] }) => handleTagsChange(e.value || [])}
-              options={allTags}
-              className={styles.tagsInput}
-              placeholder={t('selectTags')}
-              display="chip"
-            />
-            {selectedTags.length > 0 && (
-              <button
-                type="button"
-                onClick={() => handleTagsChange([])}
-                className={styles.clearFilters}
-              >
-                {t('clearFilters')}
-              </button>
-            )}
-          </div>
-        )}
-
         <div className={styles.actions}>
           <GradientButton
             onClick={() => setShowAddForm(true)}
@@ -165,40 +106,31 @@ const DictionaryPage = () => {
           </div>
         ) : (
           <>
-            {filteredWords.length === 0 && selectedTags.length > 0 ? (
-              <div className={styles.emptyState}>
-                <p>{t('noWordsWithSelectedTags')}</p>
-              </div>
-            ) : (
-              <>
-                <div className={styles.cardsContainer}>
-                  {paginatedWords.map((word) => (
-                    <WordCard
-                      key={word.id}
-                      wordId={word.id}
-                      wordData={{
-                        ru: word.ru,
-                        en: word.en,
-                        ko: word.ko,
-                        translations: word.translations,
-                        tags: word.tags,
-                      }}
-                      showActions={true}
-                      onEdit={handleEditWord}
-                      onDelete={handleDelete}
-                    />
-                  ))}
-                </div>
-                <Paginator
-                  first={adjustedFirst}
-                  rows={rows}
-                  totalRecords={filteredWords.length}
-                  rowsPerPageOptions={[10, 20, 30]}
-                  onPageChange={handlePageChangeEvent}
-                  className={styles.paginator}
+            <div className={styles.cardsContainer}>
+              {paginatedWords.map((word) => (
+                <WordCard
+                  key={word.id}
+                  wordId={word.id}
+                  wordData={{
+                    ru: word.ru,
+                    en: word.en,
+                    ko: word.ko,
+                    translations: word.translations,
+                  }}
+                  showActions={true}
+                  onEdit={handleEditWord}
+                  onDelete={handleDelete}
                 />
-              </>
-            )}
+              ))}
+            </div>
+            <Paginator
+              first={adjustedFirst}
+              rows={rows}
+              totalRecords={words.length}
+              rowsPerPageOptions={[10, 20, 30]}
+              onPageChange={handlePageChangeEvent}
+              className={styles.paginator}
+            />
           </>
         )}
       </div>
