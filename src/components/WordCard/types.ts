@@ -5,6 +5,7 @@ export interface WordData {
   en: string;
   ko: string;
   translations: Record<Lang, string>;
+  tags?: string[];
 }
 
 export interface WordCardProps {

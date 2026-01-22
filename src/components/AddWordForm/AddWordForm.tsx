@@ -27,6 +27,8 @@ const AddWordForm = ({
     en: '',
     ko: '',
   });
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
   const [error, setError] = useState('');
 
   const isEditMode = Boolean(editWordId && editWordData);
@@ -54,6 +56,7 @@ const AddWordForm = ({
           en: editWordData.en || '',
           ko: editWordData.ko || '',
         });
+        setTags(editWordData.tags || []);
       }, 0);
     } else if (!visible) {
       setTimeout(() => {
@@ -62,6 +65,8 @@ const AddWordForm = ({
           en: '',
           ko: '',
         });
+        setTags([]);
+        setTagInput('');
       }, 0);
     }
   }, [visible, editWordData]);
@@ -94,6 +99,7 @@ const AddWordForm = ({
           en: distributed.en,
           ko: distributed.ko,
         },
+        tags: tags.length > 0 ? tags : undefined,
       };
 
       if (isEditMode && editWordId) {
@@ -107,6 +113,8 @@ const AddWordForm = ({
         en: '',
         ko: '',
       });
+      setTags([]);
+      setTagInput('');
       onHide();
 
       if (onWordAdded) {
@@ -139,8 +147,25 @@ const AddWordForm = ({
       en: '',
       ko: '',
     });
+    setTags([]);
+    setTagInput('');
     setError('');
     onHide();
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && tagInput.trim()) {
+      e.preventDefault();
+      const trimmedTag = tagInput.trim();
+      if (tags.length < 3 && !tags.includes(trimmedTag)) {
+        setTags([...tags, trimmedTag]);
+        setTagInput('');
+      }
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   const getLangLabel = (lang: Lang): string => {
@@ -195,6 +220,38 @@ const AddWordForm = ({
             />
           </div>
         ))}
+
+        <div className={styles.field}>
+          <label htmlFor="tags" className={styles.label}>
+            {t('tags')} ({tags.length}/3)
+          </label>
+          <InputText
+            id="tags"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagInputKeyDown}
+            className={styles.input}
+            placeholder={t('enterTag')}
+            disabled={tags.length >= 3}
+          />
+          {tags.length > 0 && (
+            <div className={styles.tagsContainer}>
+              {tags.map((tag) => (
+                <span key={tag} className={styles.tag}>
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTag(tag)}
+                    className={styles.tagRemove}
+                    aria-label={t('removeTag')}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div className={styles.actions}>
           <Button label={t('cancel')} onClick={handleClose} severity="secondary" outlined />

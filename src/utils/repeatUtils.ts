@@ -8,6 +8,7 @@ export interface Word {
     en: string;
     ko: string;
   };
+  tags?: string[];
 }
 
 export const shuffleArray = <T>(array: T[]): T[] => {
