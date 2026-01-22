@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getUserId } from '../utils/localAuth';
 import { fetchWords } from '../utils/wordsApi';
 import { WordsContext, type WordData } from './WordsContext';

@@ -9,15 +9,6 @@ export interface WordData {
   };
 }
 
-/**
- * Пропсы компонента AddWordForm.
- *
- * @prop visible - Видимость диалога формы
- * @prop onHide - Обработчик закрытия формы
- * @prop onWordAdded - Коллбэк после успешного добавления/редактирования слова
- * @prop editWordId - ID редактируемого слова (если режим редактирования)
- * @prop editWordData - Данные редактируемого слова
- */
 export interface AddWordFormProps {
   visible: boolean;
   onHide: () => void;
