@@ -104,5 +104,12 @@
   "lastFiveRecords": "Отображаются последние 5 рекордов для каждой длительности",
   "clearRecords": "Очистить рекорды",
   "clear": "Очистить",
-  "confirmClearRecords": "Вы уверены, что хотите очистить все рекорды?"
+  "confirmClearRecords": "Вы уверены, что хотите очистить все рекорды?",
+  "tags": "Теги",
+  "enterTag": "Введите тег и нажмите Enter",
+  "removeTag": "Удалить тег",
+  "filterByTags": "Фильтр по тегам",
+  "selectTags": "Выберите теги",
+  "clearFilters": "Очистить фильтры",
+  "noWordsWithSelectedTags": "Нет слов с выбранными тегами"
 }
