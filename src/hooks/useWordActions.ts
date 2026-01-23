@@ -1,28 +1,18 @@
 import { useState } from 'react';
+import type { WordInput } from '../types/word';
 import { getUserId } from '../utils/localAuth';
 import { deleteWord } from '../utils/wordsApi';
 import { removeWordFromCache } from '../utils/wordsCache';
-
-interface WordData {
-  ru: string;
-  en: string;
-  ko: string;
-  translations: {
-    ru: string;
-    en: string;
-    ko: string;
-  };
-}
 
 interface UseWordActionsProps {
   onWordUpdated?: () => void;
 }
 
 export const useWordActions = ({ onWordUpdated }: UseWordActionsProps = {}) => {
-  const [editingWord, setEditingWord] = useState<{ id: string; data: WordData } | null>(null);
+  const [editingWord, setEditingWord] = useState<{ id: string; data: WordInput } | null>(null);
   const [deletingWordId, setDeletingWordId] = useState<string | null>(null);
 
-  const handleEdit = (wordId: string, wordData: WordData) => {
+  const handleEdit = (wordId: string, wordData: WordInput) => {
     setEditingWord({ id: wordId, data: wordData });
   };
 

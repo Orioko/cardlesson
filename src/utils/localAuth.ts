@@ -1,3 +1,5 @@
+import { ERROR_MESSAGES } from '../constants/errors';
+import { getFromLocalStorage, isLocalStorageAvailable, saveToLocalStorage } from './localStorage';
 import { findUserByEmail, saveUserToStorage, verifyUserCredentials } from './userStorage';
 
 interface LocalUser {
@@ -10,24 +12,7 @@ const USER_STORAGE_KEY = 'local_user';
 const USER_CHANGE_EVENT = 'localAuthChange';
 
 export const getCurrentUser = (): LocalUser | null => {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  try {
-    if (!window.localStorage) {
-      return null;
-    }
-    const userData = localStorage.getItem(USER_STORAGE_KEY);
-    if (userData) {
-      return JSON.parse(userData) as LocalUser;
-    }
-  } catch (error) {
-    console.error('Ошибка получения пользователя:', error);
-    return null;
-  }
-
-  return null;
+  return getFromLocalStorage<LocalUser>(USER_STORAGE_KEY);
 };
 
 export const getUserId = (): string | null => {
@@ -35,11 +20,17 @@ export const getUserId = (): string | null => {
   return user?.id || null;
 };
 
+const dispatchUserChangeEvent = (user: LocalUser | null): void => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(USER_CHANGE_EVENT, { detail: user }));
+  }
+};
+
 export const login = (email: string, password: string): Promise<LocalUser> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (!window.localStorage) {
-        reject(new Error('localStorage не поддерживается'));
+      if (!isLocalStorageAvailable()) {
+        reject(new Error(ERROR_MESSAGES.LOCALSTORAGE_NOT_SUPPORTED));
         return;
       }
 
@@ -57,8 +48,8 @@ export const login = (email: string, password: string): Promise<LocalUser> => {
           name: userCredentials.email.split('@')[0],
         };
 
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-        window.dispatchEvent(new CustomEvent(USER_CHANGE_EVENT, { detail: user }));
+        saveToLocalStorage(USER_STORAGE_KEY, user);
+        dispatchUserChangeEvent(user);
         resolve(user);
       } catch (error) {
         console.error('Ошибка входа:', error);
@@ -71,8 +62,8 @@ export const login = (email: string, password: string): Promise<LocalUser> => {
 export const register = (email: string, password: string): Promise<LocalUser> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (!window.localStorage) {
-        reject(new Error('localStorage не поддерживается'));
+      if (!isLocalStorageAvailable()) {
+        reject(new Error(ERROR_MESSAGES.LOCALSTORAGE_NOT_SUPPORTED));
         return;
       }
 
@@ -92,8 +83,8 @@ export const register = (email: string, password: string): Promise<LocalUser> =>
           name: newUserCredentials.email.split('@')[0],
         };
 
-        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-        window.dispatchEvent(new CustomEvent(USER_CHANGE_EVENT, { detail: user }));
+        saveToLocalStorage(USER_STORAGE_KEY, user);
+        dispatchUserChangeEvent(user);
         resolve(user);
       } catch (error) {
         console.error('Ошибка регистрации:', error);
@@ -104,13 +95,9 @@ export const register = (email: string, password: string): Promise<LocalUser> =>
 };
 
 export const logout = async (): Promise<void> => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
   try {
     localStorage.removeItem(USER_STORAGE_KEY);
-    window.dispatchEvent(new CustomEvent(USER_CHANGE_EVENT, { detail: null }));
+    dispatchUserChangeEvent(null);
   } catch {
     console.error('Ошибка выхода');
   }

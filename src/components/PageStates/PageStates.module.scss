@@ -1,0 +1,25 @@
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+
+  p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+  }
+}

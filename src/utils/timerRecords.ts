@@ -1,4 +1,5 @@
 import { getUserId } from './localAuth';
+import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from './localStorage';
 
 export interface TimerRecord {
   minutes: number;
@@ -13,35 +14,28 @@ const getRecordsKey = (userId: string): string => {
   return `${RECORDS_STORAGE_KEY_PREFIX}${userId}`;
 };
 
+const sortAndLimitRecords = (records: TimerRecord[]): TimerRecord[] => {
+  return records.sort((a, b) => b.date - a.date).slice(0, MAX_RECORDS_PER_DURATION);
+};
+
 export const getTimerRecords = (): Record<number, TimerRecord[]> => {
   const userId = getUserId();
   if (!userId) {
     return {};
   }
 
-  try {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return {};
-    }
+  const recordsKey = getRecordsKey(userId);
+  const parsed = getFromLocalStorage<Record<number, TimerRecord[]>>(recordsKey);
 
-    const recordsKey = getRecordsKey(userId);
-    const stored = localStorage.getItem(recordsKey);
-    if (stored) {
-      const parsed = JSON.parse(stored) as Record<number, TimerRecord[]>;
-      const result: Record<number, TimerRecord[]> = {};
-      for (const [minutes, records] of Object.entries(parsed)) {
-        const sortedRecords = (records as TimerRecord[])
-          .sort((a, b) => b.date - a.date)
-          .slice(0, MAX_RECORDS_PER_DURATION);
-        result[Number(minutes)] = sortedRecords;
-      }
-      return result;
-    }
-  } catch (error) {
-    console.error('Ошибка загрузки рекордов:', error);
+  if (!parsed) {
+    return {};
   }
 
-  return {};
+  const result: Record<number, TimerRecord[]> = {};
+  for (const [minutes, records] of Object.entries(parsed)) {
+    result[Number(minutes)] = sortAndLimitRecords(records as TimerRecord[]);
+  }
+  return result;
 };
 
 export const saveTimerRecord = (minutes: number, wordsCompleted: number): void => {
@@ -50,32 +44,20 @@ export const saveTimerRecord = (minutes: number, wordsCompleted: number): void =
     return;
   }
 
-  try {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return;
-    }
+  const allRecords = getTimerRecords();
+  const recordsForDuration = allRecords[minutes] || [];
 
-    const allRecords = getTimerRecords();
-    const recordsForDuration = allRecords[minutes] || [];
+  const newRecord: TimerRecord = {
+    minutes,
+    wordsCompleted,
+    date: Date.now(),
+  };
 
-    const newRecord: TimerRecord = {
-      minutes,
-      wordsCompleted,
-      date: Date.now(),
-    };
+  recordsForDuration.push(newRecord);
+  allRecords[minutes] = sortAndLimitRecords(recordsForDuration);
 
-    recordsForDuration.push(newRecord);
-    const sortedRecords = recordsForDuration
-      .sort((a, b) => b.date - a.date)
-      .slice(0, MAX_RECORDS_PER_DURATION);
-
-    allRecords[minutes] = sortedRecords;
-
-    const recordsKey = getRecordsKey(userId);
-    localStorage.setItem(recordsKey, JSON.stringify(allRecords));
-  } catch (error) {
-    console.error('Ошибка сохранения рекорда:', error);
-  }
+  const recordsKey = getRecordsKey(userId);
+  saveToLocalStorage(recordsKey, allRecords);
 };
 
 export const clearTimerRecords = (): void => {
@@ -84,14 +66,6 @@ export const clearTimerRecords = (): void => {
     return;
   }
 
-  try {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return;
-    }
-
-    const recordsKey = getRecordsKey(userId);
-    localStorage.removeItem(recordsKey);
-  } catch (error) {
-    console.error('Ошибка очистки рекордов:', error);
-  }
+  const recordsKey = getRecordsKey(userId);
+  removeFromLocalStorage(recordsKey);
 };

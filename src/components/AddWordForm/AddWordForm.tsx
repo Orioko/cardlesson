@@ -4,9 +4,12 @@ import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isDuplicateWordError } from '../../utils/errorHandlingUtils';
 import { autoDistributeWords } from '../../utils/languageDetection';
+import { getLanguageLabel, getLanguagePlaceholder } from '../../utils/languageLabels';
 import { getUserId } from '../../utils/localAuth';
 import { getSelectedLanguages } from '../../utils/selectedLanguagesStorage';
+import { createWordInput } from '../../utils/wordDataHelpers';
 import { addWord, updateWord } from '../../utils/wordsApi';
 import GradientButton from '../GradientButton';
 import type { Lang } from '../WordCard/types';
@@ -84,17 +87,7 @@ const AddWordForm = ({
 
     try {
       const distributed = autoDistributeWords(wordValues);
-
-      const wordData = {
-        ru: distributed.ru,
-        en: distributed.en,
-        ko: distributed.ko,
-        translations: {
-          ru: distributed.ru,
-          en: distributed.en,
-          ko: distributed.ko,
-        },
-      };
+      const wordData = createWordInput(distributed);
 
       if (isEditMode && editWordId) {
         await updateWord(editWordId, wordData);
@@ -121,12 +114,16 @@ const AddWordForm = ({
       }
     } catch (error) {
       console.error('Ошибка сохранения слова:', error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
 
-      if (errorMessage === 'DUPLICATE_WORD') {
+      if (isDuplicateWordError(error)) {
         setError(t('duplicateWordError') || 'Такое слово уже существует в словаре');
-      } else if (errorMessage.includes('permission') || errorMessage.includes('Permission')) {
-        setError(t('permissionDenied') || 'Недостаточно прав для выполнения операции');
+      } else if (error instanceof Error) {
+        const errorMessage = error.message;
+        if (errorMessage.includes('permission') || errorMessage.includes('Permission')) {
+          setError(t('permissionDenied') || 'Недостаточно прав для выполнения операции');
+        } else {
+          setError(isEditMode ? t('errorUpdatingWord') : t('errorAddingWord'));
+        }
       } else {
         setError(isEditMode ? t('errorUpdatingWord') : t('errorAddingWord'));
       }
@@ -141,24 +138,6 @@ const AddWordForm = ({
     });
     setError('');
     onHide();
-  };
-
-  const getLangLabel = (lang: Lang): string => {
-    const labels: Record<Lang, string> = {
-      ru: t('russianWord'),
-      en: t('englishWord'),
-      ko: t('koreanWord'),
-    };
-    return labels[lang];
-  };
-
-  const getLangPlaceholder = (lang: Lang): string => {
-    const placeholders: Record<Lang, string> = {
-      ru: t('enterRussianWord'),
-      en: t('enterEnglishWord'),
-      ko: t('enterKoreanWord'),
-    };
-    return placeholders[lang];
   };
 
   const dialogKey = useMemo(() => {
@@ -184,14 +163,14 @@ const AddWordForm = ({
         {selectedLangs.map((lang) => (
           <div key={lang} className={styles.field}>
             <label htmlFor={lang} className={styles.label}>
-              {getLangLabel(lang)}
+              {getLanguageLabel(lang, t)}
             </label>
             <InputText
               id={lang}
               value={wordValues[lang]}
               onChange={(e) => setWordValues({ ...wordValues, [lang]: e.target.value })}
               className={styles.input}
-              placeholder={getLangPlaceholder(lang)}
+              placeholder={getLanguagePlaceholder(lang, t)}
             />
           </div>
         ))}

@@ -10,6 +10,7 @@ import LanguageSettings from '../LanguageSettings';
 import WhiteButton from '../WhiteButton';
 import { languageOptions, type LanguageOption } from './constants';
 import styles from './Header.module.scss';
+import NavigationButtons from './NavigationButtons';
 import type { HeaderProps } from './types';
 
 const Header = ({ title, showExitButton = true, showNavigation = false }: HeaderProps) => {
@@ -54,91 +55,13 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
     setShowExitDialog(false);
   };
 
-  const isOnDictionaryPage = location.pathname === '/' || location.pathname === '/dictionary';
-  const isOnRepeatPage = location.pathname === '/repeat';
-  const isOnTimerPage = location.pathname === '/timer';
-  const isOnRecordsPage = location.pathname === '/records';
-
   return (
     <>
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <h1 className={styles.title}>{title}</h1>
           <div className={styles.controls}>
-            {showNavigation && (
-              <>
-                {isOnDictionaryPage && (
-                  <>
-                    <WhiteButton
-                      onClick={() => navigate('/repeat')}
-                      icon="pi pi-refresh"
-                      label={t('repeat')}
-                      className={styles.navButton}
-                    />
-                    <WhiteButton
-                      onClick={() => navigate('/timer')}
-                      icon="pi pi-clock"
-                      label={t('timer')}
-                      className={styles.navButton}
-                    />
-                  </>
-                )}
-                {isOnRepeatPage && (
-                  <>
-                    <WhiteButton
-                      onClick={() => navigate('/timer')}
-                      icon="pi pi-clock"
-                      label={t('timer')}
-                      className={styles.navButton}
-                    />
-                    <WhiteButton
-                      onClick={() => navigate('/')}
-                      icon="pi pi-book"
-                      label={t('myDictionary')}
-                      className={styles.navButton}
-                    />
-                  </>
-                )}
-                {isOnTimerPage && (
-                  <>
-                    <WhiteButton
-                      onClick={() => navigate('/repeat')}
-                      icon="pi pi-refresh"
-                      label={t('repeat')}
-                      className={styles.navButton}
-                    />
-                    <WhiteButton
-                      onClick={() => navigate('/')}
-                      icon="pi pi-book"
-                      label={t('myDictionary')}
-                      className={styles.navButton}
-                    />
-                  </>
-                )}
-                {isOnRecordsPage && (
-                  <>
-                    <WhiteButton
-                      onClick={() => navigate('/repeat')}
-                      icon="pi pi-refresh"
-                      label={t('repeat')}
-                      className={styles.navButton}
-                    />
-                    <WhiteButton
-                      onClick={() => navigate('/timer')}
-                      icon="pi pi-clock"
-                      label={t('timer')}
-                      className={styles.navButton}
-                    />
-                    <WhiteButton
-                      onClick={() => navigate('/')}
-                      icon="pi pi-book"
-                      label={t('myDictionary')}
-                      className={styles.navButton}
-                    />
-                  </>
-                )}
-              </>
-            )}
+            {showNavigation && <NavigationButtons currentPath={location.pathname} />}
             <div className={styles.languageSwitcher}>
               <Button text onClick={handleLanguageButtonClick} className={styles.languageButton}>
                 <div className={styles.languageButtonContent}>
