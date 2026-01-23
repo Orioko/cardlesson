@@ -1,0 +1,217 @@
+.spellingContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 88px;
+}
+
+.content {
+  flex: 1;
+  padding: 32px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 640px;
+  background: white;
+  border-radius: 16px;
+  border: 2px solid rgba(99, 102, 241, 0.12);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionTitle {
+  font-weight: 700;
+  color: #111827;
+  font-size: 14px;
+}
+
+.langSelector {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.langOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  background: rgba(99, 102, 241, 0.04);
+  cursor: pointer;
+  user-select: none;
+}
+
+.radio {
+  cursor: pointer;
+}
+
+.langLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.hints {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hintRow {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.03);
+}
+
+.hintLang {
+  font-weight: 800;
+  color: #6366f1;
+  min-width: 44px;
+}
+
+.hintValue {
+  color: #111827;
+  font-weight: 600;
+}
+
+.emptyHint {
+  color: #6b7280;
+  background: rgba(17, 24, 39, 0.03);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.input {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.message {
+  margin-top: 12px;
+}
+
+.solution {
+  margin-top: 10px;
+}
+
+.solutionText {
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.solutionLabel {
+  font-weight: 800;
+  color: #6366f1;
+  min-width: 44px;
+}
+
+.solutionValue {
+  font-weight: 700;
+  color: #111827;
+}
+
+.progress {
+  text-align: center;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+  border: 2px solid rgba(99, 102, 241, 0.15);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 640px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.progressMain {
+  font-size: 22px;
+  font-weight: 800;
+  color: #6366f1;
+}
+
+.stats {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.progressSecondary {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.finishedState {
+  text-align: center;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.finishedState p {
+  color: #666;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.repeatButton {
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .spellingContainer {
+    padding-top: 100px;
+  }
+
+  .content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .spellingContainer {
+    padding-top: 115px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}

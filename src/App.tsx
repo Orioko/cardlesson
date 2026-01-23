@@ -11,6 +11,7 @@ const DictionaryPage = lazy(() => import('./pages/DictionaryPage'));
 const RepeatPage = lazy(() => import('./pages/RepeatPage'));
 const TimerPage = lazy(() => import('./pages/TimerPage'));
 const RecordsPage = lazy(() => import('./pages/RecordsPage'));
+const SpellingPage = lazy(() => import('./pages/SpellingPage'));
 
 const App = () => {
   return (
@@ -63,6 +64,14 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <RecordsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/spelling"
+                element={
+                  <ProtectedRoute>
+                    <SpellingPage />
                   </ProtectedRoute>
                 }
               />
