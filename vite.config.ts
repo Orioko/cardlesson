@@ -47,4 +47,24 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 1000,
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.ts',
+    css: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        '**/*.test.{ts,tsx}',
+        '**/*.config.{ts,js}',
+        '**/setupTests.ts',
+        '**/main.tsx',
+        '**/types/',
+        '**/constants/',
+      ],
+    },
+  },
 });
