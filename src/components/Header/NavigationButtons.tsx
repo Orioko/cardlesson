@@ -17,16 +17,25 @@ const navigationConfig: Record<string, NavigationButton[]> = {
   dictionary: [
     { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
     { path: '/timer', icon: 'pi pi-clock', labelKey: 'timer' },
+    { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
   ],
   repeat: [
     { path: '/timer', icon: 'pi pi-clock', labelKey: 'timer' },
     { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
+    { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
   ],
   timer: [
     { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
     { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
+    { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
   ],
   records: [
+    { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
+    { path: '/timer', icon: 'pi pi-clock', labelKey: 'timer' },
+    { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
+    { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
+  ],
+  spelling: [
     { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
     { path: '/timer', icon: 'pi pi-clock', labelKey: 'timer' },
     { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
@@ -45,6 +54,9 @@ const getPageKey = (pathname: string): string => {
   }
   if (pathname === '/records') {
     return 'records';
+  }
+  if (pathname === '/spelling') {
+    return 'spelling';
   }
   return '';
 };
