@@ -1,13 +1,13 @@
 import { Button } from 'primereact/button';
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AddWordForm from '../../components/AddWordForm';
 import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
+import { EmptyState, LoadingState } from '../../components/PageStates';
 import WordCard from '../../components/WordCard';
-import { useWordActions } from '../../hooks/useWordActions';
+import { useWordEdit } from '../../hooks/useWordEdit';
 import { useWordsContext } from '../../hooks/useWordsContext';
 import {
   handleCorrectAnswer,
@@ -23,10 +23,7 @@ const RepeatPageContent = () => {
   const { t } = useTranslation();
   const { words } = useWordsContext();
 
-  const { editingWord, handleEdit, clearEditingWord } = useWordActions();
-
   const [repeatState, setRepeatState] = useState<RepeatState>(() => initializeRepeatState(words));
-  const [showEditForm, setShowEditForm] = useState(false);
 
   const currentWord = useMemo(() => {
     if (
@@ -55,73 +52,16 @@ const RepeatPageContent = () => {
     setRepeatState(resetRepeatState(words));
   }, [words]);
 
-  const handleEditWord = useCallback(
-    (
-      wordId: string,
-      wordData: {
-        ru: string;
-        en: string;
-        ko: string;
-        translations: { ru: string; en: string; ko: string };
-      }
-    ) => {
-      handleEdit(wordId, wordData);
-      setShowEditForm(true);
-    },
-    [handleEdit]
-  );
+  const { showEditForm, editingWord, handleEditWord, handleWordSaved, handleCloseEditForm } =
+    useWordEdit({
+      onWordSaved: (updatedWord) => {
+        const result = handleWordUpdate(updatedWord.id, updatedWord, repeatState);
+        setRepeatState(result.newState);
+      },
+    });
 
-  const handleWordSaved = useCallback(
-    (updatedWordData?: {
-      id: string;
-      data: {
-        ru: string;
-        en: string;
-        ko: string;
-        translations: { ru: string; en: string; ko: string };
-      };
-    }) => {
-      if (!updatedWordData || !editingWord) {
-        setShowEditForm(false);
-        clearEditingWord();
-        return;
-      }
-
-      const updatedWord = {
-        id: updatedWordData.id,
-        ru: updatedWordData.data.ru,
-        en: updatedWordData.data.en,
-        ko: updatedWordData.data.ko,
-        translations: updatedWordData.data.translations,
-      };
-
-      const result = handleWordUpdate(editingWord.id, updatedWord, repeatState);
-      setRepeatState(result.newState);
-      setShowEditForm(false);
-      clearEditingWord();
-    },
-    [editingWord, repeatState, clearEditingWord]
-  );
-
-  const handleCloseEditForm = useCallback(() => {
-    setShowEditForm(false);
-    clearEditingWord();
-  }, [clearEditingWord]);
-
-  const hasWords = words.length > 0;
-
-  if (!hasWords) {
-    return (
-      <div className={styles.repeatContainer}>
-        <Header title={t('repeat')} showNavigation={true} />
-        <div className={styles.content}>
-          <div className={styles.emptyState}>
-            <p>{t('noWords')}</p>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
+  if (words.length === 0) {
+    return <EmptyState title={t('repeat')} containerClassName={styles.repeatContainer} />;
   }
 
   if (repeatState.isCompleted) {
@@ -145,17 +85,7 @@ const RepeatPageContent = () => {
   }
 
   if (!currentWord) {
-    return (
-      <div className={styles.repeatContainer}>
-        <Header title={t('repeat')} showNavigation={true} />
-        <div className={styles.content}>
-          <div className={styles.loading}>
-            <ProgressSpinner />
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <LoadingState title={t('repeat')} containerClassName={styles.repeatContainer} />;
   }
 
   return (
@@ -233,17 +163,7 @@ const RepeatPage = () => {
   const wordsKey = useMemo(() => words.map((w) => w.id).join(','), [words]);
 
   if (loading) {
-    return (
-      <div className={styles.repeatContainer}>
-        <Header title={t('repeat')} showNavigation={true} />
-        <div className={styles.content}>
-          <div className={styles.loading}>
-            <ProgressSpinner />
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <LoadingState title={t('repeat')} containerClassName={styles.repeatContainer} />;
   }
 
   return <RepeatPageContent key={wordsKey} />;

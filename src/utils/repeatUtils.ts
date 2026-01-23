@@ -1,16 +1,5 @@
+import type { Word } from '../types/word';
 import { createEphemeralRng } from './runtimeRandom';
-
-export interface Word {
-  id: string;
-  ru: string;
-  en: string;
-  ko: string;
-  translations: {
-    ru: string;
-    en: string;
-    ko: string;
-  };
-}
 
 export const shuffleArray = <T>(array: T[]): T[] => {
   const shuffled = [...array];

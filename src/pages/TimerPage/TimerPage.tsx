@@ -1,5 +1,4 @@
 import { Button } from 'primereact/button';
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -7,9 +6,11 @@ import AddWordForm from '../../components/AddWordForm';
 import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
+import { EmptyState, LoadingState } from '../../components/PageStates';
 import WhiteButton from '../../components/WhiteButton';
 import WordCard from '../../components/WordCard';
-import { useWordActions } from '../../hooks/useWordActions';
+import { useTimeFormatter } from '../../hooks/useTimeFormatter';
+import { useWordEdit } from '../../hooks/useWordEdit';
 import { useWordsContext } from '../../hooks/useWordsContext';
 import {
   handleCorrectAnswer,
@@ -36,8 +37,7 @@ const TimerPageContent = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { words } = useWordsContext();
-
-  const { editingWord, handleEdit, clearEditingWord } = useWordActions();
+  const { formatTime } = useTimeFormatter();
 
   const [selectedTimer, setSelectedTimer] = useState<TimerOption | null>(null);
   const [timerState, setTimerState] = useState<TimerState>({
@@ -47,7 +47,6 @@ const TimerPageContent = () => {
     totalSeconds: 0,
   });
   const [repeatState, setRepeatState] = useState<RepeatState | null>(null);
-  const [showEditForm, setShowEditForm] = useState(false);
   const [wordsCompleted, setWordsCompleted] = useState<Set<string>>(new Set());
   const wordsCompletedRef = useRef<Set<string>>(new Set());
 
@@ -149,58 +148,16 @@ const TimerPageContent = () => {
     setRepeatState(result.newState);
   }, [currentWord, repeatState]);
 
-  const handleEditWord = useCallback(
-    (
-      wordId: string,
-      wordData: {
-        ru: string;
-        en: string;
-        ko: string;
-        translations: { ru: string; en: string; ko: string };
-      }
-    ) => {
-      handleEdit(wordId, wordData);
-      setShowEditForm(true);
-    },
-    [handleEdit]
-  );
-
-  const handleWordSaved = useCallback(
-    (updatedWordData?: {
-      id: string;
-      data: {
-        ru: string;
-        en: string;
-        ko: string;
-        translations: { ru: string; en: string; ko: string };
-      };
-    }) => {
-      if (!updatedWordData || !editingWord || !repeatState) {
-        setShowEditForm(false);
-        clearEditingWord();
-        return;
-      }
-
-      const updatedWord = {
-        id: updatedWordData.id,
-        ru: updatedWordData.data.ru,
-        en: updatedWordData.data.en,
-        ko: updatedWordData.data.ko,
-        translations: updatedWordData.data.translations,
-      };
-
-      const result = handleWordUpdate(editingWord.id, updatedWord, repeatState);
-      setRepeatState(result.newState);
-      setShowEditForm(false);
-      clearEditingWord();
-    },
-    [editingWord, repeatState, clearEditingWord]
-  );
-
-  const handleCloseEditForm = useCallback(() => {
-    setShowEditForm(false);
-    clearEditingWord();
-  }, [clearEditingWord]);
+  const { showEditForm, editingWord, handleEditWord, handleWordSaved, handleCloseEditForm } =
+    useWordEdit({
+      onWordSaved: (updatedWord) => {
+        if (!repeatState) {
+          return;
+        }
+        const result = handleWordUpdate(updatedWord.id, updatedWord, repeatState);
+        setRepeatState(result.newState);
+      },
+    });
 
   const handleReset = useCallback(() => {
     setSelectedTimer(null);
@@ -214,26 +171,8 @@ const TimerPageContent = () => {
     setWordsCompleted(new Set());
   }, []);
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const hasWords = words.length > 0;
-
-  if (!hasWords) {
-    return (
-      <div className={styles.timerContainer}>
-        <Header title={t('timer')} showNavigation={true} />
-        <div className={styles.content}>
-          <div className={styles.emptyState}>
-            <p>{t('noWords')}</p>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
+  if (words.length === 0) {
+    return <EmptyState title={t('timer')} containerClassName={styles.timerContainer} />;
   }
 
   if (!selectedTimer) {
@@ -334,17 +273,7 @@ const TimerPageContent = () => {
   }
 
   if (!currentWord) {
-    return (
-      <div className={styles.timerContainer}>
-        <Header title={t('timer')} showNavigation={true} />
-        <div className={styles.content}>
-          <div className={styles.loading}>
-            <ProgressSpinner />
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <LoadingState title={t('timer')} containerClassName={styles.timerContainer} />;
   }
 
   return (
@@ -419,17 +348,7 @@ const TimerPage = () => {
   const wordsKey = useMemo(() => words.map((w) => w.id).join(','), [words]);
 
   if (loading) {
-    return (
-      <div className={styles.timerContainer}>
-        <Header title={t('timer')} showNavigation={true} />
-        <div className={styles.content}>
-          <div className={styles.loading}>
-            <ProgressSpinner />
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <LoadingState title={t('timer')} containerClassName={styles.timerContainer} />;
   }
 
   return <TimerPageContent key={wordsKey} />;

@@ -1,21 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { Word } from '../types/word';
 import { getUserId } from '../utils/localAuth';
 import { fetchWords } from '../utils/wordsApi';
 
-interface WordData {
-  id: string;
-  ru: string;
-  en: string;
-  ko: string;
-  translations: {
-    ru: string;
-    en: string;
-    ko: string;
-  };
-}
-
 export const useWords = () => {
-  const [words, setWords] = useState<WordData[]>([]);
+  const [words, setWords] = useState<Word[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const loadWords = useCallback(async () => {
