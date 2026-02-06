@@ -17,6 +17,7 @@ import {
   getPaginatedItems,
   handlePageChange,
 } from '../../utils/paginationUtils';
+import { getTodayWordsCount } from '../../utils/wordDataHelpers';
 import styles from './DictionaryPage.module.scss';
 
 const DictionaryPage = () => {
@@ -36,6 +37,10 @@ const DictionaryPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
+
+  const totalWordsCount = words.length;
+
+  const todayWordsCount = useMemo(() => getTodayWordsCount(words), [words]);
 
   const adjustedFirst = useMemo(
     () => calculateAdjustedFirst(first, words.length),
@@ -87,6 +92,13 @@ const DictionaryPage = () => {
     <div className={styles.dictionaryContainer}>
       <Header title={t('myDictionary')} showNavigation={true} />
       <div className={styles.content}>
+        <div className={styles.stats}>
+          <span className={styles.statsItem}>{t('totalWords', { count: totalWordsCount })}</span>
+          <span className={styles.statsItem}>
+            {t('wordsAddedToday', { count: todayWordsCount })}
+          </span>
+        </div>
+
         <div className={styles.actions}>
           <GradientButton
             onClick={() => setShowAddForm(true)}

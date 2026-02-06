@@ -10,6 +10,8 @@ export interface WordData {
     en: string;
     ko: string;
   };
+  userId?: string;
+  createdAt?: string | number | Date;
 }
 
 interface WordsContextValue {

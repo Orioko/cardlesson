@@ -47,6 +47,7 @@
   "skipWord": "Пропустить",
   "progress": "{{current}} из {{total}}",
   "totalWords": "Всего слов: {{count}}",
+  "wordsAddedToday": "Добавлено сегодня: {{count}}",
   "allWordsCompleted": "Все слова пройдены, ты молодчина! Продолжай повторение каждый день!",
   "correctCount": "Правильных: {{count}}",
   "incorrectCount": "Неправильных: {{count}}",

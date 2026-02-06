@@ -1,4 +1,5 @@
 import { addWord, fetchWords } from './wordsApi';
+import { capitalizeFirstLetter } from './wordDataHelpers';
 import { filterDuplicateWords } from './wordsDuplicatesCheck';
 
 export interface WordData {
@@ -57,13 +58,13 @@ export const importWordsFromFile = async (file: File): Promise<ImportResult> => 
       try {
         if (word.ru || word.en || word.ko) {
           const wordData = {
-            ru: word.ru || '',
-            en: word.en || '',
-            ko: word.ko || '',
+            ru: capitalizeFirstLetter(word.ru || ''),
+            en: capitalizeFirstLetter(word.en || ''),
+            ko: capitalizeFirstLetter(word.ko || ''),
             translations: {
-              ru: word.translations?.ru || word.ru || '',
-              en: word.translations?.en || word.en || '',
-              ko: word.translations?.ko || word.ko || '',
+              ru: capitalizeFirstLetter(word.translations?.ru || word.ru || ''),
+              en: capitalizeFirstLetter(word.translations?.en || word.en || ''),
+              ko: capitalizeFirstLetter(word.translations?.ko || word.ko || ''),
             },
           };
 
