@@ -20,6 +20,20 @@
   margin-bottom: 32px;
 }
 
+.stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  color: #666;
+  font-size: 14px;
+}
+
+.statsItem {
+  white-space: nowrap;
+}
+
 .addButton {
   min-width: 200px;
 }
@@ -64,6 +78,10 @@
     margin-bottom: 24px;
   }
 
+  .stats {
+    margin-bottom: 16px;
+  }
+
   .addButton {
     width: 100%;
     max-width: 400px;
@@ -89,6 +107,10 @@
 
   .actions {
     margin-bottom: 10px;
+  }
+
+  .stats {
+    margin-bottom: 12px;
   }
 
   .cardsContainer {

@@ -47,6 +47,7 @@
   "skipWord": "건너뛰기",
   "progress": "{{total}}개 중 {{current}}개",
   "totalWords": "전체 단어: {{count}}개",
+  "wordsAddedToday": "오늘 추가된 단어: {{count}}개",
   "allWordsCompleted": "모든 단어를 완료했습니다, 잘했어요! 매일 반복하세요!",
   "correctCount": "정답: {{count}}",
   "incorrectCount": "오답: {{count}}",

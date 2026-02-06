@@ -47,6 +47,7 @@
   "skipWord": "Skip",
   "progress": "{{current}} of {{total}}",
   "totalWords": "Total words: {{count}}",
+  "wordsAddedToday": "Words added today: {{count}}",
   "allWordsCompleted": "All words completed, great job! Keep practicing every day!",
   "correctCount": "Correct: {{count}}",
   "incorrectCount": "Incorrect: {{count}}",
