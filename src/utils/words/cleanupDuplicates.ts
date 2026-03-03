@@ -1,5 +1,5 @@
-import type { Word } from '../types/word';
-import { getUserId } from './localAuth';
+import type { Word } from '../../types/word';
+import { getUserId } from '../storage/localAuth';
 import { loadWordsFromCache, saveWordsToCache } from './wordsCache';
 import { normalizeWord, wordsAreEqual } from './wordsDuplicatesCheck';
 

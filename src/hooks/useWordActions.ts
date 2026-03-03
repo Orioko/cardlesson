@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { WordInput } from '../types/word';
-import { getUserId } from '../utils/localAuth';
-import { deleteWord } from '../utils/wordsApi';
-import { removeWordFromCache } from '../utils/wordsCache';
+import { getUserId } from '../utils/storage/localAuth';
+import { deleteWord } from '../utils/words/wordsApi';
+import { removeWordFromCache } from '../utils/words/wordsCache';
 
 interface UseWordActionsProps {
   onWordUpdated?: () => void;

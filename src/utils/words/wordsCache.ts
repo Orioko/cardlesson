@@ -1,4 +1,4 @@
-import type { Word } from '../types/word';
+import type { Word } from '../../types/word';
 
 const CACHE_KEY_PREFIX = 'words_cache_';
 const CACHE_TIMESTAMP_KEY_PREFIX = 'words_cache_timestamp_';

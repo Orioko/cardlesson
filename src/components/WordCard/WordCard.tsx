@@ -2,7 +2,7 @@ import { Button } from 'primereact/button';
 import type { KeyboardEvent } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getFrontCardLanguage } from '../../utils/frontCardLanguageStorage';
+import { getFrontCardLanguage } from '../../utils/language/frontCardLanguageStorage';
 import { LANGS } from './constants';
 import type { Lang, WordCardProps } from './types';
 import { getFilledLanguages, getFrontLanguage } from './utils';

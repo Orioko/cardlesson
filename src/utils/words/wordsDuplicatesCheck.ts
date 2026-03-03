@@ -1,4 +1,4 @@
-import type { PartialWord } from '../types/word';
+import type { PartialWord } from '../../types/word';
 
 interface WordDataNormalized {
   ru: string;

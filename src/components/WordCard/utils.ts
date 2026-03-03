@@ -1,5 +1,5 @@
 import type { WordInput } from '../../types/word';
-import { getFrontCardLanguage } from '../../utils/frontCardLanguageStorage';
+import { getFrontCardLanguage } from '../../utils/language/frontCardLanguageStorage';
 import { createEphemeralRng, getRuntimeRandomSalt } from '../../utils/runtimeRandom';
 import { LANGS } from './constants';
 import type { Lang } from './types';

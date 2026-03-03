@@ -1,8 +1,14 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Lang } from '../components/WordCard/types';
-import { getFrontCardLanguage, saveFrontCardLanguage } from '../utils/frontCardLanguageStorage';
-import { getSelectedLanguages, saveSelectedLanguages } from '../utils/selectedLanguagesStorage';
+import {
+  getFrontCardLanguage,
+  saveFrontCardLanguage,
+} from '../utils/language/frontCardLanguageStorage';
+import {
+  getSelectedLanguages,
+  saveSelectedLanguages,
+} from '../utils/language/selectedLanguagesStorage';
 
 interface UseLanguageSettingsReturn {
   selectedLangs: Lang[];

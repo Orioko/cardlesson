@@ -1,4 +1,4 @@
-import type { Lang } from '../components/WordCard/types';
+import type { Lang } from '../../components/WordCard/types';
 
 const KOREAN_REGEX = /[\uAC00-\uD7A3]/;
 const CYRILLIC_REGEX = /[\u0400-\u04FF]/;

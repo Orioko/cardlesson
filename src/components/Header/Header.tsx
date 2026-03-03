@@ -4,7 +4,7 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { logout } from '../../utils/localAuth';
+import { logout } from '../../utils/storage/localAuth';
 import GradientButton from '../GradientButton';
 import LanguageSettings from '../LanguageSettings';
 import WhiteButton from '../WhiteButton';

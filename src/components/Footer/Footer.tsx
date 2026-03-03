@@ -2,7 +2,7 @@ import { Dialog } from 'primereact/dialog';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../../utils/localAuth';
+import { logout } from '../../utils/storage/localAuth';
 import GradientButton from '../GradientButton';
 import WhiteButton from '../WhiteButton';
 import styles from './Footer.module.scss';

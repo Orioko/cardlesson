@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { getLangLabel } from '../../utils/languageUtils';
+import { getLangLabel } from '../../utils/language/languageUtils';
 import { LANGS } from '../WordCard/constants';
 import type { Lang } from '../WordCard/types';
 import styles from './LanguageSettings.module.scss';
