@@ -123,12 +123,14 @@
   font-size: 14px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .cardContainer {
     max-width: 100%;
     margin: 0;
   }
+}
 
+@media (max-width: 480px) {
   .word {
     font-size: 18px;
   }
