@@ -1,14 +1,4 @@
-interface WordData {
-  id?: string;
-  ru?: string;
-  en?: string;
-  ko?: string;
-  translations?: {
-    ru?: string;
-    en?: string;
-    ko?: string;
-  };
-}
+import type { PartialWord } from '../types/word';
 
 interface WordDataNormalized {
   ru: string;
@@ -16,7 +6,7 @@ interface WordDataNormalized {
   ko: string;
 }
 
-export const normalizeWord = (word: WordData): WordDataNormalized => {
+export const normalizeWord = (word: PartialWord): WordDataNormalized => {
   const getFieldValue = (main: string | undefined, translation: string | undefined): string => {
     const value = (main || translation || '').trim().toLowerCase();
     return value;
@@ -48,7 +38,7 @@ export const wordsAreEqual = (word1: WordDataNormalized, word2: WordDataNormaliz
   return values1.every((value, index) => value === values2[index]);
 };
 
-export const isDuplicateWord = (newWord: WordData, existingWords: WordData[]): boolean => {
+export const isDuplicateWord = (newWord: PartialWord, existingWords: PartialWord[]): boolean => {
   if (existingWords.length === 0) {
     return false;
   }
@@ -68,12 +58,12 @@ export const isDuplicateWord = (newWord: WordData, existingWords: WordData[]): b
 };
 
 export const filterDuplicateWords = (
-  importedWords: WordData[],
-  existingWords: WordData[]
-): WordData[] => {
+  importedWords: PartialWord[],
+  existingWords: PartialWord[]
+): PartialWord[] => {
   const normalizedExisting = existingWords.map(normalizeWord);
 
-  const uniqueImported: WordData[] = [];
+  const uniqueImported: PartialWord[] = [];
   const seenImported = new Set<string>();
 
   for (const word of importedWords) {

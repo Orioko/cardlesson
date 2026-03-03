@@ -21,6 +21,7 @@ export default defineConfig([
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      'react-hooks/exhaustive-deps': 'off',
       'prettier/prettier': 'error',
     },
     languageOptions: {

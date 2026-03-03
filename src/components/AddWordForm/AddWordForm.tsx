@@ -25,11 +25,11 @@ const AddWordForm = ({
 }: AddWordFormProps) => {
   const { t } = useTranslation();
   const [selectedLangs, setSelectedLangs] = useState<Lang[]>(() => getSelectedLanguages());
-  const [wordValues, setWordValues] = useState<Record<Lang, string>>({
-    ru: '',
-    en: '',
-    ko: '',
-  });
+  const [wordValues, setWordValues] = useState<Record<Lang, string>>(() => ({
+    ru: editWordData?.ru || '',
+    en: editWordData?.en || '',
+    ko: editWordData?.ko || '',
+  }));
   const [error, setError] = useState('');
 
   const isEditMode = Boolean(editWordId && editWordData);
@@ -48,26 +48,6 @@ const AddWordForm = ({
       window.removeEventListener('storage', handleLanguagesChange);
     };
   }, []);
-
-  useEffect(() => {
-    if (visible && editWordData) {
-      setTimeout(() => {
-        setWordValues({
-          ru: editWordData.ru || '',
-          en: editWordData.en || '',
-          ko: editWordData.ko || '',
-        });
-      }, 0);
-    } else if (!visible) {
-      setTimeout(() => {
-        setWordValues({
-          ru: '',
-          en: '',
-          ko: '',
-        });
-      }, 0);
-    }
-  }, [visible, editWordData]);
 
   const handleSubmit = async () => {
     const filledFields = selectedLangs.filter((lang) => wordValues[lang]?.trim().length > 0).length;

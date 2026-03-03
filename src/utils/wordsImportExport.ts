@@ -1,18 +1,7 @@
+import type { PartialWord } from '../types/word';
 import { addWord, fetchWords } from './wordsApi';
 import { capitalizeFirstLetter } from './wordDataHelpers';
 import { filterDuplicateWords } from './wordsDuplicatesCheck';
-
-export interface WordData {
-  id?: string;
-  ru?: string;
-  en?: string;
-  ko?: string;
-  translations?: {
-    ru?: string;
-    en?: string;
-    ko?: string;
-  };
-}
 
 export interface ImportResult {
   addedCount: number;
@@ -20,7 +9,7 @@ export interface ImportResult {
   duplicatesCount: number;
 }
 
-export const exportWordsToJson = (words: WordData[]): void => {
+export const exportWordsToJson = (words: PartialWord[]): void => {
   try {
     const jsonContent = JSON.stringify(words, null, 2);
     const blob = new Blob([jsonContent], { type: 'application/json' });

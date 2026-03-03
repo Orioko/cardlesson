@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import type { Word } from '../types/word';
 import { getUserId } from '../utils/localAuth';
 import { fetchWords } from '../utils/wordsApi';
-import { WordsContext, type WordData } from './WordsContext';
+import { WordsContext } from './WordsContext';
 
 interface WordsProviderProps {
   children: React.ReactNode;
 }
 
 export const WordsProvider = ({ children }: WordsProviderProps) => {
-  const [words, setWords] = useState<WordData[]>([]);
+  const [words, setWords] = useState<Word[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const loadWords = useCallback(async () => {
