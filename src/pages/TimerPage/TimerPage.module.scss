@@ -306,6 +306,12 @@
   max-width: 200px;
 }
 
+@media (max-width: 900px) {
+  .timerContainer {
+    padding-top: 100px;
+  }
+}
+
 @media (max-width: 768px) {
   .timerContainer {
     padding-top: 100px;

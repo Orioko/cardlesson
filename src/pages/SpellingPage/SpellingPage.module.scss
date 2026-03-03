@@ -196,6 +196,12 @@
   min-width: 200px;
 }
 
+@media (max-width: 900px) {
+  .spellingContainer {
+    padding-top: 100px;
+  }
+}
+
 @media (max-width: 768px) {
   .spellingContainer {
     padding-top: 100px;

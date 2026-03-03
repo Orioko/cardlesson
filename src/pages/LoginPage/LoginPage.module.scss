@@ -48,6 +48,12 @@
   margin-top: 8px;
 }
 
+@media (max-width: 900px) {
+  .loginContainer {
+    padding-top: 120px;
+  }
+}
+
 @media (max-width: 768px) {
   .loginContainer {
     padding-top: 120px;

@@ -172,6 +172,12 @@
   min-width: 200px;
 }
 
+@media (max-width: 900px) {
+  .repeatContainer {
+    padding-top: 100px;
+  }
+}
+
 @media (max-width: 768px) {
   .repeatContainer {
     padding-top: 100px;
