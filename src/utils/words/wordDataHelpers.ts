@@ -1,4 +1,4 @@
-import type { Word, WordInput } from '../types/word';
+import type { Word, WordInput } from '../../types/word';
 
 export const transformToWord = (
   id: string,

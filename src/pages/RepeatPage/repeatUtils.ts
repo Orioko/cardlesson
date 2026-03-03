@@ -1,5 +1,5 @@
-import type { Word } from '../types/word';
-import { createEphemeralRng } from './runtimeRandom';
+import type { Word } from '../../types/word';
+import { createEphemeralRng } from '../../utils/runtimeRandom';
 
 export const shuffleArray = <T>(array: T[]): T[] => {
   const shuffled = [...array];

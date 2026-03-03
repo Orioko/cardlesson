@@ -2,8 +2,8 @@ import { PrimeReactProvider } from 'primereact/api';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { cleanupDuplicates } from './utils/cleanupDuplicates';
-import { initializeDefaultUser } from './utils/userStorage';
+import { cleanupDuplicates } from './utils/words/cleanupDuplicates';
+import { initializeDefaultUser } from './utils/storage/userStorage';
 
 import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.min.css';

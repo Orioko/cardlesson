@@ -18,7 +18,7 @@ import {
   handleWordUpdate,
   initializeRepeatState,
   type RepeatState,
-} from '../../utils/repeatUtils';
+} from '../RepeatPage/repeatUtils';
 import { saveTimerRecord } from '../../utils/timerRecords';
 import styles from './TimerPage.module.scss';
 

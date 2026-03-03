@@ -1,4 +1,4 @@
-import type { Lang } from '../components/WordCard/types';
+import type { Lang } from '../../components/WordCard/types';
 
 export const stripAfterParenthesis = (value: string): string => {
   const idx = value.indexOf('(');

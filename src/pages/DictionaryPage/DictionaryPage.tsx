@@ -17,7 +17,7 @@ import {
   getPaginatedItems,
   handlePageChange,
 } from '../../utils/paginationUtils';
-import { getTodayWordsCount } from '../../utils/wordDataHelpers';
+import { getTodayWordsCount } from '../../utils/words/wordDataHelpers';
 import styles from './DictionaryPage.module.scss';
 
 const DictionaryPage = () => {

@@ -1,5 +1,9 @@
-import { getUserId } from './localAuth';
-import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from './localStorage';
+import { getUserId } from './storage/localAuth';
+import {
+  getFromLocalStorage,
+  removeFromLocalStorage,
+  saveToLocalStorage,
+} from './storage/localStorage';
 
 export interface TimerRecord {
   minutes: number;

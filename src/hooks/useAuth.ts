@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { login as authLogin, register as authRegister } from '../utils/localAuth';
+import { login as authLogin, register as authRegister } from '../utils/storage/localAuth';
 import { validateEmail, validatePassword } from '../utils/validation';
 
 interface UseAuthProps {

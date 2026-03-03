@@ -1,4 +1,4 @@
-import type { Lang } from '../components/WordCard/types';
+import type { Lang } from '../../components/WordCard/types';
 
 export const getLangLabel = (lang: Lang, t: (key: string) => string): string => {
   const labels: Record<Lang, string> = {

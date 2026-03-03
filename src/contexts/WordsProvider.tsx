@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import type { Word } from '../types/word';
-import { getUserId } from '../utils/localAuth';
-import { fetchWords } from '../utils/wordsApi';
+import { getUserId } from '../utils/storage/localAuth';
+import { fetchWords } from '../utils/words/wordsApi';
 import { WordsContext } from './WordsContext';
 
 interface WordsProviderProps {

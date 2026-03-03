@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import type { Word, WordInput } from '../types/word';
-import { transformToWord } from '../utils/wordDataHelpers';
+import { transformToWord } from '../utils/words/wordDataHelpers';
 
 interface UseWordEditProps {
   onWordSaved?: (updatedWord: Word) => void;

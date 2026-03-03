@@ -1,4 +1,4 @@
-import type { PartialWord } from '../types/word';
+import type { PartialWord } from '../../types/word';
 import { addWord, fetchWords } from './wordsApi';
 import { capitalizeFirstLetter } from './wordDataHelpers';
 import { filterDuplicateWords } from './wordsDuplicatesCheck';
