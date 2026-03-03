@@ -136,6 +136,76 @@
   white-space: nowrap;
 }
 
+@media (max-width: 900px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 0;
+    padding-right: 0;
+  }
+
+  .controls {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .navButton {
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none !important;
+  }
+
+  .navButton :global(.p-button) {
+    border: none !important;
+  }
+
+  .navButton :global(.p-button-label) {
+    display: none;
+  }
+
+  .navButton :global(.p-button-icon) {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .languageButton {
+    height: 44px;
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  .languageButtonContent {
+    gap: 0;
+  }
+
+  .flagIcon {
+    width: 24px;
+    height: 18px;
+  }
+
+  .languageCode {
+    display: none;
+  }
+
+  .exitButton {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .headerContent {
     flex-direction: column;

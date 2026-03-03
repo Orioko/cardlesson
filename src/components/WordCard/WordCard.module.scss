@@ -3,7 +3,7 @@
   cursor: pointer;
   width: 100%;
   max-width: 400px;
-  height: 250px;
+  aspect-ratio: 8 / 5;
   margin: 10px;
   position: relative;
 }
@@ -121,4 +121,23 @@
 .editButton :global(.p-button-icon),
 .deleteButton :global(.p-button-icon) {
   font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .cardContainer {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .word {
+    font-size: 18px;
+  }
+
+  .translationText {
+    font-size: 14px;
+  }
+
+  .langLabel {
+    font-size: 10px;
+  }
 }
