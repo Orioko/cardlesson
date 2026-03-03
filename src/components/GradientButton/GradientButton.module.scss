@@ -12,6 +12,12 @@
   transform: translateY(0);
 }
 
+.gradientButton :global(.p-button:focus),
+.gradientButton :global(.p-button:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
 .gradientButton :global(.p-button-label) {
   color: white;
 }
