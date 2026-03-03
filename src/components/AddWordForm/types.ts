@@ -1,18 +1,9 @@
-export interface WordData {
-  ru: string;
-  en: string;
-  ko: string;
-  translations: {
-    ru: string;
-    en: string;
-    ko: string;
-  };
-}
+import type { WordInput } from '../../types/word';
 
 export interface AddWordFormProps {
   visible: boolean;
   onHide: () => void;
-  onWordAdded?: (updatedWord?: { id: string; data: WordData }) => void;
+  onWordAdded?: (updatedWord?: { id: string; data: WordInput }) => void;
   editWordId?: string;
-  editWordData?: WordData;
+  editWordData?: WordInput;
 }

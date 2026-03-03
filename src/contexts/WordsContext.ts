@@ -1,21 +1,8 @@
 import { createContext } from 'react';
-
-export interface WordData {
-  id: string;
-  ru: string;
-  en: string;
-  ko: string;
-  translations: {
-    ru: string;
-    en: string;
-    ko: string;
-  };
-  userId?: string;
-  createdAt?: string | number | Date;
-}
+import type { Word } from '../types/word';
 
 interface WordsContextValue {
-  words: WordData[];
+  words: Word[];
   loading: boolean;
   refreshWords: () => void;
 }
