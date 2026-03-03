@@ -6,12 +6,17 @@
   background: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
-  border-color: #000000;
   color: #333;
 }
 
 .whiteButton :global(.p-button:active) {
   transform: translateY(0);
+}
+
+.whiteButton :global(.p-button:focus),
+.whiteButton :global(.p-button:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 
 .whiteButton :global(.p-button-label) {
