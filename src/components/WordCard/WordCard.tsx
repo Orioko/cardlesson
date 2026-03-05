@@ -2,7 +2,7 @@ import { Button } from 'primereact/button';
 import type { KeyboardEvent } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getFrontCardLanguage } from '../../utils/frontCardLanguageStorage';
+import { getFrontCardLanguage } from '../../utils/language/frontCardLanguageStorage';
 import { LANGS } from './constants';
 import type { Lang, WordCardProps } from './types';
 import { getFilledLanguages, getFrontLanguage } from './utils';
@@ -19,11 +19,11 @@ const WordCard = ({
 }: WordCardProps) => {
   const { t, i18n } = useTranslation();
   const [isFlipped, setIsFlipped] = useState(false);
-  const [frontCardLanguageUpdate, setFrontCardLanguageUpdate] = useState(0);
+  const [savedFrontLang, setSavedFrontLang] = useState(() => getFrontCardLanguage());
 
   useEffect(() => {
     const handleFrontCardLanguageChange = () => {
-      setFrontCardLanguageUpdate((prev) => prev + 1);
+      setSavedFrontLang(getFrontCardLanguage());
     };
 
     window.addEventListener('frontCardLanguageChanged', handleFrontCardLanguageChange);
@@ -34,8 +34,7 @@ const WordCard = ({
 
   const frontLang = useMemo(() => {
     return getFrontLanguage(wordData, displayLang, wordId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wordData, displayLang, wordId, frontCardLanguageUpdate]);
+  }, [wordData, displayLang, wordId, savedFrontLang]);
 
   const { front, back } = useMemo(() => {
     if (wordData) {
@@ -47,7 +46,6 @@ const WordCard = ({
       const backEntries = filled.map((l) => [l, wordData[l].trim()] as const);
 
       const frontText = wordData[frontLang]?.trim() || '';
-      const savedFrontLang = getFrontCardLanguage();
       const russianWord = wordData.ru?.trim() || '';
 
       let displayText = frontText;
@@ -77,7 +75,7 @@ const WordCard = ({
     }
 
     return { front: '', back: {} as Partial<Record<Lang, string>> };
-  }, [wordData, wordKey, i18n.resolvedLanguage, i18n.language, t, frontLang]);
+  }, [wordData, wordKey, i18n.resolvedLanguage, i18n.language, t, frontLang, savedFrontLang]);
 
   const handleFlip = useCallback(() => {
     setIsFlipped((s) => !s);

@@ -7,7 +7,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import { useAuth } from '../../hooks/useAuth';
-import { getCurrentUser } from '../../utils/localAuth';
+import { getCurrentUser } from '../../utils/storage/localAuth';
 import styles from './LoginPage.module.scss';
 
 const LoginPage = () => {

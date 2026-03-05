@@ -1,4 +1,4 @@
-import { ERROR_MESSAGES } from '../constants/errors';
+import { ERROR_MESSAGES } from '../../constants/errors';
 import { getFromLocalStorage, isLocalStorageAvailable, saveToLocalStorage } from './localStorage';
 import { findUserByEmail, saveUserToStorage, verifyUserCredentials } from './userStorage';
 

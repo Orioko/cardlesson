@@ -1,5 +1,5 @@
-import { LANGS } from '../components/WordCard/constants';
-import type { Lang } from '../components/WordCard/types';
+import { LANGS } from '../../components/WordCard/constants';
+import type { Lang } from '../../components/WordCard/types';
 
 const SELECTED_LANGUAGES_KEY = 'selected_languages';
 

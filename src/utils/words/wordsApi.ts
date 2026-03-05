@@ -1,6 +1,6 @@
-import { ERROR_MESSAGES } from '../constants/errors';
-import type { Word, WordInput } from '../types/word';
-import { getUserId } from './localAuth';
+import { ERROR_MESSAGES } from '../../constants/errors';
+import type { Word, WordInput } from '../../types/word';
+import { getUserId } from '../storage/localAuth';
 import { loadWordsFromCache, saveWordsToCache } from './wordsCache';
 import { isDuplicateWord } from './wordsDuplicatesCheck';
 

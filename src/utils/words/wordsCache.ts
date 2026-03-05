@@ -1,16 +1,4 @@
-interface WordData {
-  id: string;
-  ru: string;
-  en: string;
-  ko: string;
-  translations: {
-    ru: string;
-    en: string;
-    ko: string;
-  };
-  userId?: string;
-  createdAt?: string | number | Date;
-}
+import type { Word } from '../../types/word';
 
 const CACHE_KEY_PREFIX = 'words_cache_';
 const CACHE_TIMESTAMP_KEY_PREFIX = 'words_cache_timestamp_';
@@ -23,7 +11,7 @@ export const getWordsCacheTimestampKey = (userId: string): string => {
   return `${CACHE_TIMESTAMP_KEY_PREFIX}${userId}`;
 };
 
-export const saveWordsToCache = (userId: string, words: WordData[]): void => {
+export const saveWordsToCache = (userId: string, words: Word[]): void => {
   try {
     if (typeof window === 'undefined' || !window.localStorage) {
       console.warn('localStorage не доступен');
@@ -38,7 +26,7 @@ export const saveWordsToCache = (userId: string, words: WordData[]): void => {
   }
 };
 
-export const loadWordsFromCache = (userId: string): WordData[] | null => {
+export const loadWordsFromCache = (userId: string): Word[] | null => {
   try {
     if (typeof window === 'undefined' || !window.localStorage) {
       return null;
@@ -46,7 +34,7 @@ export const loadWordsFromCache = (userId: string): WordData[] | null => {
     const cacheKey = getWordsCacheKey(userId);
     const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
-      return JSON.parse(cachedData) as WordData[];
+      return JSON.parse(cachedData) as Word[];
     }
   } catch (error) {
     console.error('Ошибка загрузки кэша:', error);

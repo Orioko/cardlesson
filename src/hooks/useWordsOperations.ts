@@ -1,10 +1,10 @@
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { checkAndRemoveDuplicates } from '../utils/cleanupDuplicates';
 import { isAuthenticationError, isInvalidFileFormatError } from '../utils/errorHandlingUtils';
-import { fixWordsLanguages } from '../utils/fixWordsLanguages';
-import { formatImportMessages } from '../utils/importMessagesUtils';
-import { exportWordsToJson, importWordsFromFile } from '../utils/wordsImportExport';
+import { checkAndRemoveDuplicates } from '../utils/words/cleanupDuplicates';
+import { fixWordsLanguages } from '../utils/words/fixWordsLanguages';
+import { formatImportMessages } from '../utils/words/importMessagesUtils';
+import { exportWordsToJson, importWordsFromFile } from '../utils/words/wordsImportExport';
 import { useAsyncOperation } from './useAsyncOperation';
 import { useWordsContext } from './useWordsContext';
 

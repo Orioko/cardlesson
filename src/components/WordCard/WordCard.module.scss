@@ -3,7 +3,7 @@
   cursor: pointer;
   width: 100%;
   max-width: 400px;
-  aspect-ratio: 8 / 5;
+  height: 250px;
   margin: 10px;
   position: relative;
 }
@@ -66,12 +66,14 @@
   flex-direction: column;
   gap: 15px;
   width: 100%;
+  text-align: center;
 }
 
 .translation {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  align-items: center;
 }
 
 .langLabel {
@@ -123,12 +125,11 @@
   font-size: 14px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .cardContainer {
     max-width: 100%;
     margin: 0;
   }
-
   .word {
     font-size: 24px;
   }
@@ -140,4 +141,3 @@
   .langLabel {
     font-size: 24px;
   }
-}

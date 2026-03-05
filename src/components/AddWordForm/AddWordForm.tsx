@@ -5,12 +5,12 @@ import { Message } from 'primereact/message';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isDuplicateWordError } from '../../utils/errorHandlingUtils';
-import { autoDistributeWords } from '../../utils/languageDetection';
-import { getLanguageLabel, getLanguagePlaceholder } from '../../utils/languageLabels';
-import { getUserId } from '../../utils/localAuth';
-import { getSelectedLanguages } from '../../utils/selectedLanguagesStorage';
-import { createWordInput } from '../../utils/wordDataHelpers';
-import { addWord, updateWord } from '../../utils/wordsApi';
+import { autoDistributeWords } from '../../utils/language/languageDetection';
+import { getLanguageLabel, getLanguagePlaceholder } from '../../utils/language/languageLabels';
+import { getSelectedLanguages } from '../../utils/language/selectedLanguagesStorage';
+import { getUserId } from '../../utils/storage/localAuth';
+import { createWordInput } from '../../utils/words/wordDataHelpers';
+import { addWord, updateWord } from '../../utils/words/wordsApi';
 import GradientButton from '../GradientButton';
 import type { Lang } from '../WordCard/types';
 import styles from './AddWordForm.module.scss';
@@ -25,11 +25,11 @@ const AddWordForm = ({
 }: AddWordFormProps) => {
   const { t } = useTranslation();
   const [selectedLangs, setSelectedLangs] = useState<Lang[]>(() => getSelectedLanguages());
-  const [wordValues, setWordValues] = useState<Record<Lang, string>>({
-    ru: '',
-    en: '',
-    ko: '',
-  });
+  const [wordValues, setWordValues] = useState<Record<Lang, string>>(() => ({
+    ru: editWordData?.ru || '',
+    en: editWordData?.en || '',
+    ko: editWordData?.ko || '',
+  }));
   const [error, setError] = useState('');
 
   const isEditMode = Boolean(editWordId && editWordData);
@@ -48,26 +48,6 @@ const AddWordForm = ({
       window.removeEventListener('storage', handleLanguagesChange);
     };
   }, []);
-
-  useEffect(() => {
-    if (visible && editWordData) {
-      setTimeout(() => {
-        setWordValues({
-          ru: editWordData.ru || '',
-          en: editWordData.en || '',
-          ko: editWordData.ko || '',
-        });
-      }, 0);
-    } else if (!visible) {
-      setTimeout(() => {
-        setWordValues({
-          ru: '',
-          en: '',
-          ko: '',
-        });
-      }, 0);
-    }
-  }, [visible, editWordData]);
 
   const handleSubmit = async () => {
     const filledFields = selectedLangs.filter((lang) => wordValues[lang]?.trim().length > 0).length;

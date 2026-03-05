@@ -1,4 +1,4 @@
-import { autoDistributeWords } from './languageDetection';
+import { autoDistributeWords } from '../language/languageDetection';
 import { fetchWords, updateWord } from './wordsApi';
 
 export interface FixWordsLanguagesResult {

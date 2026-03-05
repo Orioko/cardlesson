@@ -1,5 +1,5 @@
 import { Button } from 'primereact/button';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
@@ -12,20 +12,6 @@ const RecordsPage = () => {
   const { t } = useTranslation();
   const [records, setRecords] = useState(() => getTimerRecords());
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 900);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  }, []);
 
   const hasRecords = useMemo(() => Object.keys(records).length > 0, [records]);
 
@@ -44,17 +30,14 @@ const RecordsPage = () => {
       <div className={styles.content}>
         {!hasRecords ? (
           <div className={styles.emptyState}>
-            <i
-              className="pi pi-sparkles"
-              style={{ fontSize: '48px', color: '#667eea', marginBottom: '16px' }}
-            ></i>
+            <i className={`pi pi-sparkles ${styles.emptyIcon}`}></i>
             <p>{t('noRecordsYet')}</p>
           </div>
         ) : (
           <>
             <div className={styles.headerSection}>
               <div className={styles.iconWrapper}>
-                <i className="pi pi-sparkles" style={{ fontSize: '32px', color: '#667eea' }}></i>
+                <i className={`pi pi-sparkles ${styles.headerIcon}`}></i>
               </div>
               <p className={styles.infoText}>{t('lastFiveRecords')}</p>
             </div>
@@ -71,7 +54,7 @@ const RecordsPage = () => {
                     {recordsForDuration.length > 0 ? (
                       <div className={styles.recordDetails}>
                         {recordsForDuration.map((record, index) => (
-                          <div key={index} className={styles.recordRow}>
+                          <div key={record.date} className={styles.recordRow}>
                             <div className={styles.recordValue}>
                               <span className={styles.recordLabel}>#{index + 1}:</span>
                               <span className={styles.recordScore}>{record.wordsCompleted}</span>
@@ -105,7 +88,7 @@ const RecordsPage = () => {
         <div className={styles.mobileActions}>
           <Button
             icon="pi pi-trash"
-            label={isMobile ? t('clear') : t('clearRecords')}
+            label={t('clearRecords')}
             onClick={handleOpenConfirmDialog}
             severity="secondary"
             outlined

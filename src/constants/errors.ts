@@ -3,7 +3,7 @@ export const ERROR_MESSAGES = {
   INVALID_FILE_FORMAT: 'Invalid file format: expected array of words',
   DUPLICATE_WORD: 'DUPLICATE_WORD',
   WORD_NOT_FOUND: 'Word not found',
-  LOCALSTORAGE_NOT_SUPPORTED: 'localStorage не поддерживается',
+  LOCALSTORAGE_NOT_SUPPORTED: 'localStorage is not supported',
 } as const;
 
 export type ErrorMessage = (typeof ERROR_MESSAGES)[keyof typeof ERROR_MESSAGES];

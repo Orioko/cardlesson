@@ -12,15 +12,15 @@ import type { Lang } from '../../components/WordCard/types';
 import { getFilledLanguages, getFrontLanguage } from '../../components/WordCard/utils';
 import { useWordsContext } from '../../hooks/useWordsContext';
 import type { Word } from '../../types/word';
-import { getLangLabel } from '../../utils/languageUtils';
+import { getLangLabel } from '../../utils/language/languageUtils';
 import {
   handleCorrectAnswer,
   handleIncorrectAnswer,
   initializeRepeatState,
   resetRepeatState,
   type RepeatState,
-} from '../../utils/repeatUtils';
-import { isSpellingAnswerCorrect } from '../../utils/spellingAnswerUtils';
+} from '../RepeatPage/repeatUtils';
+import { isSpellingAnswerCorrect } from './spellingAnswerUtils';
 import styles from './SpellingPage.module.scss';
 
 type CheckResult = 'idle' | 'correct' | 'incorrect';

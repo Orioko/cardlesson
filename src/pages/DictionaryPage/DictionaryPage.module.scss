@@ -100,7 +100,7 @@
   }
 
   .cardsContainer {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
@@ -124,11 +124,6 @@
 
   .stats {
     margin-bottom: 12px;
-  }
-
-  .cardsContainer {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 8px;
   }
 
   .paginator {

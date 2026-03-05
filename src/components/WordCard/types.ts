@@ -1,17 +1,12 @@
-export type Lang = 'ru' | 'en' | 'ko';
+import type { WordInput } from '../../types/word';
 
-export interface WordData {
-  ru: string;
-  en: string;
-  ko: string;
-  translations: Record<Lang, string>;
-}
+export type Lang = 'ru' | 'en' | 'ko';
 
 export interface WordCardProps {
   wordKey?: string;
-  wordData?: WordData;
+  wordData?: WordInput;
   wordId?: string;
-  onEdit?: (id: string, data: WordData) => void;
+  onEdit?: (id: string, data: WordInput) => void;
   onDelete?: (id: string) => void;
   showActions?: boolean;
   displayLang?: Lang;

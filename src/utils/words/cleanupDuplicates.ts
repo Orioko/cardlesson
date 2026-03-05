@@ -1,20 +1,7 @@
-import { getUserId } from './localAuth';
+import type { Word } from '../../types/word';
+import { getUserId } from '../storage/localAuth';
 import { loadWordsFromCache, saveWordsToCache } from './wordsCache';
 import { normalizeWord, wordsAreEqual } from './wordsDuplicatesCheck';
-
-interface WordData {
-  id: string;
-  ru: string;
-  en: string;
-  ko: string;
-  translations: {
-    ru: string;
-    en: string;
-    ko: string;
-  };
-  userId?: string;
-  createdAt?: string | number | Date;
-}
 
 export interface CheckDuplicatesResult {
   duplicatesCount: number;
@@ -37,7 +24,7 @@ export const checkAndRemoveDuplicates = async (): Promise<CheckDuplicatesResult>
     normalized: normalizeWord(word),
   }));
 
-  const uniqueWords: WordData[] = [];
+  const uniqueWords: Word[] = [];
   const seenKeys = new Set<string>();
 
   for (const { word, normalized } of normalizedWords) {
@@ -91,9 +78,7 @@ export const cleanupDuplicates = (): void => {
       return;
     }
 
-    const uniqueWords = Array.from(
-      new Map(words.map((word: WordData) => [word.id, word])).values()
-    );
+    const uniqueWords = Array.from(new Map(words.map((word: Word) => [word.id, word])).values());
 
     if (uniqueWords.length !== words.length) {
       saveWordsToCache(userId, uniqueWords);

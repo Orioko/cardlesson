@@ -1,5 +1,5 @@
-import { LANGS } from '../components/WordCard/constants';
-import type { Lang } from '../components/WordCard/types';
+import { LANGS } from '../../components/WordCard/constants';
+import type { Lang } from '../../components/WordCard/types';
 
 const FRONT_CARD_LANGUAGE_KEY = 'front_card_language';
 

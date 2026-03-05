@@ -16,7 +16,7 @@ import {
   initializeRepeatState,
   resetRepeatState,
   type RepeatState,
-} from '../../utils/repeatUtils';
+} from './repeatUtils';
 import styles from './RepeatPage.module.scss';
 
 const RepeatPageContent = () => {
