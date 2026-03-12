@@ -116,5 +116,6 @@
   "lastFiveRecords": "각 시간대별 최근 5개 기록 표시",
   "clearRecords": "기록 지우기",
   "clear": "지우기",
-  "confirmClearRecords": "모든 기록을 지우시겠습니까?"
+  "confirmClearRecords": "모든 기록을 지우시겠습니까?",
+  "searchWordsPlaceholder": "단어 검색 (모든 언어)"
 }

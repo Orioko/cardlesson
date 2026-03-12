@@ -14,6 +14,12 @@
   box-sizing: border-box;
 }
 
+.search {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
 .actions {
   display: flex;
   justify-content: center;
@@ -32,6 +38,10 @@
 
 .statsItem {
   white-space: nowrap;
+}
+
+.statsItemButton {
+  cursor: pointer;
 }
 
 .addButton {
@@ -86,6 +96,10 @@
     padding: 16px;
   }
 
+  .search {
+    margin-bottom: 16px;
+  }
+
   .actions {
     margin-bottom: 24px;
   }
@@ -116,6 +130,10 @@
 
   .content {
     padding: 12px;
+  }
+
+  .search {
+    margin-bottom: 12px;
   }
 
   .actions {
