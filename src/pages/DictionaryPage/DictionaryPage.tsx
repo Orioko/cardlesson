@@ -1,5 +1,6 @@
 import { Paginator } from 'primereact/paginator';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import type { KeyboardEvent } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AddWordForm from '../../components/AddWordForm';
@@ -8,6 +9,7 @@ import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import WordCard from '../../components/WordCard';
+import DictionarySearch from '../../components/DictionarySearch';
 import { useWordActions } from '../../hooks/useWordActions';
 import { useWordsContext } from '../../hooks/useWordsContext';
 import {
@@ -37,20 +39,52 @@ const DictionaryPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   const totalWordsCount = words.length;
+
+  const filteredWords = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    if (!query) {
+      return words;
+    }
+
+    return words.filter((word) => {
+      const candidates = [
+        word.ru,
+        word.en,
+        word.ko,
+        word.translations?.ru,
+        word.translations?.en,
+        word.translations?.ko,
+      ];
+
+      return candidates.some((value) => {
+        if (!value) {
+          return false;
+        }
+
+        return value.toLowerCase().includes(query);
+      });
+    });
+  }, [words, searchQuery]);
 
   const todayWordsCount = useMemo(() => getTodayWordsCount(words), [words]);
 
   const adjustedFirst = useMemo(
-    () => calculateAdjustedFirst(first, words.length),
-    [first, words.length]
+    () => calculateAdjustedFirst(first, filteredWords.length),
+    [first, filteredWords.length]
   );
 
-  const paginatedWords = useMemo(() => getPaginatedItems(words, first, rows), [words, first, rows]);
+  const paginatedWords = useMemo(
+    () => getPaginatedItems(filteredWords, first, rows),
+    [filteredWords, first, rows]
+  );
 
   const handlePageChangeEvent = (event: { first: number; rows: number }) => {
-    const newState = handlePageChange(event, words.length);
+    const newState = handlePageChange(event, filteredWords.length);
     setFirst(newState.first);
     setRows(newState.rows);
   };
@@ -88,16 +122,50 @@ const DictionaryPage = () => {
     clearEditingWord();
   };
 
+  const handleToggleSearch = () => {
+    setIsSearchVisible((prevState) => {
+      const nextState = !prevState;
+
+      if (!nextState) {
+        setSearchQuery('');
+        setFirst(0);
+      }
+
+      return nextState;
+    });
+  };
+
+  const handleStatsKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleToggleSearch();
+    }
+  };
+
   return (
     <div className={styles.dictionaryContainer}>
       <Header title={t('myDictionary')} showNavigation={true} />
       <div className={styles.content}>
         <div className={styles.stats}>
-          <span className={styles.statsItem}>{t('totalWords', { count: totalWordsCount })}</span>
+          <span
+            className={`${styles.statsItem} ${styles.statsItemButton}`}
+            onClick={handleToggleSearch}
+            role="button"
+            tabIndex={0}
+            onKeyDown={handleStatsKeyDown}
+          >
+            {t('totalWords', { count: totalWordsCount })}
+          </span>
           <span className={styles.statsItem}>
             {t('wordsAddedToday', { count: todayWordsCount })}
           </span>
         </div>
+
+        {isSearchVisible && (
+          <div className={styles.search}>
+            <DictionarySearch value={searchQuery} onChange={setSearchQuery} />
+          </div>
+        )}
 
         <div className={styles.actions}>
           <GradientButton
@@ -138,7 +206,7 @@ const DictionaryPage = () => {
             <Paginator
               first={adjustedFirst}
               rows={rows}
-              totalRecords={words.length}
+              totalRecords={filteredWords.length}
               rowsPerPageOptions={[10, 20, 30]}
               onPageChange={handlePageChangeEvent}
               className={styles.paginator}

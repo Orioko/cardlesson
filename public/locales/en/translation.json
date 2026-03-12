@@ -117,5 +117,6 @@
   "lastFiveRecords": "Showing last 5 records for each duration",
   "clearRecords": "Clear Records",
   "clear": "Clear",
-  "confirmClearRecords": "Are you sure you want to clear all records?"
+  "confirmClearRecords": "Are you sure you want to clear all records?",
+  "searchWordsPlaceholder": "Search in words (any language)"
 }
