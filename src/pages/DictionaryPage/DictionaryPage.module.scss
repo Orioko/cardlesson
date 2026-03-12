@@ -109,7 +109,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 550px) {
   .dictionaryContainer {
     padding-top: 115px;
   }
@@ -127,7 +127,7 @@
   }
 
   .cardsContainer {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: 1fr;
     gap: 8px;
   }
 
