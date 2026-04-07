@@ -16,7 +16,7 @@ export interface RepeatState {
   wordsQueue: Word[];
   isCompleted: boolean;
   correctWords: Set<string>;
-  incorrectCount: number;
+  incorrectWords: Set<string>;
 }
 
 export const initializeRepeatState = (words: Word[]): RepeatState => {
@@ -25,7 +25,7 @@ export const initializeRepeatState = (words: Word[]): RepeatState => {
     wordsQueue: words.length > 0 ? shuffleArray([...words]) : [],
     isCompleted: false,
     correctWords: new Set(),
-    incorrectCount: 0,
+    incorrectWords: new Set(),
   };
 };
 
@@ -119,12 +119,15 @@ export const handleIncorrectAnswer = (
     newIndex = 0;
   }
 
+  const newIncorrectWords = new Set(state.incorrectWords);
+  newIncorrectWords.add(currentWord.id);
+
   return {
     newState: {
       ...state,
       wordsQueue: newQueue,
       currentIndex: newIndex,
-      incorrectCount: state.incorrectCount + 1,
+      incorrectWords: newIncorrectWords,
     },
   };
 };
