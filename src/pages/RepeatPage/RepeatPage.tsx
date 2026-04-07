@@ -139,7 +139,7 @@ const RepeatPageContent = () => {
                 {t('correctCount', { count: repeatState.correctWords.size })}
               </span>
               <span className={styles.progressSecondary}>
-                {t('incorrectCount', { count: repeatState.incorrectCount })}
+                {t('incorrectCount', { count: repeatState.incorrectWords.size })}
               </span>
             </div>
           </div>
