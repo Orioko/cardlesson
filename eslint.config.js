@@ -14,6 +14,15 @@ export default defineConfig([
   reactRefresh.configs.vite,
   prettierConfig,
   {
+    files: ['**/metro.config.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     plugins: {
       'react-hooks': reactHooks,

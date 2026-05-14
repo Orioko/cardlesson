@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { getUserId } from '../utils/localAuth';
 import { fetchWords } from '../utils/wordsApi';
+import { getUserId, onAuthChange } from '../utils/localAuth';
 import { WordsContext, type WordData } from './WordsContext';
 
 interface WordsProviderProps {
@@ -31,7 +31,9 @@ export const WordsProvider = ({ children }: WordsProviderProps) => {
   }, []);
 
   useEffect(() => {
-    loadWords();
+    return onAuthChange(() => {
+      void loadWords();
+    });
   }, [loadWords]);
 
   const refreshWords = useCallback(() => {

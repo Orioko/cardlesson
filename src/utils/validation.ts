@@ -12,7 +12,10 @@ export const validateEmail = (email: string): ValidationResult => {
     return { isValid: false, error: VALIDATION_ERRORS.EMAIL_REQUIRED };
   }
 
-  if (!VALIDATION_RULES.EMAIL_REGEX.test(trimmedEmail)) {
+  const isEmail = VALIDATION_RULES.EMAIL_REGEX.test(trimmedEmail);
+  const isLocalLogin = VALIDATION_RULES.LOCAL_LOGIN_REGEX.test(trimmedEmail);
+
+  if (!isEmail && !isLocalLogin) {
     return { isValid: false, error: VALIDATION_ERRORS.EMAIL_INVALID };
   }
 

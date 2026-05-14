@@ -1,3 +1,5 @@
+import { BUILTIN_ACCOUNTS } from '../../shared/constants/builtinAccounts';
+
 interface UserCredentials {
   email: string;
   password: string;
@@ -46,6 +48,11 @@ export const findUserByEmail = (email: string): UserCredentials | null => {
   return users.find((u) => u.email === email) || null;
 };
 
+export const findUserById = (id: string): UserCredentials | null => {
+  const users = getUsersFromStorage();
+  return users.find((u) => u.id === id) || null;
+};
+
 export const verifyUserCredentials = (email: string, password: string): UserCredentials | null => {
   const user = findUserByEmail(email);
 
@@ -60,10 +67,6 @@ export const verifyUserCredentials = (email: string, password: string): UserCred
   return user;
 };
 
-const DEFAULT_USER_EMAIL = 'maniblesk@gmail.com';
-const DEFAULT_USER_PASSWORD = 'apfl21SME';
-const DEFAULT_USER_ID = 'default_user_maniblesk';
-
 export const initializeDefaultUser = (): void => {
   try {
     if (typeof window === 'undefined' || !window.localStorage) {
@@ -71,29 +74,45 @@ export const initializeDefaultUser = (): void => {
     }
 
     const users = getUsersFromStorage();
-    const defaultUserIndex = users.findIndex((u) => u.email === DEFAULT_USER_EMAIL);
+    let changed = false;
 
-    if (defaultUserIndex === -1) {
-      const defaultUser: UserCredentials = {
-        email: DEFAULT_USER_EMAIL,
-        password: DEFAULT_USER_PASSWORD,
-        id: DEFAULT_USER_ID,
-        createdAt: 0,
-      };
+    for (const builtin of BUILTIN_ACCOUNTS) {
+      const index = users.findIndex((u) => u.id === builtin.id);
 
-      users.push(defaultUser);
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-      console.log('Дефолтный пользователь создан:', DEFAULT_USER_EMAIL);
-    } else {
-      const existingUser = users[defaultUserIndex];
-      if (existingUser.password !== DEFAULT_USER_PASSWORD) {
-        users[defaultUserIndex] = {
-          ...existingUser,
-          password: DEFAULT_USER_PASSWORD,
-        };
-        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-        console.log('Пароль дефолтного пользователя восстановлен');
+      if (index === -1) {
+        const byEmailIndex = users.findIndex((u) => u.email === builtin.email);
+        if (byEmailIndex !== -1) {
+          users[byEmailIndex] = {
+            ...users[byEmailIndex],
+            id: builtin.id,
+            password: builtin.password,
+            email: builtin.email,
+          };
+        } else {
+          users.push({
+            email: builtin.email,
+            password: builtin.password,
+            id: builtin.id,
+            createdAt: 0,
+          });
+        }
+        changed = true;
+        continue;
       }
+
+      const existing = users[index];
+      if (existing.password !== builtin.password || existing.email !== builtin.email) {
+        users[index] = {
+          ...existing,
+          email: builtin.email,
+          password: builtin.password,
+        };
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
     }
   } catch (error) {
     console.error('Ошибка инициализации дефолтного пользователя:', error);

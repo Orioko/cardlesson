@@ -1,8 +1,13 @@
 import { ERROR_MESSAGES } from '../constants/errors';
 import { getFromLocalStorage, isLocalStorageAvailable, saveToLocalStorage } from './localStorage';
-import { findUserByEmail, saveUserToStorage, verifyUserCredentials } from './userStorage';
+import {
+  findUserByEmail,
+  findUserById,
+  saveUserToStorage,
+  verifyUserCredentials,
+} from './userStorage';
 
-interface LocalUser {
+export interface LocalUser {
   id: string;
   email?: string;
   name?: string;
@@ -100,6 +105,33 @@ export const logout = async (): Promise<void> => {
     dispatchUserChangeEvent(null);
   } catch {
     console.error('Ошибка выхода');
+  }
+};
+
+export const switchToRegisteredUser = (userId: string): LocalUser => {
+  if (!isLocalStorageAvailable()) {
+    throw new Error(ERROR_MESSAGES.LOCALSTORAGE_NOT_SUPPORTED);
+  }
+
+  try {
+    const credentials = findUserById(userId);
+
+    if (!credentials) {
+      throw new Error('Пользователь не найден');
+    }
+
+    const user: LocalUser = {
+      id: credentials.id,
+      email: credentials.email,
+      name: credentials.email.split('@')[0],
+    };
+
+    saveToLocalStorage(USER_STORAGE_KEY, user);
+    dispatchUserChangeEvent(user);
+    return user;
+  } catch (error) {
+    console.error('Ошибка смены профиля:', error);
+    throw error instanceof Error ? error : new Error('Ошибка смены профиля');
   }
 };
 

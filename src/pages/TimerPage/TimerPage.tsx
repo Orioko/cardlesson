@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import AddWordForm from '../../components/AddWordForm';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
 import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
@@ -11,6 +12,7 @@ import WhiteButton from '../../components/WhiteButton';
 import WordCard from '../../components/WordCard';
 import { useTimeFormatter } from '../../hooks/useTimeFormatter';
 import { useWordEdit } from '../../hooks/useWordEdit';
+import { useWordActions } from '../../hooks/useWordActions';
 import { useWordsContext } from '../../hooks/useWordsContext';
 import {
   handleCorrectAnswer,
@@ -36,7 +38,7 @@ interface TimerState {
 const TimerPageContent = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { words } = useWordsContext();
+  const { words, refreshWords } = useWordsContext();
   const { formatTime } = useTimeFormatter();
 
   const [selectedTimer, setSelectedTimer] = useState<TimerOption | null>(null);
@@ -158,6 +160,60 @@ const TimerPageContent = () => {
         setRepeatState(result.newState);
       },
     });
+
+  const { deletingWordId, handleDelete, confirmDelete, cancelDelete } = useWordActions({
+    onWordUpdated: refreshWords,
+  });
+
+  const handleConfirmDelete = useCallback(async () => {
+    await confirmDelete((deletedWordId) => {
+      setWordsCompleted((prev) => {
+        const newCompleted = new Set(prev);
+        newCompleted.delete(deletedWordId);
+        return newCompleted;
+      });
+
+      setRepeatState((prev) => {
+        if (!prev) {
+          return prev;
+        }
+
+        const deletedWordIndex = prev.wordsQueue.findIndex((word) => word.id === deletedWordId);
+        const newQueue = prev.wordsQueue.filter((word) => word.id !== deletedWordId);
+        const newCorrectWords = new Set(prev.correctWords);
+        const newIncorrectWords = new Set(prev.incorrectWords);
+        newCorrectWords.delete(deletedWordId);
+        newIncorrectWords.delete(deletedWordId);
+
+        if (newQueue.length === 0) {
+          return {
+            ...prev,
+            currentIndex: 0,
+            wordsQueue: [],
+            isCompleted: true,
+            correctWords: newCorrectWords,
+            incorrectWords: newIncorrectWords,
+          };
+        }
+
+        let newIndex = prev.currentIndex;
+        if (deletedWordIndex !== -1 && deletedWordIndex < prev.currentIndex) {
+          newIndex -= 1;
+        }
+        if (newIndex >= newQueue.length) {
+          newIndex = 0;
+        }
+
+        return {
+          ...prev,
+          currentIndex: newIndex,
+          wordsQueue: newQueue,
+          correctWords: newCorrectWords,
+          incorrectWords: newIncorrectWords,
+        };
+      });
+    });
+  }, [confirmDelete]);
 
   const handleReset = useCallback(() => {
     setSelectedTimer(null);
@@ -297,6 +353,7 @@ const TimerPageContent = () => {
             }}
             showActions={true}
             onEdit={handleEditWord}
+            onDelete={handleDelete}
           />
         </div>
         <div className={styles.actions}>
@@ -337,6 +394,11 @@ const TimerPageContent = () => {
         onWordAdded={handleWordSaved}
         editWordId={editingWord?.id}
         editWordData={editingWord?.data}
+      />
+      <ConfirmDialog
+        visible={Boolean(deletingWordId)}
+        onHide={cancelDelete}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

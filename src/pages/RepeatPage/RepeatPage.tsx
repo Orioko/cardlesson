@@ -3,7 +3,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AddWordForm from '../../components/AddWordForm';
 import Footer from '../../components/Footer';
-import GradientButton from '../../components/GradientButton';
 import Header from '../../components/Header';
 import { EmptyState, LoadingState } from '../../components/PageStates';
 import WordCard from '../../components/WordCard';
@@ -71,11 +70,12 @@ const RepeatPageContent = () => {
         <div className={styles.content}>
           <div className={styles.finishedState}>
             <p>{t('allWordsCompleted')}</p>
-            <GradientButton
+            <Button
               icon="pi pi-refresh"
               label={t('repeatAgain')}
               onClick={handleRepeatAgain}
               className={styles.repeatButton}
+              text
             />
           </div>
         </div>
