@@ -1,0 +1,68 @@
+interface WordData {
+  id?: string;
+  ru?: string;
+  en?: string;
+  ko?: string;
+  translations?: {
+    ru?: string;
+    en?: string;
+    ko?: string;
+  };
+}
+
+interface WordDataNormalized {
+  ru: string;
+  en: string;
+  ko: string;
+}
+
+export const normalizeWord = (word: WordData): WordDataNormalized => {
+  const getFieldValue = (main: string | undefined, translation: string | undefined): string => {
+    const value = (main || translation || '').trim().toLowerCase();
+    return value;
+  };
+
+  return {
+    ru: getFieldValue(word.ru, word.translations?.ru),
+    en: getFieldValue(word.en, word.translations?.en),
+    ko: getFieldValue(word.ko, word.translations?.ko),
+  };
+};
+
+export const wordsAreEqual = (word1: WordDataNormalized, word2: WordDataNormalized): boolean => {
+  const getNonEmptyValues = (word: WordDataNormalized): string[] => {
+    return [word.ru, word.en, word.ko].filter((value) => value.length > 0).sort();
+  };
+
+  const values1 = getNonEmptyValues(word1);
+  const values2 = getNonEmptyValues(word2);
+
+  if (values1.length !== values2.length || values1.length < 2) {
+    return false;
+  }
+
+  if (values1.length === 0) {
+    return false;
+  }
+
+  return values1.every((value, index) => value === values2[index]);
+};
+
+export const isDuplicateWord = (newWord: WordData, existingWords: WordData[]): boolean => {
+  if (existingWords.length === 0) {
+    return false;
+  }
+
+  const normalizedNew = normalizeWord(newWord);
+  const normalizedKey = [normalizedNew.ru, normalizedNew.en, normalizedNew.ko]
+    .sort()
+    .filter((v) => v.length > 0)
+    .join('|');
+
+  if (normalizedKey.length === 0) {
+    return false;
+  }
+
+  const normalizedExisting = existingWords.map(normalizeWord);
+  return normalizedExisting.some((existing) => wordsAreEqual(normalizedNew, existing));
+};

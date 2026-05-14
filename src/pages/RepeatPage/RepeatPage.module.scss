@@ -169,7 +169,24 @@
 }
 
 .repeatButton {
-  min-width: 200px;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #666;
+}
+
+.repeatButton:global(.p-button.p-button-text) {
+  color: #666;
+}
+
+.repeatButton :global(.p-button-label) {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.repeatButton :global(.p-button-icon) {
+  font-size: 18px;
+  color: #666;
 }
 
 @media (max-width: 900px) {

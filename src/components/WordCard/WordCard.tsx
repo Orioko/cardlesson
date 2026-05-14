@@ -82,13 +82,34 @@ const WordCard = ({
   const handleFlip = useCallback(() => {
     setIsFlipped((s) => !s);
   }, []);
+  const handleCardClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(`.${styles.actions}`)) {
+        return;
+      }
 
-  const stopPropagation = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-  }, []);
+      handleFlip();
+    },
+    [handleFlip]
+  );
+
+  const stopPropagation = useCallback(
+    (
+      e:
+        | React.MouseEvent<HTMLElement>
+        | React.PointerEvent<HTMLElement>
+        | React.KeyboardEvent<HTMLElement>
+    ) => {
+      e.preventDefault();
+      e.stopPropagation();
+    },
+    []
+  );
 
   const handleEdit = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
       e.stopPropagation();
       if (wordId && wordData && onEdit) {
         onEdit(wordId, wordData);
@@ -99,6 +120,7 @@ const WordCard = ({
 
   const handleDelete = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
       e.stopPropagation();
       if (wordId && onDelete) {
         onDelete(wordId);
@@ -120,11 +142,18 @@ const WordCard = ({
   return (
     <div className={styles.cardContainer}>
       {showActions && wordId && (
-        <div className={styles.actions} onClick={stopPropagation}>
+        <div
+          className={styles.actions}
+          onClick={stopPropagation}
+          onMouseDown={stopPropagation}
+          onPointerDown={stopPropagation}
+        >
           {onEdit && wordData && (
             <Button
               icon="pi pi-pencil"
               onClick={handleEdit}
+              onMouseDown={stopPropagation}
+              onPointerDown={stopPropagation}
               aria-label={t('edit')}
               title={t('edit')}
               className={styles.editButton}
@@ -137,6 +166,8 @@ const WordCard = ({
             <Button
               icon="pi pi-times"
               onClick={handleDelete}
+              onMouseDown={stopPropagation}
+              onPointerDown={stopPropagation}
               aria-label={t('delete')}
               title={t('delete')}
               className={styles.deleteButton}
@@ -149,7 +180,7 @@ const WordCard = ({
       )}
       <div
         className={styles.card}
-        onClick={handleFlip}
+        onClick={handleCardClick}
         role="button"
         tabIndex={0}
         onKeyDown={handleKeyDown}
