@@ -105,47 +105,90 @@ $header-nav-strip-gap-sm: 8px;
 
 .profileOverlay {
   box-sizing: border-box;
-  min-width: calc(4 * #{$header-nav-control-size} + 3 * #{$header-nav-strip-gap-md});
+  min-width: 280px;
   max-width: calc(100vw - 32px);
-  padding: 4px;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.profileOverlayBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.profileCurrentSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.profileCurrentAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.profileCurrentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.profileCurrentEmail {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profileCurrentBadge {
+  font-size: 12px;
+  color: #667eea;
+  font-weight: 500;
+}
+
+.profileOverlayDivider {
+  height: 1px;
+  background: #e8e8e8;
+  margin: 0;
 }
 
 .profileOverlayTitle {
-  padding: 4px 10px 6px;
+  padding: 8px 16px 4px;
   font-size: 12px;
   font-weight: 600;
-  color: #555;
+  color: #888;
   line-height: 1.2;
-  min-height: $header-nav-control-size;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .profileAccountRow {
   width: 100%;
   justify-content: flex-start;
   box-sizing: border-box;
-  min-height: $header-nav-control-size;
-  height: $header-nav-control-size;
-  padding: 0 8px;
-  margin-bottom: 2px;
-  border-radius: 6px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 0;
   transition: all 0.2s ease;
-  gap: 8px;
+  gap: 10px;
 
   &:hover {
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba(102, 126, 234, 0.08);
   }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.profileAccountRowActive {
-  background: rgba(102, 126, 234, 0.15);
-  font-weight: 600;
 }
 
 .profileRowChip {
@@ -170,9 +213,17 @@ $header-nav-strip-gap-sm: 8px;
   white-space: nowrap;
 }
 
-.profileRowCheck {
-  color: #667eea;
-  flex-shrink: 0;
+.profileSignOutAll {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 12px 16px;
+  border-radius: 0;
+  color: #555;
+  font-weight: 500;
+
+  &:hover {
+    background: rgba(102, 126, 234, 0.08);
+  }
 }
 
 .languageButton {
@@ -421,7 +472,7 @@ $header-nav-strip-gap-sm: 8px;
   }
 
   .profileOverlay {
-    min-width: calc(4 * #{$header-nav-control-size} + 3 * #{$header-nav-strip-gap-sm});
+    min-width: 260px;
   }
 
   .navButton {

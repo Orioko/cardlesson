@@ -2,6 +2,8 @@
   "languages": "EN",
   "ExitUser": "Exit",
   "exitAccount": "Sign out of account",
+  "exitAllAccounts": "Sign out of all accounts",
+  "confirmExitAllMessage": "Are you sure you want to sign out of all accounts?",
   "profileMenu": "Accounts",
   "profiles": "Switch account",
   "currentProfile": "Current",

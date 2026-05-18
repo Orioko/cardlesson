@@ -15,5 +15,3 @@ export interface Word {
 }
 
 export type WordInput = Omit<Word, 'id' | 'userId' | 'createdAt'>;
-
-export type WordUpdate = Partial<Word>;

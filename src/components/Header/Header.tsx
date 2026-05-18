@@ -52,6 +52,11 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
     });
   }, [profileAccounts, authUser?.id]);
 
+  const otherProfileAccounts = useMemo(
+    () => sortedProfileAccounts.filter((acc) => acc.id !== authUser?.id),
+    [sortedProfileAccounts, authUser?.id]
+  );
+
   const handleProfileMenuOpen = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     setProfileAccounts(getUsersFromStorage().map((u) => ({ id: u.id, email: u.email })));
     profileOverlayRef.current?.toggle(e);
@@ -83,9 +88,10 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
     languageOverlayRef.current?.toggle(e);
   }, []);
 
-  const handleExitClick = () => {
+  const handleExitClick = useCallback(() => {
+    profileOverlayRef.current?.hide();
     setShowExitDialog(true);
-  };
+  }, []);
 
   const handleConfirmExit = async () => {
     try {
@@ -107,48 +113,6 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
           <h1 className={styles.title}>{title}</h1>
           <div className={styles.controls}>
             {showNavigation && <NavigationButtons currentPath={location.pathname} />}
-            {showExitButton && authUser && (
-              <div className={styles.profileSwitcher}>
-                <Button
-                  text
-                  type="button"
-                  onClick={handleProfileMenuOpen}
-                  className={styles.profileMenuButton}
-                  aria-label={t('profileMenu')}
-                >
-                  <div className={styles.profileMenuButtonContent}>
-                    <span className={styles.profileAvatar}>
-                      {(authUser.email ?? '?').charAt(0).toUpperCase()}
-                    </span>
-                    <i className="pi pi-chevron-down" />
-                  </div>
-                </Button>
-                <OverlayPanel ref={profileOverlayRef} className={styles.profileOverlay}>
-                  <div className={styles.profileOverlayTitle}>{t('profiles')}</div>
-                  {sortedProfileAccounts.map((acc) => {
-                    const isActive = acc.id === authUser.id;
-
-                    return (
-                      <Button
-                        key={acc.id}
-                        text
-                        type="button"
-                        className={`${styles.profileAccountRow} ${isActive ? styles.profileAccountRowActive : ''}`}
-                        onClick={() => handleSelectProfile(acc.id)}
-                      >
-                        <span className={styles.profileRowChip}>
-                          {acc.email.charAt(0).toUpperCase()}
-                        </span>
-                        <span className={styles.profileRowEmail}>{acc.email}</span>
-                        {isActive ? (
-                          <i className={`pi pi-check ${styles.profileRowCheck}`} />
-                        ) : null}
-                      </Button>
-                    );
-                  })}
-                </OverlayPanel>
-              </div>
-            )}
             <div className={styles.languageSwitcher}>
               <Button text onClick={handleLanguageButtonClick} className={styles.languageButton}>
                 <div className={styles.languageButtonContent}>
@@ -190,13 +154,65 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
               text
               severity="secondary"
             />
-            {showExitButton && (
-              <WhiteButton
-                onClick={handleExitClick}
-                icon="pi pi-times"
-                label={t('ExitUser')}
-                className={styles.exitButton}
-              />
+            {showExitButton && authUser && (
+              <div className={styles.profileSwitcher}>
+                <Button
+                  text
+                  type="button"
+                  onClick={handleProfileMenuOpen}
+                  className={styles.profileMenuButton}
+                  aria-label={t('profileMenu')}
+                >
+                  <div className={styles.profileMenuButtonContent}>
+                    <span className={styles.profileAvatar}>
+                      {(authUser.email ?? '?').charAt(0).toUpperCase()}
+                    </span>
+                    <i className="pi pi-chevron-down" />
+                  </div>
+                </Button>
+                <OverlayPanel ref={profileOverlayRef} className={styles.profileOverlay}>
+                  <div className={styles.profileOverlayBody}>
+                    <div className={styles.profileCurrentSection}>
+                      <span className={styles.profileCurrentAvatar}>
+                        {(authUser.email ?? '?').charAt(0).toUpperCase()}
+                      </span>
+                      <div className={styles.profileCurrentInfo}>
+                        <span className={styles.profileCurrentEmail}>{authUser.email}</span>
+                        <span className={styles.profileCurrentBadge}>{t('currentProfile')}</span>
+                      </div>
+                    </div>
+                    {otherProfileAccounts.length > 0 ? (
+                      <>
+                        <div className={styles.profileOverlayDivider} />
+                        <div className={styles.profileOverlayTitle}>{t('profiles')}</div>
+                        {otherProfileAccounts.map((acc) => (
+                          <Button
+                            key={acc.id}
+                            text
+                            type="button"
+                            className={styles.profileAccountRow}
+                            onClick={() => handleSelectProfile(acc.id)}
+                          >
+                            <span className={styles.profileRowChip}>
+                              {acc.email.charAt(0).toUpperCase()}
+                            </span>
+                            <span className={styles.profileRowEmail}>{acc.email}</span>
+                          </Button>
+                        ))}
+                      </>
+                    ) : null}
+                    <div className={styles.profileOverlayDivider} />
+                    <Button
+                      text
+                      type="button"
+                      icon="pi pi-sign-out"
+                      className={styles.profileSignOutAll}
+                      label={t('exitAllAccounts')}
+                      onClick={handleExitClick}
+                    />
+                  </div>
+                </OverlayPanel>
+              </div>
             )}
           </div>
         </div>
@@ -213,10 +229,10 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
         className={styles.exitDialog}
       >
         <div className={styles.exitContent}>
-          <p>{t('confirmExitMessage')}</p>
+          <p>{t('confirmExitAllMessage')}</p>
           <div className={styles.exitActions}>
             <WhiteButton label={t('cancel')} onClick={handleCancelExit} />
-            <GradientButton label={t('ExitUser')} onClick={handleConfirmExit} />
+            <GradientButton label={t('exitAllAccounts')} onClick={handleConfirmExit} />
           </div>
         </div>
       </Dialog>

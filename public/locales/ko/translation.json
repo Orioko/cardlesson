@@ -2,6 +2,8 @@
   "languages": "KO",
   "ExitUser": "나가기",
   "exitAccount": "계정에서 로그아웃",
+  "exitAllAccounts": "모든 계정에서 로그아웃",
+  "confirmExitAllMessage": "모든 계정에서 로그아웃하시겠습니까?",
   "profileMenu": "계정",
   "profiles": "계정 전환",
   "currentProfile": "현재",

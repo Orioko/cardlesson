@@ -2,6 +2,8 @@
   "languages": "RU",
   "ExitUser": "Выйти",
   "exitAccount": "Выйти из учётной записи",
+  "exitAllAccounts": "Выйти из всех аккаунтов",
+  "confirmExitAllMessage": "Вы уверены, что хотите выйти из всех аккаунтов?",
   "profileMenu": "Аккаунты",
   "profiles": "Сменить аккаунт",
   "currentProfile": "Текущий",
