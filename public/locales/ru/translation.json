@@ -76,6 +76,7 @@
   "invalidCredentials": "Неверный email или пароль",
   "userAlreadyExists": "Пользователь с таким email уже существует",
   "languageSettings": "Настройки",
+  "appLanguage": "Язык приложения",
   "selectLanguagesForCards": "Выберите языки, которые будут использоваться при добавлении карточек",
   "selectFrontCardLanguage": "Выберите язык, который будет отображаться на лицевой стороне карточки",
   "random": "Случайный",

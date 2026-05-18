@@ -76,6 +76,7 @@
   "invalidCredentials": "Invalid email or password",
   "userAlreadyExists": "User with this email already exists",
   "languageSettings": "Settings",
+  "appLanguage": "App language",
   "selectLanguagesForCards": "Select languages that will be used when adding cards",
   "selectFrontCardLanguage": "Select the language to display on the front of the card",
   "random": "Random",

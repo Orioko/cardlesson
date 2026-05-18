@@ -6,6 +6,7 @@ import { useStatusMessages } from '../../hooks/useStatusMessages';
 import { useWordsOperations } from '../../hooks/useWordsOperations';
 import GradientButton from '../GradientButton';
 import type { Lang } from '../WordCard/types';
+import AppLanguageRadioList from './AppLanguageRadioList';
 import FrontCardLanguageRadioList from './FrontCardLanguageRadioList';
 import ImportExportButtons from './ImportExportButtons';
 import LanguageCheckboxList from './LanguageCheckboxList';
@@ -18,7 +19,9 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
   const {
     selectedLangs,
     frontCardLang,
+    appLanguage,
     setFrontCardLang,
+    setAppLanguage,
     handleLangToggle: toggleLang,
     handleSave: saveLanguages,
   } = useLanguageSettings();
@@ -63,6 +66,9 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
   return (
     <div className={styles.content}>
       <StatusMessages error={error} statusMessage={statusMessage} statusSeverity={statusSeverity} />
+
+      <p className={styles.description}>{t('appLanguage')}</p>
+      <AppLanguageRadioList appLanguage={appLanguage} onChange={setAppLanguage} />
 
       <p className={styles.description}>{t('selectLanguagesForCards')}</p>
       <LanguageCheckboxList selectedLangs={selectedLangs} onToggle={handleLangToggle} />
