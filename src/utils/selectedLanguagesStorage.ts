@@ -1,5 +1,6 @@
 import { LANGS } from '../components/WordCard/constants';
 import type { Lang } from '../components/WordCard/types';
+import { getUserScopedStorageKey, migrateSharedLegacySettingsIfNeeded } from './userSettingsScope';
 
 const SELECTED_LANGUAGES_KEY = 'selected_languages';
 
@@ -9,7 +10,15 @@ export const getSelectedLanguages = (): Lang[] => {
       return LANGS;
     }
 
-    const stored = localStorage.getItem(SELECTED_LANGUAGES_KEY);
+    const storageKey = getUserScopedStorageKey(SELECTED_LANGUAGES_KEY);
+
+    if (!storageKey) {
+      return LANGS;
+    }
+
+    migrateSharedLegacySettingsIfNeeded();
+
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       const parsed = JSON.parse(stored) as Lang[];
       const valid = parsed.filter((lang) => LANGS.includes(lang));
@@ -30,6 +39,12 @@ export const saveSelectedLanguages = (languages: Lang[]): void => {
       return;
     }
 
+    const storageKey = getUserScopedStorageKey(SELECTED_LANGUAGES_KEY);
+
+    if (!storageKey) {
+      return;
+    }
+
     if (languages.length < 2) {
       throw new Error('Необходимо выбрать минимум 2 языка');
     }
@@ -39,7 +54,7 @@ export const saveSelectedLanguages = (languages: Lang[]): void => {
       throw new Error('Необходимо выбрать минимум 2 языка');
     }
 
-    localStorage.setItem(SELECTED_LANGUAGES_KEY, JSON.stringify(valid));
+    localStorage.setItem(storageKey, JSON.stringify(valid));
     window.dispatchEvent(new CustomEvent('selectedLanguagesChanged'));
   } catch (error) {
     console.error('Ошибка сохранения выбранных языков:', error);
