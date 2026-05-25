@@ -386,22 +386,43 @@ $header-nav-strip-gap-sm: 8px;
 
 .exitDialog {
   width: 90vw;
-  max-width: 400px;
+  max-width: 440px;
+
+  :global(.p-dialog-header) {
+    padding: 24px 24px 12px;
+  }
+
+  :global(.p-dialog-content) {
+    padding: 0 24px 24px;
+  }
 }
 
 .exitContent {
-  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 8px;
+}
+
+.exitContent p {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 15px;
 }
 
 .exitActions {
   display: flex;
   gap: 12px;
-  justify-content: flex-end;
-  margin-top: 20px;
+  justify-content: space-between;
+  width: 100%;
 }
 
-@media (max-width: 480px) {
-  .exitActions {
-    flex-direction: row;
-  }
+.exitActions > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.exitActions :global(.p-button) {
+  width: 100%;
+  justify-content: center;
 }
