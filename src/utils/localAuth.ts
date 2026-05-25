@@ -1,4 +1,5 @@
 import { ERROR_MESSAGES } from '../constants/errors';
+import { applyUserSettingsForCurrentUser } from './applyUserSettings';
 import { getFromLocalStorage, isLocalStorageAvailable, saveToLocalStorage } from './localStorage';
 import {
   findUserByEmail,
@@ -54,6 +55,7 @@ export const login = (email: string, password: string): Promise<LocalUser> => {
         };
 
         saveToLocalStorage(USER_STORAGE_KEY, user);
+        void applyUserSettingsForCurrentUser();
         dispatchUserChangeEvent(user);
         resolve(user);
       } catch (error) {
@@ -89,6 +91,7 @@ export const register = (email: string, password: string): Promise<LocalUser> =>
         };
 
         saveToLocalStorage(USER_STORAGE_KEY, user);
+        void applyUserSettingsForCurrentUser();
         dispatchUserChangeEvent(user);
         resolve(user);
       } catch (error) {
@@ -127,6 +130,7 @@ export const switchToRegisteredUser = (userId: string): LocalUser => {
     };
 
     saveToLocalStorage(USER_STORAGE_KEY, user);
+    void applyUserSettingsForCurrentUser();
     dispatchUserChangeEvent(user);
     return user;
   } catch (error) {

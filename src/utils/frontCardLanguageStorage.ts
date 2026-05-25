@@ -1,5 +1,6 @@
 import { LANGS } from '../components/WordCard/constants';
 import type { Lang } from '../components/WordCard/types';
+import { getUserScopedStorageKey, migrateSharedLegacySettingsIfNeeded } from './userSettingsScope';
 
 const FRONT_CARD_LANGUAGE_KEY = 'front_card_language';
 
@@ -9,7 +10,15 @@ export const getFrontCardLanguage = (): Lang | null => {
       return null;
     }
 
-    const stored = localStorage.getItem(FRONT_CARD_LANGUAGE_KEY);
+    const storageKey = getUserScopedStorageKey(FRONT_CARD_LANGUAGE_KEY);
+
+    if (!storageKey) {
+      return null;
+    }
+
+    migrateSharedLegacySettingsIfNeeded();
+
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       const parsed = stored as Lang;
       if (LANGS.includes(parsed)) {
@@ -29,13 +38,19 @@ export const saveFrontCardLanguage = (language: Lang | null): void => {
       return;
     }
 
+    const storageKey = getUserScopedStorageKey(FRONT_CARD_LANGUAGE_KEY);
+
+    if (!storageKey) {
+      return;
+    }
+
     if (language === null) {
-      localStorage.removeItem(FRONT_CARD_LANGUAGE_KEY);
+      localStorage.removeItem(storageKey);
     } else {
       if (!LANGS.includes(language)) {
         throw new Error('Недопустимый язык');
       }
-      localStorage.setItem(FRONT_CARD_LANGUAGE_KEY, language);
+      localStorage.setItem(storageKey, language);
     }
     window.dispatchEvent(new CustomEvent('frontCardLanguageChanged'));
   } catch (error) {
