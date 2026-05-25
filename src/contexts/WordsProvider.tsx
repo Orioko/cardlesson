@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { applyUserSettingsForCurrentUser } from '../utils/applyUserSettings';
 import { fetchWords } from '../utils/wordsApi';
 import { getUserId, onAuthChange } from '../utils/localAuth';
 import { WordsContext, type WordData } from './WordsContext';
@@ -31,7 +32,10 @@ export const WordsProvider = ({ children }: WordsProviderProps) => {
   }, []);
 
   useEffect(() => {
-    return onAuthChange(() => {
+    return onAuthChange((user) => {
+      if (user) {
+        void applyUserSettingsForCurrentUser();
+      }
       void loadWords();
     });
   }, [loadWords]);

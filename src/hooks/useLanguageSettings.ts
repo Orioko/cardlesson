@@ -1,19 +1,9 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LANGS } from '../components/WordCard/constants';
 import type { Lang } from '../components/WordCard/types';
+import { getAppLanguage, saveAppLanguage } from '../utils/appLanguageStorage';
 import { getFrontCardLanguage, saveFrontCardLanguage } from '../utils/frontCardLanguageStorage';
 import { getSelectedLanguages, saveSelectedLanguages } from '../utils/selectedLanguagesStorage';
-
-const normalizeAppLanguage = (language: string): Lang => {
-  const baseLanguage = language.split('-')[0];
-
-  if (LANGS.includes(baseLanguage as Lang)) {
-    return baseLanguage as Lang;
-  }
-
-  return 'en';
-};
 
 interface UseLanguageSettingsReturn {
   selectedLangs: Lang[];
@@ -29,9 +19,7 @@ export const useLanguageSettings = (): UseLanguageSettingsReturn => {
   const { t, i18n } = useTranslation();
   const [selectedLangs, setSelectedLangs] = useState<Lang[]>(() => getSelectedLanguages());
   const [frontCardLang, setFrontCardLang] = useState<Lang | null>(() => getFrontCardLanguage());
-  const [appLanguage, setAppLanguage] = useState<Lang>(() =>
-    normalizeAppLanguage(i18n.resolvedLanguage || i18n.language || 'en')
-  );
+  const [appLanguage, setAppLanguage] = useState<Lang>(() => getAppLanguage());
 
   const handleLangToggle = useCallback(
     (lang: Lang): string | null => {
@@ -56,6 +44,7 @@ export const useLanguageSettings = (): UseLanguageSettingsReturn => {
 
       saveSelectedLanguages(selectedLangs);
       saveFrontCardLanguage(frontCardLang);
+      saveAppLanguage(appLanguage);
       void i18n.changeLanguage(appLanguage);
       return true;
     } catch {
