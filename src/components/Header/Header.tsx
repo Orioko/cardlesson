@@ -182,7 +182,7 @@ const Header = ({ title, showExitButton = true, showNavigation = false }: Header
           <p>{t('confirmExitAllMessage')}</p>
           <div className={styles.exitActions}>
             <WhiteButton label={t('cancel')} onClick={handleCancelExit} />
-            <GradientButton label={t('exitAllAccounts')} onClick={handleConfirmExit} />
+            <GradientButton label={t('ExitUser')} onClick={handleConfirmExit} />
           </div>
         </div>
       </Dialog>
