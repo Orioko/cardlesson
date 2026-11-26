@@ -50,41 +50,34 @@ const TimerPageContent = () => {
   });
   const [repeatState, setRepeatState] = useState<RepeatState | null>(null);
   const [wordsCompleted, setWordsCompleted] = useState<Set<string>>(new Set());
-  const wordsCompletedRef = useRef<Set<string>>(new Set());
+  // Рекорд сохраняется ровно один раз за запуск таймера — в эффекте ниже, при переходе в isFinished.
+  const recordSavedRef = useRef(false);
 
   useEffect(() => {
-    wordsCompletedRef.current = wordsCompleted;
-  }, [wordsCompleted]);
-
-  useEffect(() => {
-    if (timerState.timeLeft <= 0 && timerState.isRunning && !timerState.isFinished) {
-      if (selectedTimer && wordsCompletedRef.current.size > 0) {
-        saveTimerRecord(selectedTimer, wordsCompletedRef.current.size);
-      }
-      requestAnimationFrame(() => {
-        setTimerState((prev) => ({ ...prev, isRunning: false, isFinished: true }));
-      });
-      return;
-    }
-
     if (!timerState.isRunning || timerState.timeLeft <= 0) {
       return;
     }
 
     const interval = setInterval(() => {
-      setTimerState((prev) => {
-        if (prev.timeLeft <= 1) {
-          if (selectedTimer && wordsCompletedRef.current.size > 0) {
-            saveTimerRecord(selectedTimer, wordsCompletedRef.current.size);
-          }
-          return { ...prev, timeLeft: 0, isRunning: false, isFinished: true };
-        }
-        return { ...prev, timeLeft: prev.timeLeft - 1 };
-      });
+      setTimerState((prev) =>
+        prev.timeLeft <= 1
+          ? { ...prev, timeLeft: 0, isRunning: false, isFinished: true }
+          : { ...prev, timeLeft: prev.timeLeft - 1 }
+      );
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerState.isRunning, timerState.timeLeft, timerState.isFinished, selectedTimer]);
+  }, [timerState.isRunning, timerState.timeLeft]);
+
+  useEffect(() => {
+    if (!timerState.isFinished || recordSavedRef.current) {
+      return;
+    }
+    recordSavedRef.current = true;
+    if (selectedTimer && wordsCompleted.size > 0) {
+      saveTimerRecord(selectedTimer, wordsCompleted.size);
+    }
+  }, [timerState.isFinished, selectedTimer, wordsCompleted]);
 
   const currentWord = useMemo(() => {
     if (
@@ -104,14 +97,11 @@ const TimerPageContent = () => {
       (repeatState?.isCompleted === true ||
         (!currentWord && repeatState && repeatState.wordsQueue.length === 0))
     ) {
-      if (selectedTimer && wordsCompletedRef.current.size > 0) {
-        saveTimerRecord(selectedTimer, wordsCompletedRef.current.size);
-      }
       requestAnimationFrame(() => {
         setTimerState((prev) => ({ ...prev, isRunning: false, isFinished: true }));
       });
     }
-  }, [timerState.isRunning, timerState.isFinished, repeatState, currentWord, selectedTimer]);
+  }, [timerState.isRunning, timerState.isFinished, repeatState, currentWord]);
 
   const handleStartTimer = useCallback(() => {
     if (!selectedTimer) {
@@ -129,6 +119,7 @@ const TimerPageContent = () => {
     });
     setRepeatState(initialState);
     setWordsCompleted(new Set());
+    recordSavedRef.current = false;
   }, [selectedTimer, words]);
 
   const handleCorrect = useCallback(() => {
@@ -158,6 +149,8 @@ const TimerPageContent = () => {
         }
         const result = handleWordUpdate(updatedWord.id, updatedWord, repeatState);
         setRepeatState(result.newState);
+        // обновить общий список, чтобы правка была видна и в словаре
+        void refreshWords();
       },
     });
 
@@ -406,14 +399,15 @@ const TimerPageContent = () => {
 
 const TimerPage = () => {
   const { t } = useTranslation();
-  const { words, loading } = useWordsContext();
-  const wordsKey = useMemo(() => words.map((w) => w.id).join(','), [words]);
+  const { loading } = useWordsContext();
 
   if (loading) {
     return <LoadingState title={t('timer')} containerClassName={styles.timerContainer} />;
   }
 
-  return <TimerPageContent key={wordsKey} />;
+  // Без key от списка слов: запущенный таймер держит свою очередь, и удаление или правка слова
+  // не должны сбрасывать его прогресс.
+  return <TimerPageContent />;
 };
 
 export default TimerPage;

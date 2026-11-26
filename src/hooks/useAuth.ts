@@ -17,9 +17,10 @@ export const useAuth = ({ onSuccess }: UseAuthProps = {}) => {
       return false;
     }
 
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
-      setError(passwordValidation.error || 'Ошибка валидации пароля');
+    // Длину пароля проверяем только при регистрации: у старых аккаунтов пароль может быть короче
+    // нынешнего минимума, и войти они всё равно должны.
+    if (!password) {
+      setError('Введите пароль');
       return false;
     }
 

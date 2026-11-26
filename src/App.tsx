@@ -3,6 +3,7 @@ import { ScrollTop } from 'primereact/scrolltop';
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import styles from './App.module.scss';
+import BackupReminder from './components/BackupReminder';
 import ProtectedRoute from './components/ProtectedRoute';
 import { WordsProvider } from './contexts/WordsProvider';
 
@@ -12,6 +13,7 @@ const RepeatPage = lazy(() => import('./pages/RepeatPage'));
 const TimerPage = lazy(() => import('./pages/TimerPage'));
 const RecordsPage = lazy(() => import('./pages/RecordsPage'));
 const SpellingPage = lazy(() => import('./pages/SpellingPage'));
+const VerbsPage = lazy(() => import('./pages/VerbsPage'));
 
 const App = () => {
   return (
@@ -75,9 +77,18 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/verbs"
+                element={
+                  <ProtectedRoute>
+                    <VerbsPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <ScrollTop threshold={200} className={styles.scrollTop} />
+            <BackupReminder />
           </Suspense>
         </div>
       </WordsProvider>

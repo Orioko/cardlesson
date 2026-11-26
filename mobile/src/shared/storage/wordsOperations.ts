@@ -1,13 +1,10 @@
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { ERROR_MESSAGES } from '../../../../shared/constants/errors';
 import type { Word } from '../../../../shared/types/word';
 import { createWordInput } from '../../../../shared/utils/wordDataHelpers';
-import { normalizeWord, wordsAreEqual } from '../../../../shared/utils/wordsDuplicatesCheck';
-import { addWord, fetchWords, updateWord } from '../../api/wordsApi';
-import { requireUserId } from '../auth/localAuth';
-import { saveStoredWords } from './wordsStorage';
+import { dedupeWords, fetchWords, importWords, updateWord } from '../../api/wordsApi';
 
 export interface ImportResult {
   addedCount: number;
@@ -90,76 +87,8 @@ const autoDistributeWords = (wordValues: { ru: string; en: string; ko: string })
   return result;
 };
 
-const filterDuplicateWords = (importedWords: WordData[], existingWords: WordData[]): WordData[] => {
-  const normalizedExisting = existingWords.map(normalizeWord);
-  const uniqueImported: WordData[] = [];
-  const seenImported = new Set<string>();
-
-  for (const word of importedWords) {
-    const normalized = normalizeWord(word);
-    const normalizedKey = [normalized.ru, normalized.en, normalized.ko]
-      .sort()
-      .filter((value) => value.length > 0)
-      .join('|');
-
-    if (!normalizedKey) {
-      continue;
-    }
-
-    if (seenImported.has(normalizedKey)) {
-      continue;
-    }
-
-    const isDuplicate = normalizedExisting.some((existing) => wordsAreEqual(normalized, existing));
-    if (!isDuplicate) {
-      seenImported.add(normalizedKey);
-      uniqueImported.push(word);
-    }
-  }
-
-  return uniqueImported;
-};
-
-export const checkAndRemoveDuplicates = async (): Promise<CheckDuplicatesResult> => {
-  const words = await fetchWords();
-  if (words.length === 0) {
-    return { duplicatesCount: 0, uniqueWordsCount: 0 };
-  }
-
-  const uniqueWords: Word[] = [];
-  const seenKeys = new Set<string>();
-
-  for (const word of words) {
-    const normalized = normalizeWord(word);
-    const normalizedKey = [normalized.ru, normalized.en, normalized.ko]
-      .sort()
-      .filter((value) => value.length > 0)
-      .join('|');
-
-    if (!normalizedKey || seenKeys.has(normalizedKey)) {
-      continue;
-    }
-
-    const isDuplicate = uniqueWords.some((uniqueWord) =>
-      wordsAreEqual(normalized, normalizeWord(uniqueWord))
-    );
-    if (!isDuplicate) {
-      seenKeys.add(normalizedKey);
-      uniqueWords.push(word);
-    }
-  }
-
-  const duplicatesCount = words.length - uniqueWords.length;
-  if (duplicatesCount > 0) {
-    const userId = await requireUserId();
-    await saveStoredWords(userId, uniqueWords);
-  }
-
-  return {
-    duplicatesCount,
-    uniqueWordsCount: uniqueWords.length,
-  };
-};
+// Повторы ищет и удаляет сервер: из одинаковых слов остаётся самое новое.
+export const checkAndRemoveDuplicates = (): Promise<CheckDuplicatesResult> => dedupeWords();
 
 export const fixWordsLanguages = async (): Promise<FixWordsLanguagesResult> => {
   const words = await fetchWords();
@@ -243,39 +172,30 @@ export const importWordsFromPickedFile = async (): Promise<ImportResult | null> 
     throw new Error(ERROR_MESSAGES.INVALID_FILE_FORMAT);
   }
 
-  const importedWords = parsedJson as WordData[];
-  const existingWords = await fetchWords();
-  const uniqueImportedWords = filterDuplicateWords(importedWords, existingWords);
-
-  let addedCount = 0;
   let errorCount = 0;
-  const duplicatesCount = importedWords.length - uniqueImportedWords.length;
-
-  for (const word of uniqueImportedWords) {
-    try {
-      const wordInput = createWordInput({
-        ru: word.ru || word.translations?.ru || '',
-        en: word.en || word.translations?.en || '',
-        ko: word.ko || word.translations?.ko || '',
-      });
-      const filledFields = [wordInput.ru, wordInput.en, wordInput.ko].filter(
-        (field) => field.trim().length > 0
-      ).length;
-
-      if (filledFields >= 2) {
-        await addWord(wordInput);
-        addedCount++;
-      } else {
-        errorCount++;
-      }
-    } catch {
+  const prepared: WordData[] = [];
+  for (const word of parsedJson as unknown[]) {
+    if (typeof word !== 'object' || word === null) {
       errorCount++;
+      continue;
     }
+    const w = word as WordData;
+    const asText = (v: unknown) => (typeof v === 'string' ? v : '');
+    prepared.push({
+      ...createWordInput({
+        ru: asText(w.ru) || asText(w.translations?.ru),
+        en: asText(w.en) || asText(w.translations?.en),
+        ko: asText(w.ko) || asText(w.translations?.ko),
+      }),
+      createdAt: w.createdAt,
+    });
   }
 
+  // Слова уходят на сервер одним запросом; дубли и слова меньше чем на двух языках он считает сам.
+  const result = await importWords(prepared);
   return {
-    addedCount,
-    errorCount,
-    duplicatesCount,
+    addedCount: result.addedCount,
+    errorCount: errorCount + result.errorCount,
+    duplicatesCount: result.duplicatesCount,
   };
 };

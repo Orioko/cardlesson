@@ -17,7 +17,7 @@ export interface WordData {
 interface WordsContextValue {
   words: WordData[];
   loading: boolean;
-  refreshWords: () => void;
+  refreshWords: () => Promise<void>;
 }
 
 export const WordsContext = createContext<WordsContextValue | undefined>(undefined);

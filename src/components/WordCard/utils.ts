@@ -49,10 +49,9 @@ export const getFrontLanguage = (
 
   const savedFrontLang = getFrontCardLanguage();
 
+  // Выбранный язык лицевой стороны возвращаем, даже если у слова его нет:
+  // карточка покажет пометку «перевод не указан» (см. WordCard).
   if (savedFrontLang !== null) {
-    if (filled.includes(savedFrontLang) && wordData[savedFrontLang]?.trim()) {
-      return savedFrontLang;
-    }
     return savedFrontLang;
   }
 

@@ -13,12 +13,13 @@ type QuickNavProps = {
 const navItems: Array<{
   screen: keyof RootStackParamList;
   labelKey: string;
-  iconName: 'menu-book' | 'spellcheck' | 'sync' | 'timer' | 'bar-chart' | 'settings';
+  iconName: 'menu-book' | 'spellcheck' | 'sync' | 'timer' | 'translate' | 'bar-chart' | 'settings';
 }> = [
   { screen: 'Dictionary', labelKey: 'dictionary', iconName: 'menu-book' },
   { screen: 'Spelling', labelKey: 'spelling', iconName: 'spellcheck' },
   { screen: 'Repeat', labelKey: 'repeat', iconName: 'sync' },
   { screen: 'Timer', labelKey: 'timer', iconName: 'timer' },
+  { screen: 'Verbs', labelKey: 'irregularVerbs', iconName: 'translate' },
   { screen: 'Records', labelKey: 'records', iconName: 'bar-chart' },
   { screen: 'Settings', labelKey: 'settings', iconName: 'settings' },
 ];

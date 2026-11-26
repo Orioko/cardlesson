@@ -1,114 +1,112 @@
-import { ERROR_MESSAGES } from '../../../../shared/constants/errors';
-import { getStorageItem, removeStorageItem, setStorageItem } from '../storage/asyncStorage';
+import { ApiError, apiRequest } from '../api/client';
 import {
-  findUserByEmail,
-  findUserById,
-  saveUserToStorage,
-  verifyUserCredentials,
-} from '../storage/userStorage';
+  emitUserChange,
+  getCurrentUser,
+  getSavedAccounts,
+  getUserId,
+  requireUserId,
+  removeAccount,
+  saveAccount,
+  setCurrentUser,
+  subscribeUserChange,
+  type LocalUser,
+} from '../api/session';
+import { pullSettingsFromServer } from '../storage/languageSettings';
+import { migrateLegacyData } from '../storage/legacyMigration';
 
-export interface LocalUser {
-  id: string;
-  email?: string;
-  name?: string;
+export type { LocalUser };
+export { getCurrentUser, getUserId, requireUserId };
+
+interface AuthResponse {
+  token: string;
+  user: LocalUser;
 }
 
-const USER_STORAGE_KEY = 'local_user';
-
-const listeners = new Set<(user: LocalUser | null) => void>();
-
-const emitUserChange = (user: LocalUser | null): void => {
-  listeners.forEach((listener) => {
-    listener(user);
-  });
-};
-
-export const getCurrentUser = async (): Promise<LocalUser | null> => {
-  return getStorageItem<LocalUser>(USER_STORAGE_KEY);
-};
-
-export const getUserId = async (): Promise<string | null> => {
-  const user = await getCurrentUser();
-  return user?.id ?? null;
+// Вход в профиль: токен сохраняется, данные старой версии (без сервера) переносятся на сервер.
+const startSession = async ({ token, user }: AuthResponse): Promise<LocalUser> => {
+  await saveAccount(user, token);
+  await setCurrentUser(user);
+  await migrateLegacyData(user);
+  await pullSettingsFromServer();
+  emitUserChange(user);
+  return user;
 };
 
 export const login = async (email: string, password: string): Promise<LocalUser> => {
-  const userCredentials = await verifyUserCredentials(email, password);
-
-  if (!userCredentials) {
-    throw new Error('Invalid email or password');
-  }
-
-  const user: LocalUser = {
-    id: userCredentials.id,
-    email: userCredentials.email,
-    name: userCredentials.email.split('@')[0],
-  };
-
-  await setStorageItem(USER_STORAGE_KEY, user);
-  emitUserChange(user);
-  return user;
+  const resp = await apiRequest<AuthResponse>(
+    'POST',
+    '/api/auth/login',
+    { email, password },
+    { auth: false }
+  );
+  return startSession(resp);
 };
 
 export const register = async (email: string, password: string): Promise<LocalUser> => {
-  const existingUser = await findUserByEmail(email);
-
-  if (existingUser) {
-    throw new Error('User with this email already exists');
-  }
-
-  const newUserCredentials = await saveUserToStorage(email, password);
-  const user: LocalUser = {
-    id: newUserCredentials.id,
-    email: newUserCredentials.email,
-    name: newUserCredentials.email.split('@')[0],
-  };
-
-  await setStorageItem(USER_STORAGE_KEY, user);
-  emitUserChange(user);
-  return user;
+  const resp = await apiRequest<AuthResponse>(
+    'POST',
+    '/api/auth/register',
+    { email, password },
+    { auth: false }
+  );
+  return startSession(resp);
 };
 
+// logout — «Выйти» (как и раньше): уйти на экран входа, оставив профиль в меню переключения.
 export const logout = async (): Promise<void> => {
-  await removeStorageItem(USER_STORAGE_KEY);
+  await setCurrentUser(null);
   emitUserChange(null);
 };
 
-export const switchToRegisteredUser = async (userId: string): Promise<LocalUser> => {
-  const credentials = await findUserById(userId);
-
-  if (!credentials) {
-    throw new Error('User not found');
+// logoutAll — «Выйти из всех аккаунтов»: закрывает на сервере все сессии этого устройства.
+export const logoutAll = async (): Promise<void> => {
+  for (const { user, token } of await getSavedAccounts()) {
+    try {
+      await apiRequest('POST', '/api/auth/logout', undefined, { token });
+    } catch {
+      // сервер недоступен — токен истечёт сам
+    }
+    await removeAccount(user.id);
   }
-
-  const user: LocalUser = {
-    id: credentials.id,
-    email: credentials.email,
-    name: credentials.email.split('@')[0],
-  };
-
-  await setStorageItem(USER_STORAGE_KEY, user);
-  emitUserChange(user);
-  return user;
+  await setCurrentUser(null);
+  emitUserChange(null);
 };
 
-export const requireUserId = async (): Promise<string> => {
-  const userId = await getUserId();
-  if (!userId) {
-    throw new Error(ERROR_MESSAGES.USER_NOT_AUTHENTICATED);
-  }
+// Профили, в которые входили на этом устройстве (для меню переключения).
+export const getProfileAccounts = async (): Promise<{ id: string; email: string }[]> =>
+  (await getSavedAccounts()).map((a) => ({ id: a.user.id, email: a.user.email ?? a.user.id }));
 
-  return userId;
+// switchToRegisteredUser переключает профиль без пароля: токен сохранён с прошлого входа.
+// Если токен уже не действует, профиль убирается из списка — в него нужно войти заново.
+export const switchToRegisteredUser = async (userId: string): Promise<LocalUser> => {
+  const account = (await getSavedAccounts()).find((a) => a.user.id === userId);
+  if (!account) {
+    throw new Error('User not found');
+  }
+  try {
+    const user = await apiRequest<LocalUser>('GET', '/api/auth/me', undefined, {
+      token: account.token,
+    });
+    await saveAccount(user, account.token);
+    await setCurrentUser(user);
+    await pullSettingsFromServer();
+    emitUserChange(user);
+    return user;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      await removeAccount(userId);
+      throw new Error('This profile session has expired, please sign in again');
+    }
+    throw error;
+  }
 };
 
 export const onAuthChange = (callback: (user: LocalUser | null) => void): (() => void) => {
-  listeners.add(callback);
+  const unsubscribe = subscribeUserChange(callback);
 
   void getCurrentUser().then((user) => {
     callback(user);
   });
 
-  return () => {
-    listeners.delete(callback);
-  };
+  return unsubscribe;
 };

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-top: 88px;
+  padding-top: var(--header-height);
 }
 
 .content {
@@ -307,17 +307,7 @@
   max-width: 200px;
 }
 
-@media (max-width: 900px) {
-  .timerContainer {
-    padding-top: 100px;
-  }
-}
-
 @media (max-width: 768px) {
-  .timerContainer {
-    padding-top: 100px;
-  }
-
   .content {
     padding: 16px;
     gap: 20px;
@@ -387,10 +377,6 @@
 }
 
 @media (max-width: 480px) {
-  .timerContainer {
-    padding-top: 115px;
-  }
-
   .content {
     padding: 16px;
     gap: 16px;

@@ -1,7 +1,7 @@
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message';
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router-dom';
 import GradientButton from '../../components/GradientButton';
@@ -36,7 +36,8 @@ const LoginPage = () => {
     return <Navigate to="/" replace />;
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event?: FormEvent) => {
+    event?.preventDefault();
     if (loading) {
       return;
     }
@@ -61,13 +62,19 @@ const LoginPage = () => {
       <div className={styles.loginContent}>
         <p className={styles.subtitle}>{t('loginSubtitle')}</p>
         {error && <Message severity="error" text={error} className={styles.message} />}
-        <div className={styles.form}>
+        {/* настоящая форма: Enter отправляет её, менеджер паролей узнаёт поля входа */}
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <InputText
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('email') || 'Email'}
             className={styles.input}
-            type="email"
+            type="text"
+            inputMode="email"
+            name="username"
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
           />
           <InputText
             value={password}
@@ -75,9 +82,12 @@ const LoginPage = () => {
             placeholder={t('password') || 'Пароль'}
             className={styles.input}
             type="password"
+            name="password"
+            autoComplete={isRegister ? 'new-password' : 'current-password'}
           />
           <GradientButton
-            onClick={handleSubmit}
+            type="submit"
+            disabled={loading}
             icon={isRegister ? 'pi pi-user-plus' : 'pi pi-sign-in'}
             label={isRegister ? t('register') || 'Регистрация' : t('loginButton') || 'Войти'}
             className={styles.loginButton}
@@ -89,10 +99,11 @@ const LoginPage = () => {
                 : t('noAccount') || 'Нет аккаунта?'
             }
             onClick={handleToggleMode}
+            type="button"
             link
             className={styles.toggleButton}
           />
-        </div>
+        </form>
       </div>
     </div>
   );

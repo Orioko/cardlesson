@@ -20,7 +20,7 @@ import styles from './RepeatPage.module.scss';
 
 const RepeatPageContent = () => {
   const { t } = useTranslation();
-  const { words } = useWordsContext();
+  const { words, refreshWords } = useWordsContext();
 
   const [repeatState, setRepeatState] = useState<RepeatState>(() => initializeRepeatState(words));
 
@@ -56,6 +56,8 @@ const RepeatPageContent = () => {
       onWordSaved: (updatedWord) => {
         const result = handleWordUpdate(updatedWord.id, updatedWord, repeatState);
         setRepeatState(result.newState);
+        // обновить общий список, чтобы правка была видна и в словаре
+        void refreshWords();
       },
     });
 

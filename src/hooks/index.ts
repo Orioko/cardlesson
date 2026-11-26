@@ -5,6 +5,5 @@ export { useStatusMessages } from './useStatusMessages';
 export { useTimeFormatter } from './useTimeFormatter';
 export { useWordActions } from './useWordActions';
 export { useWordEdit } from './useWordEdit';
-export { useWords } from './useWords';
 export { useWordsContext } from './useWordsContext';
 export { useWordsOperations } from './useWordsOperations';

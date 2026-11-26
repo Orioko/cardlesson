@@ -5,12 +5,12 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import { TIMER_DURATIONS } from '../../components/TimerRecordsDialog/constants';
-import { clearTimerRecords, getTimerRecords } from '../../utils/timerRecords';
+import { clearTimerRecords, getTimerRecords, type TimerRecord } from '../../utils/timerRecords';
 import styles from './RecordsPage.module.scss';
 
 const RecordsPage = () => {
   const { t } = useTranslation();
-  const [records, setRecords] = useState(() => getTimerRecords());
+  const [records, setRecords] = useState<Record<number, TimerRecord[]>>({});
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -27,12 +27,30 @@ const RecordsPage = () => {
     };
   }, []);
 
+  const loadRecords = useCallback(
+    () =>
+      getTimerRecords()
+        .then(setRecords)
+        .catch((error) => console.error('Не удалось загрузить рекорды:', error)),
+    []
+  );
+
+  useEffect(() => {
+    getTimerRecords()
+      .then(setRecords)
+      .catch((error) => console.error('Не удалось загрузить рекорды:', error));
+  }, []);
+
   const hasRecords = useMemo(() => Object.keys(records).length > 0, [records]);
 
-  const handleClearRecords = useCallback(() => {
-    clearTimerRecords();
-    setRecords(getTimerRecords());
-  }, []);
+  const handleClearRecords = useCallback(async () => {
+    try {
+      await clearTimerRecords();
+    } catch (error) {
+      console.error('Не удалось очистить рекорды:', error);
+    }
+    await loadRecords();
+  }, [loadRecords]);
 
   const handleOpenConfirmDialog = useCallback(() => {
     setShowConfirmDialog(true);

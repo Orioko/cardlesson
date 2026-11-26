@@ -110,10 +110,10 @@ const DictionaryPage = () => {
   };
 
   const handleConfirmDelete = async () => {
+    // словарь перезагрузится сам после удаления на сервере (onWordUpdated)
     await confirmDelete(() => {
       const newFirst = adjustPaginationAfterDelete(first, rows, words.length - 1);
       setFirst(newFirst);
-      refreshWords();
     });
   };
 

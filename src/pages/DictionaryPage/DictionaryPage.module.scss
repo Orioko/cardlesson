@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-top: 88px;
+  padding-top: var(--header-height);
 }
 
 .content {
@@ -74,12 +74,6 @@
   font-size: 16px;
 }
 
-@media (max-width: 900px) {
-  .dictionaryContainer {
-    padding-top: 100px;
-  }
-}
-
 @media (max-width: 1024px) {
   .cardsContainer {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -88,10 +82,6 @@
 }
 
 @media (max-width: 768px) {
-  .dictionaryContainer {
-    padding-top: 100px;
-  }
-
   .content {
     padding: 16px;
   }
@@ -124,12 +114,8 @@
 }
 
 @media (max-width: 550px) {
-  .dictionaryContainer {
-    padding-top: 115px;
-  }
-
   .content {
-    padding: 12px;
+    padding: 16px;
   }
 
   .search {

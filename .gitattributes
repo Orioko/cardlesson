@@ -1,0 +1,7 @@
+# Все текстовые файлы — с LF в репозитории и в рабочей копии (под это настроены prettier и eslint).
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.ttf binary

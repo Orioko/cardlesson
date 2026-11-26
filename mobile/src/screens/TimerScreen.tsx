@@ -13,7 +13,7 @@ import { AppScreen } from '../components/AppScreen';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { EmptyState, LoadingState } from '../components/ScreenStates';
 import { SectionCard } from '../components/SectionCard';
-import { AppTitle } from '../components/Typography';
+import { AppTitle, BodyText } from '../components/Typography';
 import { getTimerDurations, saveTimerRecord } from '../shared/storage/timerRecords';
 import { theme } from '../shared/theme/theme';
 
@@ -44,7 +44,8 @@ export const TimerScreen = () => {
   });
   const [repeatState, setRepeatState] = useState<RepeatState | null>(null);
   const [wordsCompleted, setWordsCompleted] = useState<Set<string>>(new Set());
-  const wordsCompletedRef = useRef<Set<string>>(new Set());
+  // Рекорд сохраняется ровно один раз за запуск — в эффекте при переходе в isFinished.
+  const recordSavedRef = useRef(false);
 
   useEffect(() => {
     const loadWords = async () => {
@@ -62,8 +63,14 @@ export const TimerScreen = () => {
   }, []);
 
   useEffect(() => {
-    wordsCompletedRef.current = wordsCompleted;
-  }, [wordsCompleted]);
+    if (!timerState.isFinished || recordSavedRef.current) {
+      return;
+    }
+    recordSavedRef.current = true;
+    if (selectedTimer && wordsCompleted.size > 0) {
+      void saveTimerRecord(selectedTimer, wordsCompleted.size);
+    }
+  }, [timerState.isFinished, selectedTimer, wordsCompleted]);
 
   useEffect(() => {
     if (!timerState.isRunning || timerState.timeLeft <= 0) {
@@ -73,9 +80,6 @@ export const TimerScreen = () => {
     const intervalId = setInterval(() => {
       setTimerState((prev) => {
         if (prev.timeLeft <= 1) {
-          if (selectedTimer && wordsCompletedRef.current.size > 0) {
-            void saveTimerRecord(selectedTimer, wordsCompletedRef.current.size);
-          }
           return {
             ...prev,
             timeLeft: 0,
@@ -94,7 +98,7 @@ export const TimerScreen = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [selectedTimer, timerState.isRunning, timerState.timeLeft]);
+  }, [timerState.isRunning, timerState.timeLeft]);
 
   const currentWord = useMemo(() => {
     if (
@@ -115,17 +119,13 @@ export const TimerScreen = () => {
       (repeatState?.isCompleted === true ||
         Boolean(!currentWord && repeatState && repeatState.wordsQueue.length === 0))
     ) {
-      if (selectedTimer && wordsCompletedRef.current.size > 0) {
-        void saveTimerRecord(selectedTimer, wordsCompletedRef.current.size);
-      }
-
       setTimerState((prev) => ({
         ...prev,
         isRunning: false,
         isFinished: true,
       }));
     }
-  }, [currentWord, repeatState, selectedTimer, timerState.isFinished, timerState.isRunning]);
+  }, [currentWord, repeatState, timerState.isFinished, timerState.isRunning]);
 
   const handleStartTimer = () => {
     if (!selectedTimer) {
@@ -141,6 +141,7 @@ export const TimerScreen = () => {
     });
     setRepeatState(initializeRepeatState(words));
     setWordsCompleted(new Set());
+    recordSavedRef.current = false;
   };
 
   const handleCorrect = () => {
@@ -208,21 +209,25 @@ export const TimerScreen = () => {
     const remainingCount = words.length - completedCount;
 
     return (
-      <View style={styles.centerWrap}>
-        <AppTitle>{t('timerFinished')}</AppTitle>
-        <BodyText>{t('wordsCompleted', { count: completedCount })}</BodyText>
-        <BodyText>{t('wordsRemaining', { count: remainingCount })}</BodyText>
-        <PrimaryButton label={t('startAgain')} onPress={handleReset} />
-      </View>
+      <AppScreen currentScreen="Timer">
+        <View style={styles.centerWrap}>
+          <AppTitle>{t('timerFinished')}</AppTitle>
+          <BodyText>{t('wordsCompleted', { count: completedCount })}</BodyText>
+          <BodyText>{t('wordsRemaining', { count: remainingCount })}</BodyText>
+          <PrimaryButton label={t('startAgain')} onPress={handleReset} />
+        </View>
+      </AppScreen>
     );
   }
 
   if (selectedTimer && !timerState.isRunning && !timerState.isFinished) {
     return (
-      <View style={styles.centerWrap}>
-        <Text style={styles.timerText}>{formatTime(selectedTimer * 60)}</Text>
-        <PrimaryButton label={t('startTimer')} onPress={handleStartTimer} />
-      </View>
+      <AppScreen currentScreen="Timer">
+        <View style={styles.centerWrap}>
+          <Text style={styles.timerText}>{formatTime(selectedTimer * 60)}</Text>
+          <PrimaryButton label={t('startTimer')} onPress={handleStartTimer} />
+        </View>
+      </AppScreen>
     );
   }
 
@@ -235,9 +240,14 @@ export const TimerScreen = () => {
       <Text style={styles.timerText}>{formatTime(timerState.timeLeft)}</Text>
       <SectionCard>
         <View style={styles.card}>
-          <Text style={styles.cardText}>{currentWord.ru}</Text>
+          {/* лицо — русское слово (или первое заполненное), ниже — остальные переводы без пустых */}
+          <Text style={styles.cardText}>{currentWord.ru || currentWord.en || currentWord.ko}</Text>
           <Text style={styles.cardSecondary}>
-            {currentWord.en} - {currentWord.ko}
+            {[currentWord.en, currentWord.ko]
+              .filter(
+                (value) => value && value !== (currentWord.ru || currentWord.en || currentWord.ko)
+              )
+              .join(' · ')}
           </Text>
         </View>
       </SectionCard>
