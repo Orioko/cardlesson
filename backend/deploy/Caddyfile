@@ -1,0 +1,18 @@
+{$CARDLESSON_DOMAIN} {
+	encode zstd gzip
+	# импорт словаря — до 8 МБ, с запасом
+	request_body {
+		max_size 10MB
+	}
+	header {
+		# браузер запоминает: к API только по HTTPS (Caddy сам получает сертификат и редиректит с http)
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		# API не отдаёт страниц — встраивать его во фреймы незачем
+		X-Frame-Options "DENY"
+		-Server
+	}
+	# Caddy дописывает IP клиента в X-Forwarded-For — по нему API ограничивает попытки входа
+	reverse_proxy api:8080
+}

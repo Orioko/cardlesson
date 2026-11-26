@@ -1,0 +1,28 @@
+.dialog {
+  width: min(440px, calc(100vw - 32px));
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.text {
+  margin: 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hint {
+  margin: 0;
+  font-size: 13px;
+  color: #9ca3af;
+}

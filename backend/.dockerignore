@@ -1,0 +1,6 @@
+data/
+deploy/
+bin/
+*.db
+*.db-*
+*.exe

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import type { WordInput } from '../types/word';
 import { getUserId } from '../utils/localAuth';
 import { deleteWord } from '../utils/wordsApi';
-import { removeWordFromCache } from '../utils/wordsCache';
 
 interface UseWordActionsProps {
   onWordUpdated?: () => void;
@@ -29,22 +28,20 @@ export const useWordActions = ({ onWordUpdated }: UseWordActionsProps = {}) => {
     const wordIdToDelete = deletingWordId;
     setDeletingWordId(null);
 
+    // Слово сразу пропадает из списка, а запрос идёт в фоне.
+    if (onDeleteSuccess) {
+      onDeleteSuccess(wordIdToDelete);
+    }
+
     try {
-      removeWordFromCache(userId, wordIdToDelete);
-
-      if (onDeleteSuccess) {
-        onDeleteSuccess(wordIdToDelete);
-      }
-
+      await deleteWord(wordIdToDelete);
+    } catch (error) {
+      console.error('Ошибка удаления слова на сервере:', error);
+    } finally {
+      // Перезагружаем словарь с сервера: при ошибке слово вернётся на место.
       if (onWordUpdated) {
         onWordUpdated();
       }
-
-      deleteWord(wordIdToDelete).catch((error) => {
-        console.error('Ошибка удаления слова на сервере:', error);
-      });
-    } catch (error) {
-      console.error('Ошибка удаления слова:', error);
     }
   };
 

@@ -11,6 +11,7 @@ import {
   getAppLanguage,
   getFrontCardLanguage,
   getSelectedLanguages,
+  pushSettingsToServer,
   saveAppLanguage,
   saveFrontCardLanguage,
   saveSelectedLanguages,
@@ -90,6 +91,9 @@ export const SettingsScreen = () => {
       await i18n.changeLanguage(appLanguage);
       setError('');
       setIsSavedVisible(true);
+      pushSettingsToServer().catch((pushError) => {
+        console.warn('Failed to save settings on server:', pushError);
+      });
     } catch {
       setError(t('minTwoLanguagesRequired'));
     }
@@ -315,7 +319,7 @@ export const SettingsScreen = () => {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingBottom: theme.spacing.xxl,
+    paddingBottom: theme.spacing.xl,
     gap: theme.spacing.lg,
   },
   group: {

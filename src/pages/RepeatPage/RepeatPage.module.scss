@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-top: 88px;
+  padding-top: var(--header-height);
 }
 
 .content {
@@ -189,17 +189,7 @@
   color: #666;
 }
 
-@media (max-width: 900px) {
-  .repeatContainer {
-    padding-top: 100px;
-  }
-}
-
 @media (max-width: 768px) {
-  .repeatContainer {
-    padding-top: 100px;
-  }
-
   .content {
     padding: 16px;
     gap: 20px;
@@ -219,10 +209,6 @@
 }
 
 @media (max-width: 480px) {
-  .repeatContainer {
-    padding-top: 115px;
-  }
-
   .content {
     padding: 16px;
     gap: 16px;

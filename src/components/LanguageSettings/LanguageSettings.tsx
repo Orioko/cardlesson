@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguageSettings } from '../../hooks/useLanguageSettings';
 import { useStatusMessages } from '../../hooks/useStatusMessages';
 import { useWordsOperations } from '../../hooks/useWordsOperations';
+import { getLastBackupAt } from '../../utils/wordsBackup';
 import GradientButton from '../GradientButton';
 import type { Lang } from '../WordCard/types';
 import AppLanguageRadioList from './AppLanguageRadioList';
@@ -22,6 +23,8 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
     appLanguage,
     setFrontCardLang,
     setAppLanguage,
+    backupReminder,
+    setBackupReminder,
     handleLangToggle: toggleLang,
     handleSave: saveLanguages,
   } = useLanguageSettings();
@@ -75,6 +78,22 @@ const LanguageSettingsContent = ({ onHide }: { onHide: () => void }) => {
 
       <p className={styles.description}>{t('selectFrontCardLanguage')}</p>
       <FrontCardLanguageRadioList frontCardLang={frontCardLang} onChange={setFrontCardLang} />
+
+      <p className={styles.description}>{t('wordsBackup')}</p>
+      <label className={styles.languageItem}>
+        <input
+          type="checkbox"
+          checked={backupReminder}
+          onChange={(e) => setBackupReminder(e.target.checked)}
+          className={styles.checkbox}
+        />
+        <span className={styles.label}>{t('backupReminderSetting')}</span>
+      </label>
+      <p className={styles.backupHint}>
+        {getLastBackupAt()
+          ? t('backupLastDate', { date: new Date(getLastBackupAt()).toLocaleDateString() })
+          : t('backupNever')}
+      </p>
 
       <ImportExportButtons
         fileInputRef={fileInputRef}

@@ -23,6 +23,7 @@ import type { Word } from '../../../shared/types/word';
 import { ERROR_MESSAGES } from '../../../shared/constants/errors';
 import { createWordInput, getTodayWordsCount } from '../../../shared/utils/wordDataHelpers';
 import { addWord, deleteWord, fetchWords, updateWord } from '../api/wordsApi';
+import { onSynced } from '../shared/sync/backgroundSync';
 import { AppScreen } from '../components/AppScreen';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { SectionCard } from '../components/SectionCard';
@@ -209,6 +210,8 @@ export const DictionaryScreen = () => {
   useFocusEffect(
     useCallback(() => {
       void loadWordsData();
+      // после фоновой синхронизации — свежий словарь (с настоящими id новых слов)
+      return onSynced(() => void loadWordsData());
     }, [loadWordsData])
   );
 
@@ -448,7 +451,17 @@ export const DictionaryScreen = () => {
         onFlip={() => handleToggleCardFlip(item.id)}
         onEdit={() => handleStartEditWord(item)}
         onDelete={() => {
-          void handleDeleteWord(item.id);
+          // как и в вебе — удаление только после подтверждения
+          Alert.alert(t('confirmDeleteWord'), primaryText, [
+            { text: t('cancel'), style: 'cancel' },
+            {
+              text: t('delete'),
+              style: 'destructive',
+              onPress: () => {
+                void handleDeleteWord(item.id);
+              },
+            },
+          ]);
         }}
         translationNotSpecifiedLabel={t('translationNotSpecified')}
       />
@@ -694,6 +707,10 @@ const styles = StyleSheet.create({
     right: theme.spacing.sm,
     flexDirection: 'row',
     gap: theme.spacing.sm,
+    // На Android повёрнутые (rotateY) грани карточки рисуются отдельным слоем и перехватывали
+    // касания: «удалить» и «изменить» переворачивали карточку. Кнопки — явно поверх граней.
+    zIndex: 10,
+    elevation: 10,
   },
   cardPrimary: {
     color: theme.colors.textOnPrimary,

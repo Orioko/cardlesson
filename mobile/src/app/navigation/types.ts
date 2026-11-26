@@ -6,4 +6,5 @@ export type RootStackParamList = {
   Timer: undefined;
   Records: undefined;
   Settings: undefined;
+  Verbs: undefined;
 };

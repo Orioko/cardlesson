@@ -15,6 +15,37 @@ $header-nav-strip-gap-sm: 8px;
   backdrop-filter: blur(10px);
 }
 
+.offlineBanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px 6px 16px;
+  background: #fff4e5;
+  color: #8a4b00;
+  font-size: 13px;
+  text-align: center;
+}
+
+.offlineBannerClose {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(138, 75, 0, 0.1);
+  }
+}
+
 .headerContent {
   max-width: 1400px;
   margin: 0 auto;
@@ -231,31 +262,15 @@ $header-nav-strip-gap-sm: 8px;
   box-sizing: border-box;
 }
 
-@media (max-width: 900px) {
-  .headerContent {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 16px;
-    gap: 16px;
-  }
-
-  .title {
-    font-size: 20px;
-    text-align: center;
-    margin-bottom: 0;
-    padding-right: 0;
-  }
-
-  .controls {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
+// Адаптивность шапки:
+//  ≥1024 — кнопки с подписями в одну строку;
+//  721–1023 — одна строка, но навигация только иконками (шапка остаётся низкой);
+//  ≤720 — заголовок сверху, иконки под ним по центру; ≤400 — всё компактнее.
+@mixin icon-only-nav {
   .navButton {
-    min-width: 44px;
-    width: 44px;
-    height: 44px;
+    min-width: $header-nav-control-size;
+    width: $header-nav-control-size;
+    height: $header-nav-control-size;
     padding: 0;
     border-radius: 50%;
     display: flex;
@@ -282,12 +297,29 @@ $header-nav-strip-gap-sm: 8px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
+  @include icon-only-nav;
+
+  .headerContent {
+    padding: 16px 20px;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .controls {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 720px) {
   .headerContent {
     flex-direction: column;
     align-items: stretch;
-    padding: 16px;
-    gap: 16px;
+    padding: 12px 16px;
+    gap: 10px;
   }
 
   .title {
@@ -300,87 +332,69 @@ $header-nav-strip-gap-sm: 8px;
   .controls {
     justify-content: center;
     flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .navButton {
-    min-width: 44px;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none !important;
-  }
-
-  .navButton :global(.p-button) {
-    border: none !important;
-  }
-
-  .navButton :global(.p-button-label) {
-    display: none;
-  }
-
-  .navButton :global(.p-button-icon) {
-    margin: 0;
-    font-size: 20px;
-  }
-
-  .exitButton {
-    display: none;
+    gap: 10px;
   }
 }
 
-@media (max-width: 480px) {
-  .headerContent {
-    padding: 16px;
-    gap: 12px;
+// Шапка без навигации (вход): заголовок и пара кнопок помещаются в одну строку на любой ширине.
+@media (max-width: 720px) {
+  .headerSimple .headerContent {
+    flex-direction: row;
+    align-items: center;
   }
 
-  .title {
-    font-size: 18px;
-    padding-right: 0;
-    margin-bottom: 0;
+  .headerSimple .title {
+    text-align: left;
   }
+}
 
+@media (max-width: 560px) {
+  // До 7 кнопок в строку на узком экране: делят ширину поровну, но не шире 44 px
   .controls {
     flex-wrap: nowrap;
     gap: 8px;
   }
 
-  .profileOverlay {
-    min-width: 260px;
+  .navButton,
+  .profileSwitcher,
+  .settingsButton {
+    flex: 1 1 0;
+    min-width: 0 !important;
+    max-width: $header-nav-control-size;
   }
 
   .navButton {
-    min-width: 44px;
-    width: 44px;
-    height: 44px;
+    width: auto;
+  }
+
+  .profileMenuButton {
+    width: 100%;
     padding: 0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    border: none !important;
   }
 
-  .navButton :global(.p-button) {
-    border: none !important;
-  }
-
-  .navButton :global(.p-button-label) {
+  // на узком экране у аватара хватает буквы, стрелка не помещается
+  .profileMenuButton :global(.pi-chevron-down) {
     display: none;
   }
+}
 
-  .navButton :global(.p-button-icon) {
-    margin: 0;
-    font-size: 20px;
+@media (max-width: 400px) {
+  .headerContent {
+    padding: 10px 12px;
+    gap: 8px;
   }
 
-  .exitButton {
-    display: none;
+  .title {
+    font-size: 18px;
+  }
+
+  .controls {
+    gap: 4px;
+  }
+
+  .profileOverlay {
+    min-width: 260px;
   }
 }
 

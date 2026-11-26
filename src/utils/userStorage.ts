@@ -1,15 +1,15 @@
-import { BUILTIN_ACCOUNTS } from '../../shared/constants/builtinAccounts';
+// Профили старой версии без сервера (ключ registered_users в localStorage).
+// Теперь они только читаются — чтобы при первом входе перенести данные на сервер
+// (см. legacyMigration.ts). Новые профили создаются на сервере.
 
-interface UserCredentials {
+interface LegacyUser {
   email: string;
-  password: string;
   id: string;
-  createdAt: number;
 }
 
 const USERS_STORAGE_KEY = 'registered_users';
 
-export const getUsersFromStorage = (): UserCredentials[] => {
+export const getUsersFromStorage = (): LegacyUser[] => {
   try {
     if (typeof window === 'undefined' || !window.localStorage) {
       return [];
@@ -17,104 +17,42 @@ export const getUsersFromStorage = (): UserCredentials[] => {
 
     const usersData = localStorage.getItem(USERS_STORAGE_KEY);
     if (usersData) {
-      return JSON.parse(usersData) as UserCredentials[];
+      const parsed: unknown = JSON.parse(usersData);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(
+          (u): u is LegacyUser => typeof u?.id === 'string' && typeof u?.email === 'string'
+        );
+      }
     }
   } catch (error) {
-    console.error('Ошибка получения пользователей:', error);
+    console.error('Ошибка чтения старых профилей:', error);
   }
 
   return [];
 };
 
-export const saveUserToStorage = (email: string, password: string): UserCredentials => {
-  const users = getUsersFromStorage();
-
-  const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const newUser: UserCredentials = {
-    email,
-    password,
-    id: userId,
-    createdAt: Date.now(),
-  };
-
-  users.push(newUser);
-  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-
-  return newUser;
-};
-
-export const findUserByEmail = (email: string): UserCredentials | null => {
-  const users = getUsersFromStorage();
-  return users.find((u) => u.email === email) || null;
-};
-
-export const findUserById = (id: string): UserCredentials | null => {
-  const users = getUsersFromStorage();
-  return users.find((u) => u.id === id) || null;
-};
-
-export const verifyUserCredentials = (email: string, password: string): UserCredentials | null => {
-  const user = findUserByEmail(email);
-
-  if (!user) {
-    return null;
-  }
-
-  if (user.password !== password) {
-    return null;
-  }
-
-  return user;
-};
-
-export const initializeDefaultUser = (): void => {
+// scrubLegacyPasswords убирает пароли из профилей старой версии: там они хранились открытым текстом.
+// Для переноса данных нужны только id и email.
+export const scrubLegacyPasswords = (): void => {
   try {
-    if (typeof window === 'undefined' || !window.localStorage) {
+    const raw = localStorage.getItem(USERS_STORAGE_KEY);
+    if (!raw || !raw.includes('"password"')) {
       return;
     }
-
-    const users = getUsersFromStorage();
-    let changed = false;
-
-    for (const builtin of BUILTIN_ACCOUNTS) {
-      const index = users.findIndex((u) => u.id === builtin.id);
-
-      if (index === -1) {
-        const byEmailIndex = users.findIndex((u) => u.email === builtin.email);
-        if (byEmailIndex !== -1) {
-          users[byEmailIndex] = {
-            ...users[byEmailIndex],
-            id: builtin.id,
-            password: builtin.password,
-            email: builtin.email,
-          };
-        } else {
-          users.push({
-            email: builtin.email,
-            password: builtin.password,
-            id: builtin.id,
-            createdAt: 0,
-          });
-        }
-        changed = true;
-        continue;
-      }
-
-      const existing = users[index];
-      if (existing.password !== builtin.password || existing.email !== builtin.email) {
-        users[index] = {
-          ...existing,
-          email: builtin.email,
-          password: builtin.password,
-        };
-        changed = true;
-      }
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return;
     }
-
-    if (changed) {
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-    }
+    const cleaned = parsed.map((u) => {
+      if (u && typeof u === 'object') {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, ...rest } = u as Record<string, unknown>;
+        return rest;
+      }
+      return u;
+    });
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(cleaned));
   } catch (error) {
-    console.error('Ошибка инициализации дефолтного пользователя:', error);
+    console.error('Не удалось очистить старые пароли:', error);
   }
 };

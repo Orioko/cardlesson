@@ -1,4 +1,4 @@
-import { getUserId } from './localAuth';
+import { getUserId } from '../api/session';
 
 const LEGACY_SETTINGS_MIGRATED_KEY = 'user_settings_legacy_migrated';
 const LEGACY_FRONT_CARD_LANGUAGE_KEY = 'front_card_language';

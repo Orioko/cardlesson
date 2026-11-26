@@ -1,8 +1,12 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { switchToRegisteredUser, type LocalUser } from '../shared/auth/localAuth';
-import { getUsersFromStorage } from '../shared/storage/userStorage';
+import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  getProfileAccounts,
+  logoutAll,
+  switchToRegisteredUser,
+  type LocalUser,
+} from '../shared/auth/localAuth';
 import { theme } from '../shared/theme/theme';
 
 type ProfileAccountMenuProps = {
@@ -21,8 +25,7 @@ export const ProfileAccountMenu = ({ currentUser }: ProfileAccountMenuProps) => 
   const [accounts, setAccounts] = useState<AccountRow[]>([]);
 
   const openMenu = useCallback(async () => {
-    const users = await getUsersFromStorage();
-    setAccounts(users.map((u) => ({ id: u.id, email: u.email })));
+    setAccounts(await getProfileAccounts());
     setVisible(true);
   }, []);
 
@@ -34,6 +37,9 @@ export const ProfileAccountMenu = ({ currentUser }: ProfileAccountMenuProps) => 
 
     try {
       await switchToRegisteredUser(userId);
+    } catch (error) {
+      // токен профиля истёк — он уже убран из списка, в него нужно войти заново
+      Alert.alert(error instanceof Error ? error.message : 'Failed to switch profile');
     } finally {
       setVisible(false);
     }
@@ -82,6 +88,16 @@ export const ProfileAccountMenu = ({ currentUser }: ProfileAccountMenuProps) => 
                 </Pressable>
               );
             })}
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                setVisible(false);
+                void logoutAll();
+              }}
+              style={styles.row}
+            >
+              <Text style={styles.signOutAll}>{t('exitAllAccounts')}</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -153,6 +169,11 @@ const styles = StyleSheet.create({
   rowEmail: {
     flex: 1,
     color: theme.colors.textPrimary,
+    fontWeight: '600',
+  },
+  signOutAll: {
+    flex: 1,
+    color: theme.colors.primary,
     fontWeight: '600',
   },
   currentMark: {

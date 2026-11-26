@@ -168,10 +168,12 @@ export const SpellingScreen = () => {
 
   if (repeatState.isCompleted) {
     return (
-      <View style={styles.centerWrap}>
-        <Text style={styles.completedText}>{t('allWordsCompleted')}</Text>
-        <PrimaryButton label={t('repeatAgain')} onPress={handleRepeatAgain} />
-      </View>
+      <AppScreen currentScreen="Spelling">
+        <View style={styles.centerWrap}>
+          <Text style={styles.completedText}>{t('allWordsCompleted')}</Text>
+          <PrimaryButton label={t('repeatAgain')} onPress={handleRepeatAgain} />
+        </View>
+      </AppScreen>
     );
   }
 

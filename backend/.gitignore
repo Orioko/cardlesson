@@ -1,0 +1,10 @@
+/data/
+/bin/
+*.db
+*.db-shm
+*.db-wal
+*.exe
+/deploy/.env
+/deploy/windows/cardlesson-pc.env
+/deploy/data/
+/deploy/backups/

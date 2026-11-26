@@ -18,27 +18,37 @@ const navigationConfig: Record<string, NavigationButton[]> = {
     { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
     { path: '/timer', icon: 'pi pi-clock', labelKey: 'timer' },
     { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
+    { path: '/verbs', icon: 'pi pi-language', labelKey: 'irregularVerbs' },
   ],
   repeat: [
     { path: '/timer', icon: 'pi pi-clock', labelKey: 'timer' },
     { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
     { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
+    { path: '/verbs', icon: 'pi pi-language', labelKey: 'irregularVerbs' },
   ],
   timer: [
     { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
     { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
     { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
+    { path: '/verbs', icon: 'pi pi-language', labelKey: 'irregularVerbs' },
   ],
   records: [
     { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
     { path: '/timer', icon: 'pi pi-clock', labelKey: 'timer' },
     { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
     { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
+    { path: '/verbs', icon: 'pi pi-language', labelKey: 'irregularVerbs' },
   ],
   spelling: [
     { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
     { path: '/timer', icon: 'pi pi-clock', labelKey: 'timer' },
     { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
+    { path: '/verbs', icon: 'pi pi-language', labelKey: 'irregularVerbs' },
+  ],
+  verbs: [
+    { path: '/repeat', icon: 'pi pi-refresh', labelKey: 'repeat' },
+    { path: '/', icon: 'pi pi-book', labelKey: 'myDictionary' },
+    { path: '/spelling', icon: 'pi pi-pencil', labelKey: 'spelling' },
   ],
 };
 
@@ -57,6 +67,9 @@ const getPageKey = (pathname: string): string => {
   }
   if (pathname === '/spelling') {
     return 'spelling';
+  }
+  if (pathname === '/verbs') {
+    return 'verbs';
   }
   return '';
 };

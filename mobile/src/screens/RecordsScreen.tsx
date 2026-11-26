@@ -16,7 +16,7 @@ import {
 import { theme } from '../shared/theme/theme';
 
 export const RecordsScreen = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [records, setRecords] = useState<Record<number, TimerRecord[]>>({});
 
@@ -77,7 +77,9 @@ export const RecordsScreen = () => {
                         <BodyText>
                           #{index + 1}: {record.wordsCompleted}
                         </BodyText>
-                        <MutedText>{new Date(record.date).toLocaleDateString()}</MutedText>
+                        <MutedText>
+                          {new Date(record.date).toLocaleDateString(i18n.language)}
+                        </MutedText>
                       </View>
                     ))
                   ) : (

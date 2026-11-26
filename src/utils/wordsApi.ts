@@ -1,115 +1,163 @@
+import {
+  DuplicateWordError,
+  OfflineWords,
+  WordNotFoundError,
+  type KeyValueStorage,
+  type WordsTransport,
+} from '../../shared/sync/offlineWords';
+import { ApiError, apiRequest } from '../api/client';
+import { getUserId } from '../api/session';
 import { ERROR_MESSAGES } from '../constants/errors';
 import type { Word, WordInput } from '../types/word';
-import { getUserId } from './localAuth';
-import { loadWordsFromCache, saveWordsToCache } from './wordsCache';
-import { isDuplicateWord } from './wordsDuplicatesCheck';
 
-const getWordsFromStorage = (userId: string): Word[] => {
-  try {
-    const words = loadWordsFromCache(userId);
-    return words || [];
-  } catch (error) {
-    console.error('Ошибка загрузки слов:', error);
-    return [];
-  }
+// Словарь работает и без сети: изменения сохраняются в браузере и уходят на сервер,
+// когда появляется связь (см. shared/sync/offlineWords.ts).
+
+const storage: KeyValueStorage = {
+  get: async <T>(key: string) => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? (JSON.parse(raw) as T) : null;
+    } catch {
+      return null;
+    }
+  },
+  set: async (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error('Не удалось сохранить словарь в браузере:', error);
+    }
+  },
+  remove: async (key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // нечего делать
+    }
+  },
 };
 
-const saveWordsToStorage = (userId: string, words: Word[]): void => {
-  try {
-    saveWordsToCache(userId, words);
-  } catch (error) {
-    console.error('Ошибка сохранения слов:', error);
-  }
+const transport: WordsTransport = {
+  list: () => apiRequest<Word[]>('GET', '/api/words'),
+  create: (input) => apiRequest<Word>('POST', '/api/words', input),
+  update: (id, patch) => apiRequest<Word>('PATCH', `/api/words/${encodeURIComponent(id)}`, patch),
+  remove: (id) => apiRequest<void>('DELETE', `/api/words/${encodeURIComponent(id)}`),
 };
 
-const getUniqueWords = (words: Word[]): Word[] => {
-  return Array.from(new Map(words.map((word) => [word.id, word])).values());
-};
+export const isNetworkError = (error: unknown): boolean =>
+  error instanceof ApiError && error.status === 0;
 
-export const fetchWords = async (): Promise<Word[]> => {
+const engines = new Map<string, OfflineWords>();
+
+// wordsSync — офлайн-словарь текущего пользователя (у каждого профиля своя очередь).
+export const wordsSync = (): OfflineWords => {
   const userId = getUserId();
   if (!userId) {
     throw new Error(ERROR_MESSAGES.USER_NOT_AUTHENTICATED);
   }
-
-  const words = getWordsFromStorage(userId);
-  const uniqueWords = getUniqueWords(words);
-
-  if (uniqueWords.length !== words.length) {
-    console.warn(`Найдено дубликатов: ${words.length - uniqueWords.length}, выполняется очистка`);
-    saveWordsToStorage(userId, uniqueWords);
+  let engine = engines.get(userId);
+  if (!engine) {
+    engine = new OfflineWords({
+      storage,
+      transport,
+      isNetworkError,
+      cacheKey: `words_server_cache_${userId}`,
+      queueKey: `words_queue_${userId}`,
+    });
+    engines.set(userId, engine);
   }
-
-  return uniqueWords;
+  return engine;
 };
 
-export const addWord = async (wordData: WordInput): Promise<Word> => {
-  const userId = getUserId();
-  if (!userId) {
-    throw new Error(ERROR_MESSAGES.USER_NOT_AUTHENTICATED);
-  }
-
-  const words = getWordsFromStorage(userId);
-
-  const newWordForCheck: Word = {
-    id: '',
-    ...wordData,
-  };
-
-  if (isDuplicateWord(newWordForCheck, words)) {
+// Ошибки переводим в те, что фронтенд уже умеет показывать (isDuplicateWordError и т.п.).
+const mapError = (error: unknown): never => {
+  if (
+    error instanceof DuplicateWordError ||
+    (error instanceof ApiError && error.code === 'duplicate_word')
+  ) {
     throw new Error(ERROR_MESSAGES.DUPLICATE_WORD);
   }
-
-  const newWord: Word = {
-    id: `word_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    ...wordData,
-    userId,
-    createdAt: new Date().toISOString(),
-  };
-
-  const wordExists = words.some((w) => w.id === newWord.id);
-  if (wordExists) {
-    console.warn('Слово с таким ID уже существует, генерируется новый ID');
-    newWord.id = `word_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  if (
+    error instanceof WordNotFoundError ||
+    (error instanceof ApiError && error.code === 'word_not_found')
+  ) {
+    throw new Error(ERROR_MESSAGES.WORD_NOT_FOUND);
   }
+  throw error;
+};
 
-  const uniqueWords = getUniqueWords(words);
-  uniqueWords.unshift(newWord);
+// fetchWords — словарь для экрана: со связью синхронизирует и берёт свежий, без связи — сохранённый.
+export const fetchWords = async (): Promise<Word[]> => wordsSync().fetch();
 
-  saveWordsToStorage(userId, uniqueWords);
-  return newWord;
+export const addWord = async (wordData: WordInput): Promise<Word> => {
+  try {
+    const engine = wordsSync();
+    const word = await engine.add(wordData);
+    void engine.flush();
+    return word;
+  } catch (error) {
+    return mapError(error);
+  }
 };
 
 export const updateWord = async (wordId: string, wordData: Partial<Word>): Promise<Word> => {
-  const userId = getUserId();
-  if (!userId) {
-    throw new Error(ERROR_MESSAGES.USER_NOT_AUTHENTICATED);
+  try {
+    const engine = wordsSync();
+    const word = await engine.update(wordId, wordData);
+    void engine.flush();
+    return word;
+  } catch (error) {
+    return mapError(error);
   }
-
-  const words = getWordsFromStorage(userId);
-  const wordIndex = words.findIndex((w) => w.id === wordId);
-
-  if (wordIndex === -1) {
-    throw new Error(ERROR_MESSAGES.WORD_NOT_FOUND);
-  }
-
-  words[wordIndex] = {
-    ...words[wordIndex],
-    ...wordData,
-  };
-
-  saveWordsToStorage(userId, words);
-  return words[wordIndex];
 };
 
 export const deleteWord = async (wordId: string): Promise<void> => {
-  const userId = getUserId();
-  if (!userId) {
-    throw new Error(ERROR_MESSAGES.USER_NOT_AUTHENTICATED);
+  try {
+    const engine = wordsSync();
+    await engine.remove(wordId);
+    void engine.flush();
+  } catch (error) {
+    mapError(error);
   }
+};
 
-  const words = getWordsFromStorage(userId);
-  const filteredWords = words.filter((w) => w.id !== wordId);
+export interface ImportWordsResponse {
+  addedCount: number;
+  duplicatesCount: number;
+  errorCount: number;
+  words: Word[];
+}
 
-  saveWordsToStorage(userId, filteredWords);
+// Операции над всем словарём выполняет сервер, поэтому им нужна связь.
+// Сначала досылаем локальные изменения, чтобы сервер работал с актуальным словарём.
+const requireOnlineSync = async (): Promise<OfflineWords> => {
+  const engine = wordsSync();
+  if (!(await engine.flush())) {
+    throw new ApiError(0, 'network', 'Сервер недоступен. Проверьте подключение к интернету');
+  }
+  return engine;
+};
+
+// importWords добавляет пачку слов одним запросом; дубли сервер пропускает сам.
+export const importWords = async (
+  words: Array<Partial<Word> & { createdAt?: Word['createdAt'] }>
+): Promise<ImportWordsResponse> => {
+  const engine = await requireOnlineSync();
+  const result = await apiRequest<ImportWordsResponse>('POST', '/api/words/import', { words });
+  await engine.fetch();
+  return result;
+};
+
+export const dedupeWords = async (): Promise<{
+  duplicatesCount: number;
+  uniqueWordsCount: number;
+}> => {
+  const engine = await requireOnlineSync();
+  const result = await apiRequest<{ duplicatesCount: number; uniqueWordsCount: number }>(
+    'POST',
+    '/api/words/dedupe'
+  );
+  await engine.fetch();
+  return result;
 };

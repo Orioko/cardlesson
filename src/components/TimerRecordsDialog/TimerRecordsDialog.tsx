@@ -1,26 +1,45 @@
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { clearTimerRecords, getTimerRecords } from '../../utils/timerRecords';
+import { clearTimerRecords, getTimerRecords, type TimerRecord } from '../../utils/timerRecords';
 import { TIMER_DURATIONS } from './constants';
 import styles from './TimerRecordsDialog.module.scss';
 import type { TimerRecordsDialogProps } from './types';
 
 const TimerRecordsDialog = ({ visible, onHide }: TimerRecordsDialogProps) => {
   const { t } = useTranslation();
+  const [records, setRecords] = useState<Record<number, TimerRecord[]>>({});
 
-  const records = useMemo(() => {
-    return visible ? getTimerRecords() : {};
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+    let cancelled = false;
+    getTimerRecords()
+      .then((loaded) => {
+        if (!cancelled) {
+          setRecords(loaded);
+        }
+      })
+      .catch((error) => console.error('Не удалось загрузить рекорды:', error));
+    return () => {
+      cancelled = true;
+    };
   }, [visible]);
 
   const hasRecords = useMemo(() => Object.keys(records).length > 0, [records]);
 
-  const handleClearRecords = useCallback(() => {
+  const handleClearRecords = useCallback(async () => {
     if (
       window.confirm(t('confirmClearRecords') || 'Вы уверены, что хотите очистить все рекорды?')
     ) {
-      clearTimerRecords();
+      try {
+        await clearTimerRecords();
+        setRecords({});
+      } catch (error) {
+        console.error('Не удалось очистить рекорды:', error);
+      }
       onHide();
     }
   }, [t, onHide]);

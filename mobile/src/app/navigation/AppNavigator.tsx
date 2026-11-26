@@ -11,10 +11,12 @@ import {
   SettingsScreen,
   SpellingScreen,
   TimerScreen,
+  VerbsScreen,
 } from '../../screens';
 import { ProfileAccountMenu } from '../../components/ProfileAccountMenu';
 import { logout, onAuthChange, type LocalUser } from '../../shared/auth/localAuth';
-import { initializeBuiltinUsers } from '../../shared/storage/userStorage';
+import { scrubLegacyPasswords } from '../../shared/storage/userStorage';
+import { startBackgroundSync } from '../../shared/sync/backgroundSync';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -25,8 +27,18 @@ export const AppNavigator = () => {
   const [currentUser, setCurrentUser] = useState<LocalUser | null>(null);
   const [isAuthResolved, setIsAuthResolved] = useState<boolean>(false);
 
+  // всё, что сделано без связи, досылается на сервер, пока пользователь вошёл
+  const currentUserId = currentUser?.id;
   useEffect(() => {
-    void initializeBuiltinUsers();
+    if (!currentUserId) {
+      return undefined;
+    }
+    return startBackgroundSync();
+  }, [currentUserId]);
+
+  // пароли старой версии лежали в AsyncStorage открытым текстом — убираем их
+  useEffect(() => {
+    void scrubLegacyPasswords();
   }, []);
 
   useEffect(() => {
@@ -86,6 +98,11 @@ export const AppNavigator = () => {
             />
             <Stack.Screen name="Repeat" component={RepeatScreen} options={{ title: t('repeat') }} />
             <Stack.Screen name="Timer" component={TimerScreen} options={{ title: t('timer') }} />
+            <Stack.Screen
+              name="Verbs"
+              component={VerbsScreen}
+              options={{ title: t('irregularVerbs') }}
+            />
             <Stack.Screen
               name="Records"
               component={RecordsScreen}

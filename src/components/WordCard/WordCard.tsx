@@ -48,11 +48,14 @@ const WordCard = ({
 
       const frontText = wordData[frontLang]?.trim() || '';
       const savedFrontLang = getFrontCardLanguage();
-      const russianWord = wordData.ru?.trim() || '';
+      // Выбранного языка у слова нет: показываем пометку и само слово — по-русски,
+      // а если русского тоже нет, на любом заполненном языке.
+      const fallbackWord =
+        wordData.ru?.trim() || backEntries.find(([, value]) => Boolean(value))?.[1] || '';
 
       let displayText = frontText;
-      if (!frontText && savedFrontLang !== null && frontLang === savedFrontLang && russianWord) {
-        displayText = `${t('translationNotSpecified')} (${russianWord})`;
+      if (!frontText && savedFrontLang !== null && frontLang === savedFrontLang && fallbackWord) {
+        displayText = `${t('translationNotSpecified')} (${fallbackWord})`;
       }
 
       return {

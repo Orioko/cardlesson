@@ -5,3 +5,4 @@ export { RepeatScreen } from './RepeatScreen';
 export { SettingsScreen } from './SettingsScreen';
 export { SpellingScreen } from './SpellingScreen';
 export { TimerScreen } from './TimerScreen';
+export { VerbsScreen } from './VerbsScreen';

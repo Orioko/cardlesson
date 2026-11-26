@@ -1,0 +1,33 @@
+# CardLesson API на VPS: сервер и Caddy (HTTPS с сертификатом Let's Encrypt).
+# Запуск из папки backend/deploy: docker compose up -d --build
+services:
+  api:
+    build:
+      context: ..
+    image: cardlesson-api:latest
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/data
+    expose:
+      - "8080"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      CARDLESSON_DOMAIN: ${CARDLESSON_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+volumes:
+  caddy_data:
+  caddy_config:
